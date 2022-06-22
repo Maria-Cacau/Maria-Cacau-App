@@ -1,3 +1,6 @@
+# Arquivos MAC
+*.DS_Store
+
 # Planilha com dados (usada para teste)
 arquivos/zTestes/
 
