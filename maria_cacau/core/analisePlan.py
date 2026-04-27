@@ -8,7 +8,7 @@ from pandas import read_excel
 from pandas.core.frame import DataFrame
 
 from maria_cacau.core import errors
-from maria_cacau.design_system.gui_popup import Gui_popup
+from maria_cacau.design_system.gui_popup import GuiPopup
 
 
 class Analise:
@@ -32,31 +32,26 @@ class Analise:
         }
         self.allColsFiltro:list = list(set(self.colsFiltro["Sage"] + self.colsFiltro["Envio"] + self.colsFiltro["Entrega"] + self.colsFiltro["Produtos"]))
 
-        self.popUp:Gui_popup = Gui_popup()                                                              # Atributo: Cria os popUp
-
-    ## Destruidor: Deleta os atributos
-    def __del__(self) -> None:
-        del self.dtsPed, self.colsFiltro, self.allColsFiltro
-        del self.arq, self.arqUsados, self.popUp
+        self.popUp:GuiPopup = GuiPopup()                                                               # Atributo: Cria os popUp
 
     ## Método especial: Pega as colunas já filtradas
-    def getCol(self, k_:str) -> list: return self.colsFiltro[k_]
+    def get_col(self, k_:str) -> list: return self.colsFiltro[k_]
 
     ## Método especial: Pega as datas
-    def getDts(self) -> dict: return self.dtsPed
+    def get_dates(self) -> dict: return self.dtsPed
 
     ## Método especial: Faz a leitura do arquivo
-    def setArq(self, local_:str) -> bool:
+    def load_file(self, local_:str) -> bool:
         if (local_ == ""): return False
         if ((local_[-5:] != ".xlsx")):
-            self.popUp.show_PopUp(errors.A001)
+            self.popUp.show_popup(errors.A001)
             return False
 
         try:
             arq = read_excel(local_)                                                                    # Faz a leitura do arquivo
             self.arq = arq[arq[arq.columns[0]].isnull() == False][self.allColsFiltro]                  # Tira as linhas em branco (no meio e no final)
         except:
-            self.popUp.show_PopUp(errors.A002)
+            self.popUp.show_popup(errors.A002)
             return False
 
         try:
@@ -64,26 +59,26 @@ class Analise:
             dts = qDts.index.tolist()
             self.dtsPed = {str(dts[x])[:10]:int(qDts[x]) for x in range(len(dts))}
         except:
-            self.popUp.show_PopUp(errors.A003)
+            self.popUp.show_popup(errors.A003)
             return False
 
         qLinhas = len(self.arq.index)
         if (qLinhas == 0):
-            self.popUp.show_PopUp(errors.A004)
+            self.popUp.show_popup(errors.A004)
             return False
 
-        self.popUp.show_PopUp(errors.planilha_ok(qLinhas), "I")
+        self.popUp.show_popup(errors.planilha_ok(qLinhas), "I")
 
         del arq, dts, qDts, qLinhas
         return True
 
     ## Método especial: Devolve a planilha filtrada
-    def getArq(self, l_:list, d_:str) -> DataFrame:
+    def get_data(self, l_:list, d_:str) -> DataFrame:
         if (d_ in self.arqUsados.keys()): return self.arqUsados[d_][l_]                                # Memoization
         self.arqUsados[d_] = self.arq.loc[(self.arq['DATA ENTREGA'] == f"{d_} 00:00:00")].reset_index().drop(columns=['index'])
         return self.arqUsados[d_][l_]
 
     ## Método especial: Devolve a planilha filtrada com exceções a mais
-    def getArqDados(self, l_:list, d_:str) -> DataFrame:
-        arq = self.getArq(l_, d_)
+    def get_dados(self, l_:list, d_:str) -> DataFrame:
+        arq = self.get_data(l_, d_)
         return arq.loc[(arq['Modal'] != 'MOTOBOY') & (arq['Evento'] != 'Amostras')].reset_index().drop(columns=['index','Evento'])
