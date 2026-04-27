@@ -12,8 +12,9 @@ Maria-Cacau-Contagem/
 │   ├── __init__.py               # metadados centralizados (versão, copyright, ícones)
 │   ├── __main__.py               # entry point
 │   ├── core/
-│   │   ├── analisePlan.py        # leitura e filtragem da planilha Excel
-│   │   └── errors.py             # códigos de erro com docstrings
+│   │   ├── analisePlan.py            # leitura e filtragem da planilha Excel
+│   │   ├── google_sheets_service.py  # autenticação e leitura do Google Sheets
+│   │   └── errors.py                 # códigos de erro com docstrings
 │   ├── design_system/
 │   │   ├── aux_widgets.py        # factory de widgets reutilizáveis
 │   │   ├── aux_frames.py         # frame composto (label + input + botão)

@@ -11,7 +11,9 @@ App desktop para gestão de pedidos e entregas da Maria Cacau. Lê uma planilha 
 |---|---|
 | Linguagem | Python 3.13 |
 | Interface | PyQt6 |
-| Planilha | pandas + openpyxl |
+| Planilha Excel | pandas + openpyxl |
+| Planilha Google | gspread + google-auth |
+| Credenciais | keyring (keychain do SO) |
 | Build/Empacotamento | Nuitka |
 | Ambiente | direnv + venv |
 
