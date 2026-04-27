@@ -15,7 +15,18 @@ from maria_cacau.core.analisePlan import Analise
 from maria_cacau.assets import strings
 
 from PyQt6.QtWidgets import QMainWindow, QWidget, QMenuBar, QMenu, QFileDialog, QApplication, QHBoxLayout, QVBoxLayout
-from PyQt6.QtGui import QIcon, QAction
+from PyQt6.QtGui import QIcon, QAction, QPixmap, QPainter
+from PyQt6.QtCore import Qt
+
+
+class _BackgroundWidget(QWidget):
+    def __init__(self, image_path: str):
+        super().__init__()
+        self._pixmap = QPixmap(image_path)
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        painter.drawPixmap(self.rect(), self._pixmap)
 
 
 class Gui_main(QMainWindow):
@@ -25,7 +36,6 @@ class Gui_main(QMainWindow):
 
         self.setWindowIcon(QIcon('maria_cacau/assets/images/logo-icone.png'))
         self.setWindowTitle("Maria Cacau - Consulta")
-        self.setStyleSheet("QMainWindow{background: rgb(235, 230, 215);}")
 
         tamTela = QApplication.primaryScreen().availableGeometry()
         self.setMinimumSize(tamTela.width()-300, tamTela.height()-200)
@@ -35,7 +45,7 @@ class Gui_main(QMainWindow):
         self.menubar.setGeometry(0, 0, tamTela.width(), 22)
         self.setMenuBar(self.menubar)
 
-        root = QWidget()
+        root = _BackgroundWidget('maria_cacau/assets/images/background.png')
         self.setCentralWidget(root)
 
         self.gProdutos = Gui_Produtos()
