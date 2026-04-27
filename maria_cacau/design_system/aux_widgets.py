@@ -10,11 +10,12 @@
 #    Por ser usados mais de uma vez passa a ser mais otimizado dessa forma.
 
 
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QFont
 ## Bibliotecas necessárias:
 # GUI:
-from PyQt6.QtWidgets import QLabel, QPushButton, QGroupBox, QLineEdit, QTextBrowser, QGraphicsView, QWidget, QComboBox
-from PyQt6.QtGui import QFont
-from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import (QComboBox, QGraphicsView, QGroupBox, QLabel,
+                             QLineEdit, QPushButton, QTextBrowser, QWidget)
 
 
 class AuxWidgets:
