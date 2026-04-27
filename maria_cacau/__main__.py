@@ -2,11 +2,12 @@
 
 # -*- coding: utf-8 -*-
 
-from maria_cacau.features.home.home_view import Gui_main
-
 import sys
-from PyQt6.QtWidgets import QApplication
+
 from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QApplication
+
+from maria_cacau.features.home.home_view import Gui_main
 
 
 def main():
