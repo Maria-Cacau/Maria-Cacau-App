@@ -10,7 +10,6 @@
 
 from PyQt6.QtWidgets import QHBoxLayout, QVBoxLayout
 
-## Bibliotecas necessárias:
 from maria_cacau.design_system.aux_widgets import AuxWidgets
 
 

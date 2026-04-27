@@ -4,8 +4,6 @@
 
 ## Classe responsável pela criação da janela principal
 
-
-from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QAction, QIcon, QPainter, QPixmap
 from PyQt6.QtWidgets import (QApplication, QFileDialog, QHBoxLayout,
                              QMainWindow, QMenu, QMenuBar, QVBoxLayout,
@@ -21,7 +19,6 @@ from maria_cacau.features.home.sub_features.nota_fiscal.nota_fiscal_view import 
     Gui_Dados
 from maria_cacau.features.home.sub_features.orders_pendent.orders_pendent_view import \
     Gui_Entregas
-## Bibliotecas necessárias:
 from maria_cacau.features.home.sub_features.products_resume.products_resume_view import \
     Gui_Produtos
 

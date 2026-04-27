@@ -7,14 +7,12 @@
 #    Essa classe é responsável pela interface gráfica + toda
 # a parte lógica.
 
-
 from pandas.core.frame import DataFrame
 from pandas.core.series import Series
 from PyQt6.QtWidgets import QHBoxLayout, QVBoxLayout
 
 from maria_cacau.assets import strings
 from maria_cacau.core import errors
-## Bibliotecas necessárias:
 from maria_cacau.design_system.aux_widgets import AuxWidgets
 from maria_cacau.design_system.gui_popup import Gui_popup
 

@@ -7,12 +7,9 @@
 #    Aqui é onde é feito a construção da Interface Gráfica da área e
 # também o calculo para a vaidação do CPF.
 
-
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QWidget
 
 from maria_cacau.assets import strings
-## Bibliotecas necessárias:
 from maria_cacau.design_system.aux_widgets import AuxWidgets
 
 

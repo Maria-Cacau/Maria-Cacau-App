@@ -12,10 +12,8 @@
 
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QFont
-## Bibliotecas necessárias:
-# GUI:
 from PyQt6.QtWidgets import (QComboBox, QGraphicsView, QGroupBox, QLabel,
-                             QLineEdit, QPushButton, QTextBrowser, QWidget)
+                             QLineEdit, QPushButton, QTextBrowser)
 
 
 class AuxWidgets:

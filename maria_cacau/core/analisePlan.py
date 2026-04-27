@@ -9,7 +9,6 @@
 # erros, sendo cada erro identificado com um código.
 
 from pandas import read_excel
-## Bibliotecas necessárias:
 from pandas.core.frame import DataFrame
 
 from maria_cacau.core import errors
