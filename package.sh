@@ -21,7 +21,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
         --macos-app-name="$APP_NAME" \
         --macos-app-version="$VERSION" \
         --macos-app-icon="$ICON_MAC" \
-        --include-data-dir=assets=assets \
+        --include-data-dir=maria_cacau/assets=maria_cacau/assets \
         --output-dir="$OUTPUT" \
         "$ENTRY"
 
@@ -42,7 +42,7 @@ elif [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || "$OSTYPE" == "win32" ]];
         --windows-company-name="KINGS" \
         --windows-file-description="$APP_NAME" \
         --copyright="$COPYRIGHT" \
-        --include-data-dir=assets=assets \
+        --include-data-dir=maria_cacau/assets=maria_cacau/assets \
         --output-filename="$APP_NAME" \
         --output-dir="$OUTPUT" \
         "$ENTRY"

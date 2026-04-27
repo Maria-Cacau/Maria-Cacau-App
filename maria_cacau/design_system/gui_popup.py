@@ -9,6 +9,8 @@
 
 
 ## Bibliotecas necessárias:
+from maria_cacau.core.errors import AppError
+
 from PyQt6.QtWidgets import QMessageBox
 from PyQt6.QtGui import QIcon, QFont
 
@@ -25,7 +27,7 @@ class Gui_popup(QMessageBox):
 
     ## Método: Configura a interface (GUI)
     def gui_Ui(self) -> None:
-        self.setWindowIcon(QIcon('assets/logo-icone.png'))                  # Define o icone da janela (geral)
+        self.setWindowIcon(QIcon('maria_cacau/assets/images/logo-icone.png'))                  # Define o icone da janela (geral)
         self.setStyleSheet("QLabel{max-width: 400px;};")                    # Define o tamanho máximo do espaço interno
         self.setIcon(QMessageBox.Icon.Critical)                             # Define o ícone que mostra ao lado da mensagem
         self.setStandardButtons(QMessageBox.StandardButton.Save)            # Add os botões
@@ -36,13 +38,9 @@ class Gui_popup(QMessageBox):
         self.btEsq.setText("OK")                                            # Definindo o texto
 
     ## Método: Mostra a janela.
-    def show_PopUp(self, lMsg_:list, icon_:str = "C") -> int:
-        self.setTxts(lMsg_)                                                 # Define as mensagens
-        if (icon_ == "I"): self.setIcon(QMessageBox.Icon.Information)      # Define o ícone de informação
+    def show_PopUp(self, msg_:AppError, icon_:str = "C") -> int:
+        self.setWindowTitle(msg_.titulo)
+        self.setText(msg_.subtitulo)
+        self.setInformativeText(msg_.detalhe)
+        if (icon_ == "I"): self.setIcon(QMessageBox.Icon.Information)
         return self.exec()
-
-    ## Método: Define o texto de saída
-    def setTxts(self, lTxts_:list) -> None:
-        self.setWindowTitle(lTxts_[0])                                      # Título da janela
-        self.setText(lTxts_[1])                                             # Título da mensagem
-        self.setInformativeText(lTxts_[2])                                  # Mensagem (pergunta)

@@ -42,7 +42,7 @@ class AuxWidgets:
     ## Método: Cria botões com imagem
     def btsImg(self) -> QPushButton:
         btI = QPushButton()                                                             # Cria o botão
-        btI.setStyleSheet("image : url(assets/salvar-icon.png);")                      # Define a imagem
+        btI.setStyleSheet("image : url(maria_cacau/assets/images/salvar-icon.png);")                      # Define a imagem
         btI.setFixedSize(20, 20)                                                        # Define o tamanho fixo
         btI.setFont(QFont('Arial', 10))                                                 # Define a fonte
         return btI
