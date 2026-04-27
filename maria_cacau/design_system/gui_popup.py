@@ -8,11 +8,10 @@
 # não é salva. Aqui é gerado e feito toda a configuração dela.
 
 
-## Bibliotecas necessárias:
-from maria_cacau.core.errors import AppError
-
+from PyQt6.QtGui import QFont, QIcon
 from PyQt6.QtWidgets import QMessageBox
-from PyQt6.QtGui import QIcon, QFont
+
+from maria_cacau.core.errors import AppError
 
 
 class Gui_popup(QMessageBox):

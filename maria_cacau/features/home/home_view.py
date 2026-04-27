@@ -4,19 +4,23 @@
 
 ## Classe responsável pela criação da janela principal
 
+from PyQt6.QtGui import QAction, QIcon, QPainter, QPixmap
+from PyQt6.QtWidgets import (QApplication, QFileDialog, QHBoxLayout,
+                             QMainWindow, QMenu, QMenuBar, QVBoxLayout,
+                             QWidget)
 
-## Bibliotecas necessárias:
-from maria_cacau.features.home.sub_features.products_resume.products_resume_view import Gui_Produtos
-from maria_cacau.features.home.sub_features.orders_pendent.orders_pendent_view import Gui_Entregas
-from maria_cacau.features.home.sub_features.nota_fiscal.nota_fiscal_view import Gui_Dados
-from maria_cacau.features.home.sub_features.cpf_validation.cpf_validation_view import Gui_ValiCpf
-from maria_cacau.features.home.sub_features.freight_query.freight_query_view import Gui_ConsFrete
-from maria_cacau.core.analisePlan import Analise
 from maria_cacau.assets import strings
-
-from PyQt6.QtWidgets import QMainWindow, QWidget, QMenuBar, QMenu, QFileDialog, QApplication, QHBoxLayout, QVBoxLayout
-from PyQt6.QtGui import QIcon, QAction, QPixmap, QPainter
-from PyQt6.QtCore import Qt
+from maria_cacau.core.analisePlan import Analise
+from maria_cacau.features.home.sub_features.cpf_validation.cpf_validation_view import \
+    Gui_ValiCpf
+from maria_cacau.features.home.sub_features.freight_query.freight_query_view import \
+    Gui_ConsFrete
+from maria_cacau.features.home.sub_features.nota_fiscal.nota_fiscal_view import \
+    Gui_Dados
+from maria_cacau.features.home.sub_features.orders_pendent.orders_pendent_view import \
+    Gui_Entregas
+from maria_cacau.features.home.sub_features.products_resume.products_resume_view import \
+    Gui_Produtos
 
 
 class _BackgroundWidget(QWidget):

@@ -8,10 +8,10 @@
 # usadas várias vezes dentro dá área de "Notas SAGE" e "Melhor Envio"
 
 
+from PyQt6.QtWidgets import QFrame, QHBoxLayout
+
 ## Bibliotecas necessárias:
 from maria_cacau.design_system.aux_widgets import AuxWidgets
-
-from PyQt6.QtWidgets import QFrame, QHBoxLayout
 
 
 class AuxFrame(QFrame, AuxWidgets):
