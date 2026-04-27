@@ -2,6 +2,8 @@
 # Setup do projeto: instala direnv, cria o venv e instala as dependências.
 # Use: ./build.sh  (não precisa de source)
 
+VENV_NAME="venv"
+
 if [[ "$OSTYPE" == "darwin"* ]]; then
     # macOS
     if ! command -v direnv &> /dev/null; then
@@ -27,14 +29,14 @@ else
 fi
 
 # Cria o venv se não existir
-if [ ! -d "maria-cacau" ]; then
+if [ ! -d "$VENV_NAME" ]; then
     echo "Criando ambiente virtual..."
-    python3 -m venv maria-cacau
+    python3 -m venv "$VENV_NAME"
 fi
 
-# Instala as dependências
-source maria-cacau/bin/activate
-pip install -r requirements.txt
+# Instala o pacote e suas dependências
+source "$VENV_NAME/bin/activate"
+pip install -e .
 
 # Libera o direnv para ativar automaticamente
 direnv allow
