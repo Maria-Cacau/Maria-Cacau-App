@@ -12,9 +12,9 @@
 
 ## Bibliotecas necessárias:
 # GUI:
-from PyQt5.QtWidgets import QLabel, QPushButton, QGroupBox, QLineEdit, QTextBrowser, QGraphicsView, QWidget, QComboBox
-from PyQt5.QtGui import QFont
-from PyQt5.QtCore import Qt
+from PyQt6.QtWidgets import QLabel, QPushButton, QGroupBox, QLineEdit, QTextBrowser, QGraphicsView, QWidget, QComboBox
+from PyQt6.QtGui import QFont
+from PyQt6.QtCore import Qt
 
 
 class AuxWidgets:
@@ -30,7 +30,7 @@ class AuxWidgets:
         lb = QLabel(txt_, wid_)                                                 # Cria uma label
         lb.setGeometry(p1_, p2_, p3_, p4_)                                      # Define a posição
         lb.setFont(QFont('Arial', tam_))                                        # Define a fonte
-        lb.setAlignment(Qt.AlignLeft|Qt.AlignVCenter)                           # Define o alinhamento
+        lb.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)  # Define o alinhamento
         return lb
     
     
