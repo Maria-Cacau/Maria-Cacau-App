@@ -9,7 +9,7 @@ from maria_cacau.core.errors import AppError
 class GuiPopup(QMessageBox):
     ## Construtor: Cria a gui e o necessário para futuras configurações
     def __init__(self) -> None:
-        super(GuiPopup, self).__init__()
+        super().__init__()
         self.setup_ui()
 
     ## Método: Configura a interface (GUI)
@@ -29,5 +29,5 @@ class GuiPopup(QMessageBox):
         self.setWindowTitle(msg_.titulo)
         self.setText(msg_.subtitulo)
         self.setInformativeText(msg_.detalhe)
-        if (icon_ == "I"): self.setIcon(QMessageBox.Icon.Information)
+        if icon_ == "I": self.setIcon(QMessageBox.Icon.Information)
         return self.exec()

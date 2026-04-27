@@ -11,7 +11,7 @@ from maria_cacau.design_system.aux_widgets import AuxWidgets
 class GuiProdutos(AuxWidgets):
     ## Construtor: define a super classe e também o grupo
     def __init__(self) -> None:
-        super(GuiProdutos, self).__init__()
+        super().__init__()
 
         self.root = self.group_box("Produtos")                                          # Atributo: Cria o Group Box
 
@@ -94,7 +94,7 @@ class GuiProdutos(AuxWidgets):
 
     ## Método: Adiciona no dicionário somando os valores que ja existe
     def add_to_dict(self, k_:str, v_:int, d1_:dict) -> None:
-        if (k_ not in d1_.keys()): d1_[k_] = v_
+        if k_ not in d1_: d1_[k_] = v_
         else: d1_[k_] += v_
 
     ## Método: Junta as colunas de produtos (e as quantidade deles) em um dicionário
@@ -120,7 +120,7 @@ class GuiProdutos(AuxWidgets):
 
     ## Método: Pega o dicionário e coloca em string ("key -> value")
     def dict_to_str(self, d_:dict, s_:str= '') -> str:
-        for x in sorted(d_.keys()): s_ += f"{self.format_num(d_[x])} -> {x}\n"
+        for x in sorted(d_): s_ += f"{self.format_num(d_[x])} -> {x}\n"
         del x
         return s_
 

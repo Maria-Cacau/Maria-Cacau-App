@@ -13,7 +13,7 @@ from maria_cacau.design_system.gui_popup import GuiPopup
 class GuiEntregas(AuxWidgets):
     ## Construtor: define a super classe e também o grupo
     def __init__(self) -> None:
-        super(GuiEntregas, self).__init__()
+        super().__init__()
 
         self.root = self.group_box("Entregas")                                          # Cria o Group Box
 
@@ -78,7 +78,7 @@ class GuiEntregas(AuxWidgets):
 
     ## Método especial: Define as datas
     def set_dates(self, d_:dict) -> None:
-        for x in d_.keys(): self.datas[self.fix_date(str(x)[0:10])] = x
+        for x in d_: self.datas[self.fix_date(str(x)[0:10])] = x
         self.dts.addItems(sorted(self.datas.keys()))
         del x
 
@@ -106,11 +106,11 @@ class GuiEntregas(AuxWidgets):
                     arq_[self.col[0]][x], arq_[self.col[1]][x], arq_[self.col[2]][x], arq_[self.col[3]][x], arq_[self.col[4]][x])
 
             self.res = f'Para o dia {self.fix_date(d_)} temos: {sum(quant)} pedido(s)\n{entregas}\n\n'
-            if (dev == ''): self.res += "Sem nenhuma pendência!"
+            if dev == '': self.res += "Sem nenhuma pendência!"
             else: self.res += f"Falta(m) pagar:\n{dev}"
 
             self.resumos[d_] = self.res
             del quant, tipo, entregas, pag, dev, x
 
-        except:
+        except Exception:
             self.popup.show_popup(errors.E001)

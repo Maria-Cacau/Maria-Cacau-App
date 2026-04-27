@@ -8,7 +8,7 @@ from maria_cacau.design_system.aux_widgets import AuxWidgets
 class AuxFrame(QFrame, AuxWidgets):
     ## Construtor: define a super classe e também a janela principal
     def __init__(self, nLb_:str) -> None:
-        super(AuxFrame, self).__init__()
+        super().__init__()
         self.setup_ui(nLb_)
 
     ## Método: configura a frame

@@ -10,7 +10,7 @@ from maria_cacau.design_system.aux_widgets import AuxWidgets
 class GuiValiCpf(AuxWidgets):
     ## Construtor: define a super classe e também o grupo
     def __init__(self) -> None:
-        super(GuiValiCpf, self).__init__()
+        super().__init__()
 
         self.root = self.group_box("Validação CPF")                                     # Cria o Group Box
         self.root.setEnabled(False)                                                     # v5.0: Deixa inativo
