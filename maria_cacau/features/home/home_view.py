@@ -8,15 +8,15 @@ from PyQt6.QtWidgets import (QApplication, QFileDialog, QHBoxLayout,
 from maria_cacau.assets import strings
 from maria_cacau.core.analisePlan import Analise
 from maria_cacau.features.home.sub_features.cpf_validation.cpf_validation_view import \
-    Gui_ValiCpf
+    GuiValiCpf
 from maria_cacau.features.home.sub_features.freight_query.freight_query_view import \
-    Gui_ConsFrete
+    GuiConsFrete
 from maria_cacau.features.home.sub_features.nota_fiscal.nota_fiscal_view import \
-    Gui_Dados
+    GuiDados
 from maria_cacau.features.home.sub_features.orders_pendent.orders_pendent_view import \
-    Gui_Entregas
+    GuiEntregas
 from maria_cacau.features.home.sub_features.products_resume.products_resume_view import \
-    Gui_Produtos
+    GuiProdutos
 
 
 class _BackgroundWidget(QWidget):
@@ -29,10 +29,10 @@ class _BackgroundWidget(QWidget):
         painter.drawPixmap(self.rect(), self._pixmap)
 
 
-class Gui_main(QMainWindow):
+class GuiMain(QMainWindow):
     ## Construtor: Cria a janela principal com o menu e o local onde vai ser colocado as páginas
     def __init__(self) -> None:
-        super(Gui_main, self).__init__()
+        super(GuiMain, self).__init__()
 
         self.setWindowIcon(QIcon('maria_cacau/assets/images/logo-icone.png'))
         self.setWindowTitle("Maria Cacau - Consulta")
@@ -48,15 +48,15 @@ class Gui_main(QMainWindow):
         root = _BackgroundWidget('maria_cacau/assets/images/background.png')
         self.setCentralWidget(root)
 
-        self.gProdutos = Gui_Produtos()
-        self.gEntregas = Gui_Entregas()
-        self.gDados = Gui_Dados()
-        self.gVeriCpf = Gui_ValiCpf()
-        self.gConsCep = Gui_ConsFrete()
+        self.gProdutos = GuiProdutos()
+        self.gEntregas = GuiEntregas()
+        self.gDados = GuiDados()
+        self.gVeriCpf = GuiValiCpf()
+        self.gConsCep = GuiConsFrete()
 
         self.aAna = Analise()
 
-        self.gui_Ui(root)
+        self.setup_ui(root)
 
         self.datas:dict = {}
         self.dtEnt:str = ''
@@ -64,14 +64,8 @@ class Gui_main(QMainWindow):
 
         del tamTela, self.gVeriCpf, self.gConsCep
 
-
-    ## Destruidor: desaloca os atributos declarados
-    def __del__(self) -> None:
-        del self.gProdutos, self.gEntregas, self.gDados
-        del self.aAna, self.datas, self.dtEnt, self.dtDados
-
     ## Método: configura a interface
-    def gui_Ui(self, root:QWidget) -> None:
+    def setup_ui(self, root:QWidget) -> None:
     ## ------------------------------------------------------------------------------------------------
     ## Barra do menu:
         self.mnConfig = QMenu("Arquivo", self.menubar)
@@ -79,7 +73,7 @@ class Gui_main(QMainWindow):
 
         self.actLerPlan = QAction("Ler planilha", self)
         self.mnConfig.addAction(self.actLerPlan)
-        self.actLerPlan.triggered.connect(self.btLerPlan_action)
+        self.actLerPlan.triggered.connect(self.on_ler_planilha)
 
         self.mnAjuda = QMenu("Ajuda", self.menubar)
         self.menubar.addAction(self.mnAjuda.menuAction())
@@ -108,74 +102,73 @@ class Gui_main(QMainWindow):
 
     ## ------------------------------------------------------------------------------------------------
     ## Ações de botão:
-        self.gEntregas.btAttAtiv.clicked.connect(self.btLerPlan_action)
-        self.gEntregas.btOk.clicked.connect(self.btOk_actionEnt)
+        self.gEntregas.btAttAtiv.clicked.connect(self.on_ler_planilha)
+        self.gEntregas.btOk.clicked.connect(self.on_ok_entregas)
 
-        self.gProdutos.btAttAtiv.clicked.connect(self.btLerPlan_action)
-        self.gProdutos.btOk.clicked.connect(self.btOk_actionProd)
+        self.gProdutos.btAttAtiv.clicked.connect(self.on_ler_planilha)
+        self.gProdutos.btOk.clicked.connect(self.on_ok_produtos)
 
-        self.gDados.btAttAtiv.clicked.connect(self.btLerPlan_action)
-        self.gDados.btOk.clicked.connect(self.btOk_actionDados)
-
+        self.gDados.btAttAtiv.clicked.connect(self.on_ler_planilha)
+        self.gDados.btOk.clicked.connect(self.on_ok_dados)
 
     ## Método: Ação do botão "OK" da área de Produtos
-    def btOk_actionProd(self) -> None:
+    def on_ok_produtos(self) -> None:
         dia:str = ''
         for d in sorted(self.datas.keys()):
-            dia += f"\n\nDia {self.gProdutos.fixDate(d[:10])} - {self.datas[d]} pedido(s)\n"
-            dia += self.gProdutos.pedidosDia(d, self.datas[d], self.aAna.getArq(self.aAna.getCol("Produtos"),d))
+            dia += f"\n\nDia {self.gProdutos.fix_date(d[:10])} - {self.datas[d]} pedido(s)\n"
+            dia += self.gProdutos.resumo_dia(d, self.datas[d], self.aAna.get_data(self.aAna.get_col("Produtos"),d))
             self.gProdutos.pedDia = {}
 
-        self.gProdutos.setResumo(dia)
+        self.gProdutos.set_resumo(dia)
         self.gProdutos.btCopiarTxt.setEnabled(True)
         self.gProdutos.btOk.setEnabled(False)
         del dia, d
 
     ## Método: ação do botão "OK" da área de Entregas
-    def btOk_actionEnt(self) -> None:
-        dt:str = self.gEntregas.getDta()
+    def on_ok_entregas(self) -> None:
+        dt:str = self.gEntregas.get_date()
         if (self.dtEnt != dt):
-            if (dt in self.gEntregas.resumos.keys()): self.gEntregas.setTxt(self.gEntregas.resumos[dt])
+            if (dt in self.gEntregas.resumos.keys()): self.gEntregas.set_text(self.gEntregas.resumos[dt])
             else:
-                self.gEntregas.setResumo(dt, self.aAna.getArq(self.aAna.getCol("Entrega"),dt))
-                self.gEntregas.txt.setText(self.gEntregas.res)
+                self.gEntregas.set_resumo(dt, self.aAna.get_data(self.aAna.get_col("Entrega"),dt))
+                self.gEntregas.set_text(self.gEntregas.res)
                 if (not self.gEntregas.btCopiarTxt.isEnabled()):
                     self.gEntregas.btCopiarTxt.setEnabled(True)
             self.dtEnt = dt
         del dt
 
     ## Método: ação do botão OK da área de Dados
-    def btOk_actionDados(self) -> None:
-        dt:str = self.gDados.getDta()
+    def on_ok_dados(self) -> None:
+        dt:str = self.gDados.get_date()
         if (self.dtDados != dt):
-            arq = self.aAna.getArqDados(self.aAna.getCol("Sage"), dt)
-            arq['Belga'] = self.gDados.setBelga(self.aAna.getArqDados(self.aAna.getCol("Belga"), dt))
-            self.gDados.setResumo(arq)
+            arq = self.aAna.get_dados(self.aAna.get_col("Sage"), dt)
+            arq['Belga'] = self.gDados.set_belga(self.aAna.get_dados(self.aAna.get_col("Belga"), dt))
+            self.gDados.set_resumo(arq)
             self.dtDados = dt
             del arq
         del dt
 
     ## Método: Ação do botão "Ler planilha"
-    def btLerPlan_action(self) -> None:
+    def on_ler_planilha(self) -> None:
         if ("Ler planilha" == self.gDados.btAttAtiv.text()):
             locArq:tuple = QFileDialog.getOpenFileName(self, "Escolha o arquivo Excel padronizado")
-            if (self.aAna.setArq(locArq[0])):
-                self.datas = self.aAna.getDts()
+            if (self.aAna.load_file(locArq[0])):
+                self.datas = self.aAna.get_dates()
 
-                self.gEntregas.setCol(self.aAna.getCol("Entrega"))
-                self.gEntregas.setDta(self.datas)
-                self.gEntregas.btAttAtiv.clicked.connect(self.gEntregas.btAtiv_action)
+                self.gEntregas.set_cols(self.aAna.get_col("Entrega"))
+                self.gEntregas.set_dates(self.datas)
+                self.gEntregas.btAttAtiv.clicked.connect(self.gEntregas.on_ativar)
                 self.gEntregas.btAttAtiv.setText(strings.BTN_ATIVAR)
-                self.gEntregas.setTxt(strings.TXT_ATIVAR_INSTRUCAO)
+                self.gEntregas.set_text(strings.TXT_ATIVAR_INSTRUCAO)
 
-                self.gProdutos.setDta(self.datas)
-                self.gProdutos.btAttAtiv.clicked.connect(self.gProdutos.btAtiv_action)
+                self.gProdutos.set_dates(self.datas)
+                self.gProdutos.btAttAtiv.clicked.connect(self.gProdutos.on_ativar)
                 self.gProdutos.btAttAtiv.setText(strings.BTN_ATIVAR)
-                self.gProdutos.setTxt(strings.TXT_ATIVAR_INSTRUCAO)
+                self.gProdutos.set_text(strings.TXT_ATIVAR_INSTRUCAO)
 
-                self.gDados.setDta(self.datas)
-                self.gDados.setTrad(self.aAna.getCol("gSage"), self.aAna.getCol("gLbl"))
-                self.gDados.btAttAtiv.clicked.connect(self.gDados.btAtiv_action)
+                self.gDados.set_dates(self.datas)
+                self.gDados.set_trad(self.aAna.get_col("gSage"), self.aAna.get_col("gLbl"))
+                self.gDados.btAttAtiv.clicked.connect(self.gDados.on_ativar)
                 self.gDados.btAttAtiv.setText(strings.BTN_ATIVAR)
 
                 self.actLerPlan.setEnabled(False)

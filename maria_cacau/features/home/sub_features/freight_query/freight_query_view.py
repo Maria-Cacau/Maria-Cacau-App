@@ -1,40 +1,34 @@
 """Área de consulta de frete: interface gráfica e lógica de consulta."""
 
-
 from PyQt6.QtWidgets import QHBoxLayout, QVBoxLayout
 
 from maria_cacau.design_system.aux_widgets import AuxWidgets
 
 
-class Gui_ConsFrete(AuxWidgets):
+class GuiConsFrete(AuxWidgets):
     ## Construtor: define a super classe e também o grupo
     def __init__(self) -> None:
-        super(Gui_ConsFrete, self).__init__()
+        super(GuiConsFrete, self).__init__()
 
-        self.root = self.gBox("Consulta Frete")                                         # Cria o Group Box
-        self.root.setEnabled(False)                                                      # v5.0: Deixa inativo
+        self.root = self.group_box("Consulta Frete")                                    # Cria o Group Box
+        self.root.setEnabled(False)                                                     # v5.0: Deixa inativo
 
-        self.gui_Ui()
-
-    ## Destruidor: desaloca os atributos declarados
-    def __del__(self) -> None:
-        del self.root
-        del self.btVeri, self.btCopi, self.resp, self.tOrigem, self.tDestino
+        self.setup_ui()
 
     ## Método: cria e configura a janela
-    def gui_Ui(self) -> None:
+    def setup_ui(self) -> None:
         layout = QVBoxLayout(self.root)
 
         inputLayout = QHBoxLayout()
         inputLayout.addWidget(self.lbl("Origem:", 10))
-        self.tOrigem = self.lineEdit(10, readonly_=False)
+        self.tOrigem = self.line_edit(10, readonly_=False)
         inputLayout.addWidget(self.tOrigem)
         inputLayout.addWidget(self.lbl("Destino:", 10))
-        self.tDestino = self.lineEdit(10, readonly_=False)
+        self.tDestino = self.line_edit(10, readonly_=False)
         inputLayout.addWidget(self.tDestino)
         layout.addLayout(inputLayout)
 
-        self.resp = self.txtView()
+        self.resp = self.text_view()
         layout.addWidget(self.resp)
 
         btnLayout = QHBoxLayout()
