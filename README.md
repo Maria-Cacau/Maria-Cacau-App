@@ -1,62 +1,76 @@
 # Maria Cacau - Contagem
-![Version](https://img.shields.io/badge/versão-3.0-orange)
-![Size](https://img.shields.io/badge/tamanho-113MB-blue)
-![Plataform](https://img.shields.io/badge/plataforma-10+-lightgrey?logo=windows)
-[![Python version](https://img.shields.io/badge/python-v3.5+-blue?logo=python)](https://swift.org/download/#releases)
-[![License](https://img.shields.io/badge/licença-MIT-brightgreen?)](https://github.com/Gui25Reis/Maria-Cacau-Contagem/blob/main/LICENSE)
 
-[![Capa do GitHub](https://github.com/Gui25Reis/Maria-Cacau-Contagem/blob/feat/readme/arquivos/imagens/Git-Capa.png)](#empresa)
+[![Version](https://img.shields.io/badge/version-3.0-orange)](#)
+![Language](https://img.shields.io/badge/language-Python-blue?logo=python)
+[![Python Version](https://img.shields.io/badge/python-v3.13+-blue?logo=python)](https://www.python.org/downloads/)
+[![License](https://img.shields.io/badge/license-MIT-brightgreen)](https://github.com/Gui25Reis/Maria-Cacau-Contagem/blob/main/LICENSE)
 
-Programa que faz uma análise da planílha (usada como banco de dados) filtrando os dados para saber: 
-- Quais produtos vão ser feitos durante um intervalo de datas;
-- As entregas que terão em uma data específica;
-- Os dados necessários para a nota fiscal;
+<p align="center">
+    <img width=97% src="arquivos/imagens/Git-Capa.png"/>
+</p>
+
+Programa que analisa a planilha usada como banco de dados, filtrando os dados para gerar resumos de:
+- Produtos a serem feitos em um intervalo de datas
+- Entregas previstas para uma data específica
+- Dados necessários para nota fiscal
 
 </br>
 
-1. [Download](#download)
-2. [Código](#código)
-3. [Requerimentos](#requerimentos)
-4. [Documentação](#documentação)
-5. [Demonstração](#demonstração)
-6. [Licença](#licença)
-7. [Autores](#autores)
-8. [Empresa](#empresa)
+- [Platform \& Requirements](#platform--requirements)
+- [How to run](#how-to-run)
+- [Demo](#demo)
+- [License](#license)
+- [Author](#author)
+- [Company](#company)
 
-## Download
-A versão mais recente (3.0) está disponível para download nesse [link](https://github.com/Gui25Reis/Maria-Cacau-Contagem/releases/download/3.0.0/MC.-.Analise.exe). O histórico de versões está [aqui](https://github.com/Gui25Reis/Maria-Cacau-Contagem/wiki/Releases).
+## Platform & Requirements
 
-## Código
-Esse projeto é open source, todo o código está disponível nesse repositório. Por questões de sigilo e segurança os dados para teste não formam disponibilizados.
+The project runs on macOS and Windows.
 
-## Requerimentos
-O programa foi feito em ```python 3.8.5``` com a adição de uma biblioteca externa para a Interface Gráfica (GUI) chamada [PyQt5](https://pypi.org/project/PyQt5/). Para poder ter acesso total ao código basta instalar ela com o ```pip```.
+| **File** | **Description** |
+|---|---|
+| [`.python-version`](.python-version) | Python version |
+| [`requirements.txt`](requirements.txt) | Python dependencies |
+| [`Brewfile`](Brewfile) | macOS system dependencies |
 
-    pip install pyqt5-tools
+## How to run
 
+The project uses [direnv](https://direnv.net) for automatic virtual environment activation.
 
-## Documentação
-Documentação está na [wiki](https://github.com/Gui25Reis/Maria-Cacau-Contagem/wiki) do projeto.
+```bash
+# Clone the repository
+git clone https://github.com/Gui25Reis/Maria-Cacau-Contagem.git
+cd Maria-Cacau-Contagem
 
-## Demonstração
+# Run setup (installs direnv, creates venv and installs dependencies)
+./build.sh
+```
+
+After setup, direnv will activate the virtual environment automatically whenever you enter the project folder.
+
+```bash
+# Run the application
+cd _main
+python3 main.py
+```
+
+## Demo
+
 <p align="center">
-    <img width=97% src="https://github.com/Gui25Reis/Maria-Cacau-Contagem/blob/feat/readme/arquivos/imagens/telas/Tela-01.png"/>
+    <img width=97% src="arquivos/imagens/telas/Tela-01.png"/>
 </p>
-<br><br>
+<br>
 <p align="center">
-    <img width=97% src="https://github.com/Gui25Reis/Maria-Cacau-Contagem/blob/feat/readme/arquivos/imagens/telas/Tela-04.png"/>    
+    <img width=97% src="arquivos/imagens/telas/Tela-04.png"/>
 </p>
 
+## Author
 
-## Licença
-Esse projeto é licenciado pela [MIT License](https://github.com/Gui25Reis/Maria-Cacau-Contagem/blob/main/LICENSE).
-
-## Autores
 <table>
     <tr>
         <td align="center">
             <a href="https://github.com/Gui25Reis">
-                <img src="https://avatars1.githubusercontent.com/u/48360732" width="100px;" alt="Foto do Gui Reis no GitHub"/><br>
+                <img src="https://avatars1.githubusercontent.com/u/48360732" width="100px;" alt="Gui Reis photo at GitHub"/><br>
                 <sub>
                     <b>Gui Reis</b>
                 </sub>
@@ -65,13 +79,13 @@ Esse projeto é licenciado pela [MIT License](https://github.com/Gui25Reis/Maria
     </tr>
 </table>
 
+## Company
 
-## Empresa
 <table>
     <tr>
         <td colspan="3" align="center">
             <a href="https://www.mariacacau.com.br/">
-                <img src="https://static.wixstatic.com/media/808b8f_f53e7ddb5676413d8582cac5a7a4558f.png/v1/fill/w_210,h_140,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/808b8f_f53e7ddb5676413d8582cac5a7a4558f.png" width="150px;" alt="Foto da empresa Maria Cacau"/><br>
+                <img src="https://static.wixstatic.com/media/808b8f_f53e7ddb5676413d8582cac5a7a4558f.png/v1/fill/w_210,h_140,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/808b8f_f53e7ddb5676413d8582cac5a7a4558f.png" width="150px;" alt="Maria Cacau logo"/><br>
             </a>
         </td>
     </tr>
@@ -80,7 +94,7 @@ Esse projeto é licenciado pela [MIT License](https://github.com/Gui25Reis/Maria
             <a href="https://www.mariacacau.com.br/">site</a>
         </td>
         <td>
-            <a href="https://www.instagram.com/mariacacau_oficial/">insta</a>
+            <a href="https://www.instagram.com/mariacacau_oficial/">instagram</a>
         </td>
         <td>
             <a href="https://linktr.ee/mariacacau_oficial">orçamento</a>
