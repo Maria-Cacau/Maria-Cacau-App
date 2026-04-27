@@ -11,7 +11,7 @@ from maria_cacau.design_system.aux_widgets import AuxWidgets
 class GuiDados(AuxWidgets):
     ## Construtor: define a super classe e também o grupo
     def __init__(self) -> None:
-        super(GuiDados, self).__init__()
+        super().__init__()
 
         self.root = self.group_box("Dados")                                                             # Cria o Group Box
 
@@ -96,13 +96,13 @@ class GuiDados(AuxWidgets):
 
     ## Método: ação de quando muda de aba
     def on_tab_changed(self) -> None:
-        if (self.max != 0):
-            if (self.tabDados.currentIndex() == 0): self.update_nav(self.contSage)
+        if self.max != 0:
+            if self.tabDados.currentIndex() == 0: self.update_nav(self.contSage)
             else: self.update_nav(self.contEnvio)
 
     ## Método: verifica onde e qual botão vai fazer a ação
     def on_nav(self, soma_:int) -> None:
-        if (self.tabDados.currentIndex() == 0): self.contSage = self.navigate(self.contSage, self.frSage, soma_)
+        if self.tabDados.currentIndex() == 0: self.contSage = self.navigate(self.contSage, self.frSage, soma_)
         else: self.contEnvio = self.navigate(self.contEnvio, self.frEnvio, soma_)
 
     ## Método: Faz a real ação dos botões de avançar e voltar
@@ -117,7 +117,7 @@ class GuiDados(AuxWidgets):
 
     ## Método: Define as datas
     def set_dates(self, d_:dict) -> None:
-        for x in d_.keys(): self.datas[self.fix_date(str(x)[0:10])] = x
+        for x in d_: self.datas[self.fix_date(str(x)[0:10])] = x
         self.dts.addItems(sorted(self.datas.keys()))
         del x
 
@@ -134,7 +134,8 @@ class GuiDados(AuxWidgets):
         tot:list = list(arq_["TOTAL"])
         self.max = len(tot)
 
-        if (self.get_date() in self.allInfos.keys()): self.infos = self.allInfos[self.get_date()]
+        if self.get_date() in self.allInfos:
+            self.infos = self.allInfos[self.get_date()]
         else:
             cols:list = list(arq_.columns)
             self.infos = {cols[x]:list(arq_[cols[x]]) for x in range(len(cols))}
@@ -154,14 +155,14 @@ class GuiDados(AuxWidgets):
 
     ## Método: Pega as informações novas quando muda de página
     def show_page(self, d_:dict, c_:int) -> None:
-        for x in d_.keys(): d_[x].set_text(str(self.infos[self.trad[x]][c_]))
+        for x in d_: d_[x].set_text(str(self.infos[self.trad[x]][c_]))
 
     ## Método: Verifica se os botões ficam inativos ou não caso chegam nos limites
     def update_nav(self, cont_:int) -> None:
-        if (cont_+1 == self.max): self.btProx.setEnabled(False)
+        if cont_+1 == self.max: self.btProx.setEnabled(False)
         else: self.btProx.setEnabled(True)
 
-        if (cont_ == 0): self.btAnte.setEnabled(False)
+        if cont_ == 0: self.btAnte.setEnabled(False)
         else: self.btAnte.setEnabled(True)
 
         self.lbCont.setText(f"{cont_+1}/{self.max}")

@@ -8,7 +8,7 @@ from maria_cacau.design_system.aux_widgets import AuxWidgets
 class GuiConsFrete(AuxWidgets):
     ## Construtor: define a super classe e também o grupo
     def __init__(self) -> None:
-        super(GuiConsFrete, self).__init__()
+        super().__init__()
 
         self.root = self.group_box("Consulta Frete")                                    # Cria o Group Box
         self.root.setEnabled(False)                                                     # v5.0: Deixa inativo

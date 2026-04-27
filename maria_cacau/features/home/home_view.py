@@ -32,7 +32,7 @@ class _BackgroundWidget(QWidget):
 class GuiMain(QMainWindow):
     ## Construtor: Cria a janela principal com o menu e o local onde vai ser colocado as páginas
     def __init__(self) -> None:
-        super(GuiMain, self).__init__()
+        super().__init__()
 
         self.setWindowIcon(QIcon('maria_cacau/assets/images/logo-icone.png'))
         self.setWindowTitle("Maria Cacau - Consulta")
@@ -114,7 +114,7 @@ class GuiMain(QMainWindow):
     ## Método: Ação do botão "OK" da área de Produtos
     def on_ok_produtos(self) -> None:
         dia:str = ''
-        for d in sorted(self.datas.keys()):
+        for d in sorted(self.datas):
             dia += f"\n\nDia {self.gProdutos.fix_date(d[:10])} - {self.datas[d]} pedido(s)\n"
             dia += self.gProdutos.resumo_dia(d, self.datas[d], self.aAna.get_data(self.aAna.get_col("Produtos"),d))
             self.gProdutos.pedDia = {}
@@ -127,12 +127,12 @@ class GuiMain(QMainWindow):
     ## Método: ação do botão "OK" da área de Entregas
     def on_ok_entregas(self) -> None:
         dt:str = self.gEntregas.get_date()
-        if (self.dtEnt != dt):
-            if (dt in self.gEntregas.resumos.keys()): self.gEntregas.set_text(self.gEntregas.resumos[dt])
+        if self.dtEnt != dt:
+            if dt in self.gEntregas.resumos: self.gEntregas.set_text(self.gEntregas.resumos[dt])
             else:
                 self.gEntregas.set_resumo(dt, self.aAna.get_data(self.aAna.get_col("Entrega"),dt))
                 self.gEntregas.set_text(self.gEntregas.res)
-                if (not self.gEntregas.btCopiarTxt.isEnabled()):
+                if not self.gEntregas.btCopiarTxt.isEnabled():
                     self.gEntregas.btCopiarTxt.setEnabled(True)
             self.dtEnt = dt
         del dt
@@ -140,7 +140,7 @@ class GuiMain(QMainWindow):
     ## Método: ação do botão OK da área de Dados
     def on_ok_dados(self) -> None:
         dt:str = self.gDados.get_date()
-        if (self.dtDados != dt):
+        if self.dtDados != dt:
             arq = self.aAna.get_dados(self.aAna.get_col("Sage"), dt)
             arq['Belga'] = self.gDados.set_belga(self.aAna.get_dados(self.aAna.get_col("Belga"), dt))
             self.gDados.set_resumo(arq)
@@ -150,9 +150,9 @@ class GuiMain(QMainWindow):
 
     ## Método: Ação do botão "Ler planilha"
     def on_ler_planilha(self) -> None:
-        if ("Ler planilha" == self.gDados.btAttAtiv.text()):
+        if "Ler planilha" == self.gDados.btAttAtiv.text():
             locArq:tuple = QFileDialog.getOpenFileName(self, "Escolha o arquivo Excel padronizado")
-            if (self.aAna.load_file(locArq[0])):
+            if self.aAna.load_file(locArq[0]):
                 self.datas = self.aAna.get_dates()
 
                 self.gEntregas.set_cols(self.aAna.get_col("Entrega"))

@@ -13,7 +13,7 @@ from maria_cacau.design_system.gui_popup import GuiPopup
 
 class Analise:
     def __init__(self) -> None:
-        super(Analise, self).__init__()
+        super().__init__()
 
         self.arq:DataFrame = None                                                                       # Atributo: Guarda a tabela com todas as colunas que VÃO SER USADAS apenas.
         self.arqUsados:dict = {}                                                                        # Atributo: Guarda os Dataframes que já foram filtrados usados!
@@ -42,15 +42,15 @@ class Analise:
 
     ## Método especial: Faz a leitura do arquivo
     def load_file(self, local_:str) -> bool:
-        if (local_ == ""): return False
-        if ((local_[-5:] != ".xlsx")):
+        if local_ == "": return False
+        if local_[-5:] != ".xlsx":
             self.popUp.show_popup(errors.A001)
             return False
 
         try:
             arq = read_excel(local_)                                                                    # Faz a leitura do arquivo
-            self.arq = arq[arq[arq.columns[0]].isnull() == False][self.allColsFiltro]                  # Tira as linhas em branco (no meio e no final)
-        except:
+            self.arq = arq[arq[arq.columns[0]].notna()][self.allColsFiltro]                            # Tira as linhas em branco (no meio e no final)
+        except Exception:
             self.popUp.show_popup(errors.A002)
             return False
 
@@ -58,12 +58,12 @@ class Analise:
             qDts = self.arq["DATA ENTREGA"].value_counts()                                              # Pega a quantidade de datas que tem
             dts = qDts.index.tolist()
             self.dtsPed = {str(dts[x])[:10]:int(qDts[x]) for x in range(len(dts))}
-        except:
+        except Exception:
             self.popUp.show_popup(errors.A003)
             return False
 
         qLinhas = len(self.arq.index)
-        if (qLinhas == 0):
+        if qLinhas == 0:
             self.popUp.show_popup(errors.A004)
             return False
 
@@ -74,7 +74,7 @@ class Analise:
 
     ## Método especial: Devolve a planilha filtrada
     def get_data(self, l_:list, d_:str) -> DataFrame:
-        if (d_ in self.arqUsados.keys()): return self.arqUsados[d_][l_]                                # Memoization
+        if d_ in self.arqUsados: return self.arqUsados[d_][l_]                                        # Memoization
         self.arqUsados[d_] = self.arq.loc[(self.arq['DATA ENTREGA'] == f"{d_} 00:00:00")].reset_index().drop(columns=['index'])
         return self.arqUsados[d_][l_]
 
