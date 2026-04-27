@@ -44,6 +44,6 @@ class Gui_ValiCpf(AuxWidgets):
 
         txt = "INSIRA O CPF NO CAMPO ACIMA"
         self.lblResp = self.lbl(txt, 11, 10, 60, 340, 40, self.root)        # Add label de resposta
-        self.lblResp.setAlignment(Qt.AlignmentFlag.AlignCenter)                # Deixa centralizado
+        self.lblResp.setAlignment(Qt.AlignmentFlag.AlignCenter)             # Deixa centralizado
 
         del txt, lb

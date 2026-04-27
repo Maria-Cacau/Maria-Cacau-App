@@ -57,7 +57,7 @@ class Gui_Dados(AuxWidgets):
         ## Dados:
         self.tabDados = QTabWidget(self.root)                                                   # Cria a área com as tabas
         self.tabDados.setGeometry(7, 5, 478, 290)                                               # Define a posição
-        self.tabDados.setLayoutDirection(Qt.LayoutDirection.RightToLeft)                         # Define a direção das abas
+        self.tabDados.setLayoutDirection(Qt.LayoutDirection.RightToLeft)                        # Define a direção das abas
 
         self.tabNotasSage = QWidget()                                                           # Cria uma aba
         self.tabDados.addTab(self.tabNotasSage, "NOTA - SAGE")                                  # Add a aba na área

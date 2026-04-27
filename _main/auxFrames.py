@@ -32,7 +32,7 @@ class AuxFrame(QFrame, AuxWidgets):
 
     ## Método: configura a frame
     def gui_Ui(self, nLb_:str) -> None:
-        self.lbl(nLb_, 10, 10, 0, 70, 20, self)                # Add label
+        self.lbl(nLb_, 10, 10, 0, 70, 20, self)                     # Add label
 
         self.txt = self.lineEdit(10, 80, 0, 330, 20, self)          # Add entrada de texto
 
