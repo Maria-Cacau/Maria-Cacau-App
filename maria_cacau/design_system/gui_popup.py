@@ -11,7 +11,6 @@
 from PyQt6.QtGui import QFont, QIcon
 from PyQt6.QtWidgets import QMessageBox
 
-## Bibliotecas necessárias:
 from maria_cacau.core.errors import AppError
 
 

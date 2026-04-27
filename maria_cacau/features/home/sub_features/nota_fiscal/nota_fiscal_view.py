@@ -13,7 +13,6 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QHBoxLayout, QTabWidget, QVBoxLayout, QWidget
 
 from maria_cacau.design_system.aux_frames import AuxFrame
-## Bibliotecas necessárias:
 from maria_cacau.design_system.aux_widgets import AuxWidgets
 
 
