@@ -16,8 +16,8 @@ from auxFrames import AuxWidgets, AuxFrame
 from pandas.core.frame import DataFrame
 
 # GUI:
-from PyQt5.QtWidgets import QWidget, QTabWidget
-from PyQt5.QtCore import Qt
+from PyQt6.QtWidgets import QWidget, QTabWidget
+from PyQt6.QtCore import Qt
 
 
 class Gui_Dados(AuxWidgets):
@@ -57,7 +57,7 @@ class Gui_Dados(AuxWidgets):
         ## Dados:
         self.tabDados = QTabWidget(self.root)                                                   # Cria a área com as tabas
         self.tabDados.setGeometry(7, 5, 478, 290)                                               # Define a posição
-        self.tabDados.setLayoutDirection(Qt.RightToLeft)                                        # Define a direção das abas
+        self.tabDados.setLayoutDirection(Qt.LayoutDirection.RightToLeft)                         # Define a direção das abas
 
         self.tabNotasSage = QWidget()                                                           # Cria uma aba
         self.tabDados.addTab(self.tabNotasSage, "NOTA - SAGE")                                  # Add a aba na área
@@ -80,7 +80,7 @@ class Gui_Dados(AuxWidgets):
         self.btOk = self.bts("OK", 204, 302, 90, 25, self.root)                                 # Cria o botão
 
         self.lbCont = self.lbl("00/00", 11, 298, 302, 93, 25, self.root)                        # Cria a label
-        self.lbCont.setAlignment(Qt.AlignCenter)                                                # Define o alinhamento
+        self.lbCont.setAlignment(Qt.AlignmentFlag.AlignCenter)                                  # Define o alinhamento
 
         self.btAnte = self.bts("<", 394, 302, 42, 25, self.root)                                # Cria o botão
         self.btAnte.clicked.connect(lambda: self.btProxAnte_action(-1))                         # Defina a acção
@@ -188,6 +188,6 @@ class Gui_Dados(AuxWidgets):
         
         lb2 = self.lbl("ENTREGA", 10, 280, 10, 70, 16, tab_)                                    # Cria a label
         lb = self.lbl("", 10, 347, 10, 100, 15, tab_)                                           # Cria a label
-        lb.setAlignment(Qt.AlignRight)                                                          # Define o alinhamento do texto
+        lb.setAlignment(Qt.AlignmentFlag.AlignRight)                                            # Define o alinhamento do texto
         d_["ENTREGA"] = lb                                                                      # Add a label do tipo de entrega no dicionario pra ser usada
         del x, lb1, lb2                                                                         # Deleta as variáveis locais

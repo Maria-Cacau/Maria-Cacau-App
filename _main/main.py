@@ -9,7 +9,7 @@ from gui_main import Gui_main
 import sys
 
 # Arquivo da biblioteca de interface gráfica:
-from PyQt5.QtWidgets import QApplication
+from PyQt6.QtWidgets import QApplication
 
 ## Função main
 if __name__ == "__main__":
@@ -17,7 +17,7 @@ if __name__ == "__main__":
     win = Gui_main()
 
     win.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
 
 
 # self.setWindowFlags(QtCore.Qt.WindowCloseButtonHint | QtCore.Qt.WindowMinimizeButtonHint )

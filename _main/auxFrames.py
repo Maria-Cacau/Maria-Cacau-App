@@ -13,7 +13,7 @@
 from auxWidgets import AuxWidgets, QWidget
 
 # GUI:
-from PyQt5.QtWidgets import QFrame
+from PyQt6.QtWidgets import QFrame
 
 
 class AuxFrame(QFrame, AuxWidgets):

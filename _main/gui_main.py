@@ -18,8 +18,8 @@ from guiConsulta import Gui_ConsFrete
 from analisePlan import Analise
 
 # GUI:
-from PyQt5.QtWidgets import QMainWindow, QWidget, QMenuBar, QMenu, QAction, QDesktopWidget, QFileDialog
-from PyQt5.QtGui import QIcon
+from PyQt6.QtWidgets import QMainWindow, QWidget, QMenuBar, QMenu, QFileDialog, QApplication
+from PyQt6.QtGui import QIcon, QAction
 
 
 class Gui_main(QMainWindow):
@@ -31,7 +31,7 @@ class Gui_main(QMainWindow):
         self.setWindowTitle("Maria Cacau - Consulta")                                                                   # Define o título da janela
         self.setStyleSheet("QMainWindow{background: rgb(235, 230, 215);}")                                              # Define a cor de fundo
         
-        tamTela = QDesktopWidget().screenGeometry()                                                                     # Pega as dimensões da tela atual
+        tamTela = QApplication.primaryScreen().availableGeometry()                                                        # Pega as dimensões da tela atual
         self.setMinimumSize(tamTela.width()-300, tamTela.height()-200)                                                  # Define o tamanho mínimo da tela
         self.showMaximized()                                                                                            # Tela inicia maximizada
 

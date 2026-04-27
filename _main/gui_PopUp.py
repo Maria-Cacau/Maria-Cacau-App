@@ -13,8 +13,8 @@
 
 
 # GUI:
-from PyQt5.QtWidgets import QMessageBox
-from PyQt5.QtGui import QIcon, QFont
+from PyQt6.QtWidgets import QMessageBox
+from PyQt6.QtGui import QIcon, QFont
 
 
 class Gui_popup(QMessageBox):
@@ -32,18 +32,18 @@ class Gui_popup(QMessageBox):
     def gui_Ui(self) -> None:
         self.setWindowIcon(QIcon('images/logo-icone.png'))                  # Define o icone da janela (geral)
         self.setStyleSheet("QLabel{max-width: 400px;};")                    # Define o tamanho máximo do espaço interno
-        self.setIcon(self.Critical)                                         # Define o ícone que mostra ao lado da mensagemm
-        self.setStandardButtons(self.Save)                                  # Add os botões
-        self.setDefaultButton(self.Save)                                    # Botão padrão: "salvar"
+        self.setIcon(QMessageBox.Icon.Critical)                                     # Define o ícone que mostra ao lado da mensagemm
+        self.setStandardButtons(QMessageBox.StandardButton.Save)                    # Add os botões
+        self.setDefaultButton(QMessageBox.StandardButton.Save)                      # Botão padrão: "salvar"
 
-        self.btEsq = self.button(self.Save)                                 # Atributo: guarda o botão "Cancel"/Sair
+        self.btEsq = self.button(QMessageBox.StandardButton.Save)                   # Atributo: guarda o botão "Cancel"/Sair
         self.btEsq.setFont(QFont('Arial', 10))                              # Definindo a fonte dos botões
         self.btEsq.setText("OK")                                            # Definindo o texto
 
     ## Método: Mostra a janela.
     def show_PopUp(self, lMsg_:list, icon_:str = "C") -> int: 
         self.setTxts(lMsg_)                                                 # Define as mensagens
-        if (icon_ == "I"): self.setIcon(self.Information)                   # Define o ícone de onformação
+        if (icon_ == "I"): self.setIcon(QMessageBox.Icon.Information)             # Define o ícone de onformação
         return self.exec()                                                  # Executa/Mostra a janela    
 
     ## Método: Define o texto de saída
