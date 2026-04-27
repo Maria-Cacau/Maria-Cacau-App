@@ -10,10 +10,13 @@ import sys
 
 # Arquivo da biblioteca de interface gráfica:
 from PyQt6.QtWidgets import QApplication
+from PyQt6.QtCore import Qt
 
 ## Função main
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    app.styleHints().setColorScheme(Qt.ColorScheme.Light)
+
     win = Gui_main()
 
     win.show()
