@@ -8,10 +8,9 @@
 # a parte lógica.
 
 
-## Bibliotecas necessárias:
-from maria_cacau.design_system.aux_widgets import AuxWidgets
+from PyQt6.QtWidgets import QHBoxLayout, QVBoxLayout
 
-from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout
+from maria_cacau.design_system.aux_widgets import AuxWidgets
 
 
 class Gui_ConsFrete(AuxWidgets):

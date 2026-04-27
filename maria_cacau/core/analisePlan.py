@@ -8,12 +8,12 @@
 # que serão usadas, mas não pe feita nenhuma anáise. Além disso é feito os tratamento de
 # erros, sendo cada erro identificado com um código.
 
-## Bibliotecas necessárias:
-from pandas.core.frame import DataFrame
 from pandas import read_excel
+from pandas.core.frame import DataFrame
 
-from maria_cacau.design_system.gui_popup import Gui_popup
 from maria_cacau.core import errors
+from maria_cacau.design_system.gui_popup import Gui_popup
+
 
 class Analise:
     def __init__(self) -> None:
