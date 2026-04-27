@@ -8,14 +8,13 @@
 # a análise e filtragem feita dentro da planilha.
 
 
+from pandas.core.frame import DataFrame
+from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QHBoxLayout, QTabWidget, QVBoxLayout, QWidget
+
+from maria_cacau.design_system.aux_frames import AuxFrame
 ## Bibliotecas necessárias:
 from maria_cacau.design_system.aux_widgets import AuxWidgets
-from maria_cacau.design_system.aux_frames import AuxFrame
-
-from pandas.core.frame import DataFrame
-
-from PyQt6.QtWidgets import QWidget, QTabWidget, QVBoxLayout, QHBoxLayout
-from PyQt6.QtCore import Qt
 
 
 class Gui_Dados(AuxWidgets):

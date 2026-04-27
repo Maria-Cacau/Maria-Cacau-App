@@ -8,12 +8,12 @@
 # também o calculo para a vaidação do CPF.
 
 
+from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QWidget
+
+from maria_cacau.assets import strings
 ## Bibliotecas necessárias:
 from maria_cacau.design_system.aux_widgets import AuxWidgets
-from maria_cacau.assets import strings
-
-from PyQt6.QtWidgets import QWidget
-from PyQt6.QtCore import Qt
 
 
 class Gui_ValiCpf(AuxWidgets):
@@ -33,7 +33,7 @@ class Gui_ValiCpf(AuxWidgets):
 
     ## Método: cria e configura a janela
     def gui_Ui(self) -> None:
-        from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout
+        from PyQt6.QtWidgets import QHBoxLayout, QVBoxLayout
         layout = QVBoxLayout(self.root)
 
         inputLayout = QHBoxLayout()
