@@ -1,8 +1,4 @@
-######    Gui Reis   -   guisreis25@gmail.com    ######    COPYRIGHT © 2020 KINGS
-
-# -*- coding: utf-8 -*-
-
-## Classe responsável pela criação das planilhas
+"""Leitura e filtragem da planilha Excel para uso nas features."""
 
 #    Nessa classe é feita APENAS criação das planilha já com as filtragens necessessárias
 # que serão usadas, mas não pe feita nenhuma anáise. Além disso é feito os tratamento de

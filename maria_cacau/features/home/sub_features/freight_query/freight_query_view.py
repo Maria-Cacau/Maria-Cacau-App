@@ -1,11 +1,4 @@
-######    Gui Reis   -   guisreis25@gmail.com    ######    COPYRIGHT © 2020 KINGS
-
-# -*- coding: utf-8 -*-
-
-## Classe responsável pela criação da área de consulta de frete
-
-#    Essa classe é responsável pela interface gráfica + toda
-# a parte lógica.
+"""Área de consulta de frete: interface gráfica e lógica de consulta."""
 
 
 from PyQt6.QtWidgets import QHBoxLayout, QVBoxLayout

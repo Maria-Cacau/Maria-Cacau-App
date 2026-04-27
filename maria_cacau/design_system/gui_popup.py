@@ -1,11 +1,4 @@
-######    Gui Reis   -   guisreis25@gmail.com    ######    COPYRIGHT © 2020 KINGS
-
-# -*- coding: utf-8 -*-
-
-## Classe responsável pela criação da janela PopUp
-
-#    Nessa classe é criada a janela Pop-Up quando faz alguma alteração e essa
-# não é salva. Aqui é gerado e feito toda a configuração dela.
+"""Janela de popup para exibição de erros e informações ao usuário."""
 
 
 from PyQt6.QtGui import QFont, QIcon

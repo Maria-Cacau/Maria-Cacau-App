@@ -1,8 +1,4 @@
-######    Gui Reis   -   guisreis25@gmail.com    ######    COPYRIGHT © 2020 KINGS
-
-# -*- coding: utf-8 -*-
-
-## Classe responsável pela criação da janela principal
+"""Janela principal da aplicação e orquestração das sub-features."""
 
 from PyQt6.QtGui import QAction, QIcon, QPainter, QPixmap
 from PyQt6.QtWidgets import (QApplication, QFileDialog, QHBoxLayout,

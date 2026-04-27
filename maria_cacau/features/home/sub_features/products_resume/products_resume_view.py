@@ -1,11 +1,5 @@
-######    Gui Reis   -   guisreis25@gmail.com    ######    COPYRIGHT © 2020 KINGS
+"""Área de resumo de produtos: contagem de itens por período."""
 
-# -*- coding: utf-8 -*-
-
-## Classe responsável pela criação da área Produtos
-
-
-## Bibliotecas necessárias:
 from pandas.core.frame import DataFrame
 from PyQt6.QtGui import QFont
 from PyQt6.QtWidgets import QHBoxLayout, QVBoxLayout

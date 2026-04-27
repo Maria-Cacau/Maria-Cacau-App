@@ -1,14 +1,4 @@
-######    Gui Reis   -   guisreis25@gmail.com    ######    COPYRIGHT © 2020 KINGS
-
-# -*- coding: utf-8 -*-
-
-## Classe responsável pela criação dos widgets usado na Interface Gráfica
-
-#    Nessa classe é criada os widgets personalizados que serão usados em toda
-# a interface: botão, etiquetas (labels), estrada de textos, áreas de vizualização
-# de textos e gráficos.
-#    Por ser usados mais de uma vez passa a ser mais otimizado dessa forma.
-
+"""Factory de widgets PyQt6 reutilizáveis em toda a interface."""
 
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QFont

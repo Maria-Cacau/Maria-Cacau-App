@@ -1,6 +1,4 @@
-######    Gui Reis   -   guisreis25@gmail.com    ######    COPYRIGHT © 2020 KINGS
-
-# -*- coding: utf-8 -*-
+"""Entry point da aplicação. Execute com: python -m maria_cacau"""
 
 import sys
 

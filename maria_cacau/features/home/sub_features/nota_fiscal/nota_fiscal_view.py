@@ -1,11 +1,4 @@
-######    Gui Reis   -   guisreis25@gmail.com    ######    COPYRIGHT © 2020 KINGS
-
-# -*- coding: utf-8 -*-
-
-## Classe responsável pela criação da área Dados
-
-#    Nessa classe é feito a criação da Interface Gráfica da área "Dados" e também
-# a análise e filtragem feita dentro da planilha.
+"""Área de dados para emissão de Nota SAGE e Melhor Envio."""
 
 
 from pandas.core.frame import DataFrame

@@ -1,11 +1,4 @@
-######    Gui Reis   -   guisreis25@gmail.com    ######    COPYRIGHT © 2020 KINGS
-
-# -*- coding: utf-8 -*-
-
-## Classe responsável pela criação da área Entregas
-
-#    Essa classe é responsável pela interface gráfica + toda
-# a parte lógica.
+"""Área de entregas pendentes: resumo diário com inadimplências."""
 
 from pandas.core.frame import DataFrame
 from pandas.core.series import Series
