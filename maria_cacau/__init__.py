@@ -1,3 +1,5 @@
+"""Metadados centralizados do pacote maria-cacau."""
+
 from importlib.metadata import metadata as _meta
 
 _m = _meta("maria-cacau")

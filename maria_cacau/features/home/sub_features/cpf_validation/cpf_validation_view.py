@@ -1,11 +1,4 @@
-######    Gui Reis   -   guisreis25@gmail.com    ######    COPYRIGHT © 2020 KINGS
-
-# -*- coding: utf-8 -*-
-
-## Classe responsável pela criação da área de Validação do CPF
-
-#    Aqui é onde é feito a construção da Interface Gráfica da área e
-# também o calculo para a vaidação do CPF.
+"""Área de validação de CPF: interface gráfica e lógica de verificação."""
 
 from PyQt6.QtCore import Qt
 

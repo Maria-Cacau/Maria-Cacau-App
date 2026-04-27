@@ -1,16 +1,7 @@
-######    Gui Reis   -   guisreis25@gmail.com    ######    COPYRIGHT © 2020 KINGS
-
-# -*- coding: utf-8 -*-
-
-## Classe responsável pela criação dos widgets usado na Interface Gráfica
-
-#    Nessa classe é criada frames com label, entrada de texto e botão. São
-# usadas várias vezes dentro dá área de "Notas SAGE" e "Melhor Envio"
-
+"""Frame composto reutilizável com label, entrada de texto e botão de cópia."""
 
 from PyQt6.QtWidgets import QFrame, QHBoxLayout
 
-## Bibliotecas necessárias:
 from maria_cacau.design_system.aux_widgets import AuxWidgets
 
 
