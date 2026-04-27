@@ -10,6 +10,7 @@
 
 ## Bibliotecas necessárias:
 from maria_cacau.design_system.aux_widgets import AuxWidgets
+from maria_cacau.assets import strings
 
 from PyQt6.QtWidgets import QWidget
 from PyQt6.QtCore import Qt
@@ -43,7 +44,6 @@ class Gui_ValiCpf(AuxWidgets):
         inputLayout.addWidget(self.but)
         layout.addLayout(inputLayout)
 
-        txt = "INSIRA O CPF NO CAMPO ACIMA"
-        self.lblResp = self.lbl(txt, 11)
+        self.lblResp = self.lbl(strings.LBL_CPF_INSTRUCAO, 11)
         self.lblResp.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(self.lblResp)

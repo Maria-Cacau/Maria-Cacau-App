@@ -11,6 +11,8 @@
 ## Bibliotecas necessárias:
 from maria_cacau.design_system.aux_widgets import AuxWidgets
 from maria_cacau.design_system.gui_popup import Gui_popup
+from maria_cacau.assets import strings
+from maria_cacau.core import errors
 
 from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout
 
@@ -49,7 +51,7 @@ class Gui_Entregas(AuxWidgets):
         contentLayout = QHBoxLayout()
 
         self.txt = self.txtView()
-        self.setTxt('Nenhuma planilha foi seleciona.')
+        self.setTxt(strings.TXT_SEM_PLANILHA)
         contentLayout.addWidget(self.txt, stretch=3)
 
         contentLayout.addWidget(self.graphView(), stretch=2)
@@ -84,8 +86,8 @@ class Gui_Entregas(AuxWidgets):
     ## Método: ação do botão Ativar (Ler planilha)
     def btAtiv_action(self) -> None:
         self.setWidEnable(True)
-        self.setTxt('Escolha uma data e pressione "OK" para gerar o resumo das entregas.')
-        self.btAttAtiv.setText("Atualizar")
+        self.setTxt(strings.TXT_OK_INSTRUCAO_ENTREGAS)
+        self.btAttAtiv.setText(strings.BTN_ATUALIZAR)
         self.btAttAtiv.setEnabled(False)                                                # v5.0: Modo atualizar indisponível
 
     ## Método especial: Define o arquivo que vai ser usado
@@ -131,7 +133,4 @@ class Gui_Entregas(AuxWidgets):
             del quant, tipo, entregas, pag, dev, x
 
         except:
-            txts = ["Erro inesperado","Erro na leitura do arquivo",
-            'Um erro inesperado aconteceu. Contate algúem do suporte técnico.\n\nCódigo do erro: E001']
-            self.popup.show_PopUp(txts)
-            del txts
+            self.popup.show_PopUp(errors.E001)

@@ -8,6 +8,7 @@
 ## Bibliotecas necessárias:
 from pandas.core.frame import DataFrame
 from maria_cacau.design_system.aux_widgets import AuxWidgets
+from maria_cacau.assets import strings
 
 from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout
 from PyQt6.QtGui import QFont
@@ -48,7 +49,7 @@ class Gui_Produtos(AuxWidgets):
 
         ## Vizualização do texto:
         self.txt = self.txtView()
-        self.setTxt('Nenhuma planilha foi seleciona.')
+        self.setTxt(strings.TXT_SEM_PLANILHA)
         mainLayout.addWidget(self.txt, stretch=3)
 
         ## Botões texto:
@@ -86,8 +87,8 @@ class Gui_Produtos(AuxWidgets):
     ## Método: ação do botão Ativar (Ler planilha)
     def btAtiv_action(self):
         self.setWidEnable(True)
-        self.setTxt('Pressione "OK" para gerar o resumo das entregas.')
-        self.btAttAtiv.setText("Atualizar")
+        self.setTxt(strings.TXT_OK_INSTRUCAO_PRODUTOS)
+        self.btAttAtiv.setText(strings.BTN_ATUALIZAR)
         self.btAttAtiv.setEnabled(False)                                                # v5.0: Modo atualizar indisponível
 
     ## Método: deixa os widgets ativado/desativado

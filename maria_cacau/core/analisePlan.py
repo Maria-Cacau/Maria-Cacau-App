@@ -13,6 +13,7 @@ from pandas.core.frame import DataFrame
 from pandas import read_excel
 
 from maria_cacau.design_system.gui_popup import Gui_popup
+from maria_cacau.core import errors
 
 class Analise:
     def __init__(self) -> None:
@@ -52,18 +53,14 @@ class Analise:
     def setArq(self, local_:str) -> bool:
         if (local_ == ""): return False
         if ((local_[-5:] != ".xlsx")):
-            txts = ["Erro na leitura do arquivo",'Arquivo não é ".xlsx"',
-            f'O arquivo escolhido não é compatível com o programa. Procure um arquivo Excel do tipo ".xlsx" \n\nCódigo do erro: A001']
-            self.popUp.show_PopUp(txts)                                                                 # ERRO A001
+            self.popUp.show_PopUp(errors.A001)
             return False
 
         try:
             arq = read_excel(local_)                                                                    # Faz a leitura do arquivo
             self.arq = arq[arq[arq.columns[0]].isnull() == False][self.allColsFiltro]                  # Tira as linhas em branco (no meio e no final)
         except:
-            txts = ["Erro na leitura do arquivo",'Colunas não encontradas',
-            f'O arquivo escolhido não é compatível com o programa. Procure o arquivo padrão. \n\nCódigo do erro: A002']
-            self.popUp.show_PopUp(txts)                                                                 # ERRO A002
+            self.popUp.show_PopUp(errors.A002)
             return False
 
         try:
@@ -71,22 +68,17 @@ class Analise:
             dts = qDts.index.tolist()
             self.dtsPed = {str(dts[x])[:10]:int(qDts[x]) for x in range(len(dts))}
         except:
-            txts = ["Erro na leitura do arquivo",'Coluna incompatível',
-            f'Houve um problema ao ler a coluna "DATA ENTREGA". Verifique os dados da coluna e tente novamente. \n\nCódigo do erro: A003']
-            self.popUp.show_PopUp(txts)                                                                 # ERRO A003
+            self.popUp.show_PopUp(errors.A003)
             return False
 
         qLinhas = len(self.arq.index)
         if (qLinhas == 0):
-            txts = ["Erro na leitura do arquivo",'Arquivo vazio',
-            f'O arquivo está vazio, não tem nenhuma linha para ser lida. \n\nCódigo do erro: A004']
-            self.popUp.show_PopUp(txts)                                                                 # ERRO A004
+            self.popUp.show_PopUp(errors.A004)
             return False
 
-        txts = ["Concluído",'Planilha lida com sucesso', f'Foi encontrada(s) {qLinhas} linhas.']
-        self.popUp.show_PopUp(txts, "I")
+        self.popUp.show_PopUp(errors.planilha_ok(qLinhas), "I")
 
-        del arq, dts, qDts, txts, qLinhas
+        del arq, dts, qDts, qLinhas
         return True
 
     ## Método especial: Devolve a planilha filtrada

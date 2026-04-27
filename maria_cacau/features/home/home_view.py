@@ -12,6 +12,7 @@ from maria_cacau.features.home.sub_features.nota_fiscal.nota_fiscal_view import 
 from maria_cacau.features.home.sub_features.cpf_validation.cpf_validation_view import Gui_ValiCpf
 from maria_cacau.features.home.sub_features.freight_query.freight_query_view import Gui_ConsFrete
 from maria_cacau.core.analisePlan import Analise
+from maria_cacau.assets import strings
 
 from PyQt6.QtWidgets import QMainWindow, QWidget, QMenuBar, QMenu, QFileDialog, QApplication, QHBoxLayout, QVBoxLayout
 from PyQt6.QtGui import QIcon, QAction
@@ -22,7 +23,7 @@ class Gui_main(QMainWindow):
     def __init__(self) -> None:
         super(Gui_main, self).__init__()
 
-        self.setWindowIcon(QIcon('assets/logo-icone.png'))
+        self.setWindowIcon(QIcon('maria_cacau/assets/images/logo-icone.png'))
         self.setWindowTitle("Maria Cacau - Consulta")
         self.setStyleSheet("QMainWindow{background: rgb(235, 230, 215);}")
 
@@ -154,18 +155,18 @@ class Gui_main(QMainWindow):
                 self.gEntregas.setCol(self.aAna.getCol("Entrega"))
                 self.gEntregas.setDta(self.datas)
                 self.gEntregas.btAttAtiv.clicked.connect(self.gEntregas.btAtiv_action)
-                self.gEntregas.btAttAtiv.setText("Ativar")
-                self.gEntregas.setTxt('Pressiona "ativar" para desbloquear essa área.')
+                self.gEntregas.btAttAtiv.setText(strings.BTN_ATIVAR)
+                self.gEntregas.setTxt(strings.TXT_ATIVAR_INSTRUCAO)
 
                 self.gProdutos.setDta(self.datas)
                 self.gProdutos.btAttAtiv.clicked.connect(self.gProdutos.btAtiv_action)
-                self.gProdutos.btAttAtiv.setText("Ativar")
-                self.gProdutos.setTxt('Pressiona "ativar" para desbloquear essa área.')
+                self.gProdutos.btAttAtiv.setText(strings.BTN_ATIVAR)
+                self.gProdutos.setTxt(strings.TXT_ATIVAR_INSTRUCAO)
 
                 self.gDados.setDta(self.datas)
                 self.gDados.setTrad(self.aAna.getCol("gSage"), self.aAna.getCol("gLbl"))
                 self.gDados.btAttAtiv.clicked.connect(self.gDados.btAtiv_action)
-                self.gDados.btAttAtiv.setText("Ativar")
+                self.gDados.btAttAtiv.setText(strings.BTN_ATIVAR)
 
                 self.actLerPlan.setEnabled(False)
             del locArq
