@@ -1,3 +1,6 @@
+# AI
+*.claude
+
 # Arquivos MAC
 *.DS_Store
 
@@ -68,10 +71,6 @@ target/
 # Jupyter Notebook
 .ipynb_checkpoints
 
-# pyenv
-.python-version
-
-
 # Environments
 .env
 .venv
@@ -80,4 +79,5 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+maria-cacau/
 
