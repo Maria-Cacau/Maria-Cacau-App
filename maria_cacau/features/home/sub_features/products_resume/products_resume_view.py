@@ -2,7 +2,6 @@
 
 from pandas.core.frame import DataFrame
 from PyQt6.QtCore import QDate
-from PyQt6.QtGui import QFont
 from PyQt6.QtWidgets import QDateEdit, QHBoxLayout, QSizePolicy, QVBoxLayout
 
 from maria_cacau.assets import strings
@@ -88,9 +87,6 @@ class GuiProdutos(AuxWidgets):
         btnLayout2.addWidget(self.bts(strings.BTN_SALVAR))   # v5.0: inativo
         mainLayout.addLayout(btnLayout2)
 
-        copyright = self.lbl("v5.0 (02/21)\nCOPYRIGHT © 2020 KINGS", 8)
-        copyright.setFont(QFont('Arial', 8, 75))
-        mainLayout.addWidget(copyright)
 
     ## Método especial: retorna o intervalo de datas selecionado no formato DD/MM/YY
     def get_date_range(self) -> tuple[str, str]:

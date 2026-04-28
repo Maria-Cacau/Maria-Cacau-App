@@ -25,3 +25,7 @@ dev   = ["isort"]
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["maria_cacau*"]
+
+[tool.maria-cacau]
+year    = "2020"
+company = "KINGS"
