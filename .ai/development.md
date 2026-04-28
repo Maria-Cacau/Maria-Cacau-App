@@ -43,3 +43,10 @@ O `__init__.py`, o executável gerado e os metadados do pacote leem daqui automa
 
 ## Assets
 Imagens ficam em `maria_cacau/assets/images/`. Caminhos são relativos à raiz do projeto (de onde `python -m maria_cacau` é executado).
+
+## Google Sheets — primeira execução
+Na primeira vez, o app precisa do `.json` da Service Account para autenticar.
+O caminho está hardcoded em `maria_cacau/core/sheets/manager.py` (`_JSON_PATH`).
+Após a primeira autenticação, as credenciais são salvas no keychain do SO via `keyring` e o arquivo `.json` não é mais necessário.
+
+> **Pendente:** criar UI de configuração para informar o caminho do `.json` sem precisar editar o código.

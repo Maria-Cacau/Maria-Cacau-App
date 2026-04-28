@@ -1,7 +1,7 @@
 # Maria Cacau - Contagem
 
 ## O que é
-App desktop para gestão de pedidos e entregas da Maria Cacau. Lê uma planilha Excel padronizada e gera resumos para:
+App desktop para gestão de pedidos e entregas da Maria Cacau. Lê diretamente a planilha Google Sheets e gera resumos para:
 - **Produtos**: contagem de itens por período
 - **Entregas**: resumo diário com inadimplências
 - **Nota Fiscal (Dados)**: dados para emissão SAGE e Melhor Envio
@@ -11,7 +11,7 @@ App desktop para gestão de pedidos e entregas da Maria Cacau. Lê uma planilha 
 |---|---|
 | Linguagem | Python 3.13 |
 | Interface | PyQt6 |
-| Planilha Excel | pandas + openpyxl |
+| Dados | pandas |
 | Planilha Google | gspread + google-auth |
 | Credenciais | keyring (keychain do SO) |
 | Build/Empacotamento | Nuitka |
