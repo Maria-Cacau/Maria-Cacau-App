@@ -5,8 +5,9 @@ from datetime import datetime
 from typing import Final
 
 import gspread
-import keyring
 from google.oauth2.service_account import Credentials
+
+from maria_cacau.core.storage.security import SecurityStorage
 
 def _parse_date(s: str) -> datetime:
     for fmt in ('%d/%m/%y', '%d/%m/%Y'):
@@ -21,6 +22,8 @@ _KEYRING_SERVICE = "maria-cacau"
 _KEYRING_KEY     = "google-credentials"
 _SCOPES          = ["https://www.googleapis.com/auth/spreadsheets.readonly"]
 
+_security = SecurityStorage(_KEYRING_SERVICE)
+
 
 class GoogleSheetsService:
     def __init__(self) -> None:
@@ -33,12 +36,12 @@ class GoogleSheetsService:
         """Lê o .json da Service Account, autentica e salva no keychain."""
         with open(path) as f:
             raw = f.read()
-        keyring.set_password(_KEYRING_SERVICE, _KEYRING_KEY, raw)
+        _security.save(raw, _KEYRING_KEY)
         self._authenticate(raw)
 
     def load_credentials_from_keychain(self) -> bool:
         """Tenta autenticar usando credenciais salvas no keychain. Retorna False se não houver."""
-        raw = keyring.get_password(_KEYRING_SERVICE, _KEYRING_KEY)
+        raw = _security.retrieve(_KEYRING_KEY)
         if not raw:
             return False
         self._authenticate(raw)
@@ -55,12 +58,10 @@ class GoogleSheetsService:
 
     def clear_credentials(self) -> bool:
         """Remove as credenciais do keychain. Retorna False se não havia nada salvo."""
-        try:
-            keyring.delete_password(_KEYRING_SERVICE, _KEYRING_KEY)
-        except keyring.errors.PasswordDeleteError:
-            return False
-        self._client = None
-        return True
+        result = _security.delete(_KEYRING_KEY)
+        if result:
+            self._client = None
+        return result
 
     # ── Planilha ──────────────────────────────────────────────────────────────
 
