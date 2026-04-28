@@ -1,3 +1,8 @@
+## Strings de UI
+
+Todas as strings de UI ficam em `maria_cacau/assets/strings.py`. Nunca hardcodar texto de interface nas views.
+Ao adicionar qualquer string visível ao usuário (labels, botões, menus, diálogos), adicionar primeiro em `strings.py` e referenciar a constante na view.
+
 ## graphify
 
 This project has a graphify knowledge graph at graphify-out/.

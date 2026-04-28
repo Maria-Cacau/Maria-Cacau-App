@@ -43,6 +43,15 @@ class GoogleSheetsService:
     def is_authenticated(self) -> bool:
         return self._client is not None
 
+    def clear_credentials(self) -> bool:
+        """Remove as credenciais do keychain. Retorna False se não havia nada salvo."""
+        try:
+            keyring.delete_password(_KEYRING_SERVICE, _KEYRING_KEY)
+        except keyring.errors.PasswordDeleteError:
+            return False
+        self._client = None
+        return True
+
     # ── Planilha ──────────────────────────────────────────────────────────────
 
     def set_sheet(self, sheet_id: str) -> None:
