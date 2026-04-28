@@ -18,12 +18,11 @@ App desktop para gestão de pedidos e entregas da Maria Cacau. Lê diretamente a
 
 </br>
 
-- [Maria Cacau - Contagem](#maria-cacau---contagem)
-  - [Plataforma e Requisitos](#plataforma-e-requisitos)
-  - [Como rodar](#como-rodar)
-  - [Demo](#demo)
-  - [Autor](#autor)
-  - [Empresa](#empresa)
+- [Plataforma e Requisitos](#plataforma-e-requisitos)
+- [Como rodar](#como-rodar)
+- [Demo](#demo)
+- [Autor](#autor)
+- [Empresa](#empresa)
 
 ## Plataforma e Requisitos
 
@@ -43,10 +42,6 @@ O projeto roda em macOS e Windows.
 **macOS:**
 
 ```bash
-# Clonar o repositório
-git clone https://github.com/Gui25Reis/Maria-Cacau-Contagem.git
-cd Maria-Cacau-Contagem
-
 # Rodar o setup (instala direnv, cria o venv e instala as dependências)
 ./scripts/build.sh
 
@@ -59,10 +54,6 @@ python -m maria_cacau
 **Windows:**
 
 ```bat
-# Clonar o repositório
-git clone https://github.com/Gui25Reis/Maria-Cacau-Contagem.git
-cd Maria-Cacau-Contagem
-
 # Rodar o setup (cria o venv e instala as dependências)
 scripts\build.bat
 
