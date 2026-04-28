@@ -168,8 +168,6 @@ class GuiMain(QMainWindow):
 
     ## ------------------------------------------------------------------------------------------------
     ## Ações de botão:
-        self.gEntregas.btAttAtiv.clicked.connect(self._on_ativar_entregas)
-        self.gEntregas.btAttAtiv.setEnabled(False)
         self.gEntregas.btOk.clicked.connect(self.on_ok_entregas)
 
         self.gProdutos.btAttAtiv.clicked.connect(self._on_ativar_produtos)
@@ -179,14 +177,6 @@ class GuiMain(QMainWindow):
         self.gDados.btAttAtiv.clicked.connect(self._on_ativar_dados)
         self.gDados.btAttAtiv.setEnabled(False)
         self.gDados.btOk.clicked.connect(self.on_ok_dados)
-
-    ## Método: Ativar entregas — lê Cadastro (lazy) e popula datas
-    def _on_ativar_entregas(self) -> None:
-        manager.load_cadastro()
-        self._ensure_datas()
-        self.gEntregas.set_cols(manager.cadastro.get_col("entrega"))
-        self.gEntregas.set_dates(self.datas)
-        self.gEntregas.on_ativar()
 
     ## Método: Ativar produtos — lê Cadastro (lazy) e popula datas
     def _on_ativar_produtos(self) -> None:
@@ -223,17 +213,23 @@ class GuiMain(QMainWindow):
 
     ## Método: ação do botão "OK" da área de Entregas
     def on_ok_entregas(self) -> None:
+        if not service.is_connected():
+            GuiPopup().show_popup(errors.C004)
+            return
         dt: str = self.gEntregas.get_date()
-        if self.dtEnt != dt:
-            if dt in self.gEntregas.resumos:
-                self.gEntregas.set_text(self.gEntregas.resumos[dt])
-            else:
-                self.gEntregas.set_resumo(dt, manager.cadastro.get_data(manager.cadastro.get_col("entrega"), dt))
-                self.gEntregas.set_text(self.gEntregas.res)
-                if not self.gEntregas.btCopiarTxt.isEnabled():
-                    self.gEntregas.btCopiarTxt.setEnabled(True)
-            self.dtEnt = dt
-        del dt
+        if self.dtEnt == dt:
+            return
+        if dt in self.gEntregas.resumos:
+            self.gEntregas.set_text(self.gEntregas.resumos[dt])
+        else:
+            arq = manager.get_entregas_for_date(dt)
+            if arq.empty:
+                self.gEntregas.set_text(f'Sem entregas para {dt}.')
+                return
+            self.gEntregas.set_resumo(dt, arq)
+            self.gEntregas.set_text(self.gEntregas.res)
+            self.gEntregas.btCopiarTxt.setEnabled(True)
+        self.dtEnt = dt
 
     ## Método: ação do botão OK da área de Dados
     def on_ok_dados(self) -> None:
@@ -276,9 +272,6 @@ class GuiMain(QMainWindow):
         self._update_planilha_check(sheet_id)
         GuiPopup().show_popup(errors.planilha_conectada(nome), "I")
 
-        self.gEntregas.btAttAtiv.setEnabled(True)
-        self.gEntregas.set_text(strings.TXT_ATIVAR_INSTRUCAO)
-
         self.gProdutos.btAttAtiv.setEnabled(True)
         self.gProdutos.set_text(strings.TXT_ATIVAR_INSTRUCAO)
 
@@ -307,8 +300,6 @@ class GuiMain(QMainWindow):
         self._update_planilha_check(sheet_id)
         nome = self._sheet_actions[sheet_id].text()
         GuiPopup().show_popup(errors.planilha_conectada(nome), "I")
-        self.gEntregas.btAttAtiv.setEnabled(True)
-        self.gEntregas.set_text(strings.TXT_ATIVAR_INSTRUCAO)
         self.gProdutos.btAttAtiv.setEnabled(True)
         self.gProdutos.set_text(strings.TXT_ATIVAR_INSTRUCAO)
         self.gDados.btAttAtiv.setEnabled(True)
