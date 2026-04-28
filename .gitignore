@@ -8,7 +8,7 @@
 arquivos/zTestes/
 
 # Configuração do VSCode
-*.vscode/
+# *.vscode/
 
 # Arquivos da Interface Gráfica
 arquivos/gui
