@@ -65,6 +65,10 @@ class GoogleSheetsService:
 
     # ── Planilha ──────────────────────────────────────────────────────────────
 
+    def is_connected(self) -> bool:
+        """Retorna True se uma planilha foi vinculada."""
+        return self._sheet_id is not None
+
     def set_sheet(self, sheet_id: str) -> None:
         """Define qual planilha vai ser lida pelo ID ou URL do Google Sheets."""
         self._sheet_id = sheet_id
@@ -128,6 +132,54 @@ class GoogleSheetsService:
         ranges.append(f'{start}:{end}')
 
         # Batch read (limite de 100 ranges por chamada da API)
+        header_len = len(header)
+        rows: list[list] = []
+        for i in range(0, len(ranges), 100):
+            for value_range in ws.batch_get(ranges[i:i + 100]):
+                for row in value_range:
+                    rows.append(row + [''] * (header_len - len(row)))
+
+        return rows
+
+    def get_cadastro_for_dates(self, dates: set) -> list:
+        """Lê linhas da aba Cadastro para um conjunto específico de datas.
+
+        Mesmo mecanismo de dois passes de get_cadastro_filtered, mas filtra
+        por datas exatas em vez das N mais recentes.
+        """
+        spreadsheet = self._client.open_by_key(self._sheet_id)
+        ws = spreadsheet.worksheet('Cadastro')
+
+        header = ws.row_values(1)
+        data_col_1based = next(
+            (i + 1 for i, h in enumerate(header) if h.strip().upper() == 'DATA'),
+            None,
+        )
+        if data_col_1based is None:
+            return ws.get_all_values()
+
+        date_col = ws.col_values(data_col_1based)
+
+        target_rows = [1]
+        for idx, val in enumerate(date_col[1:], start=2):
+            if val:
+                v = val.strip()
+                if v in dates or v[:10] in dates:
+                    target_rows.append(idx)
+
+        if len(target_rows) <= 1:
+            return [header]
+
+        ranges: list[str] = []
+        start = end = target_rows[0]
+        for r in target_rows[1:]:
+            if r == end + 1:
+                end = r
+            else:
+                ranges.append(f'{start}:{end}')
+                start = end = r
+        ranges.append(f'{start}:{end}')
+
         header_len = len(header)
         rows: list[list] = []
         for i in range(0, len(ranges), 100):

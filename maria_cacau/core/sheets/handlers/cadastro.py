@@ -20,7 +20,7 @@ def _parse_date(s: str) -> datetime:
 
 
 class CadastroAnalyseHandler:
-    def __init__(self, raw_rows: list) -> None:
+    def __init__(self, raw_rows: list, show_popup: bool = True) -> None:
         self._popup = GuiPopup()
         self.arqUsados: dict = {}
         self.dtsPed: dict = {}
@@ -60,7 +60,8 @@ class CadastroAnalyseHandler:
         qDts = self.arq['data'].value_counts()
         self.dtsPed = {str(d)[:10]: int(c) for d, c in qDts.items()}
 
-        self._popup.show_popup(errors.planilha_ok(len(self.arq.index)), "I")
+        if show_popup:
+            self._popup.show_popup(errors.planilha_ok(len(self.arq.index)), "I")
 
     ## Método especial: Pega as colunas já filtradas
     def get_col(self, k_: str) -> list:
