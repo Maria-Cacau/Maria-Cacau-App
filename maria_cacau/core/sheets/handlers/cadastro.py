@@ -57,7 +57,7 @@ class CadastroAnalyseHandler:
     def get_dates(self) -> dict:
         return self.dtsPed
 
-    ## Método especial: Pega as N datas mais recentes
+    ## Método especial: Pega as N datas mais recentes (TODO: Remover)
     def get_recent_dates(self, n: int = 20) -> dict:
         keys = sorted(self.dtsPed)[-n:]
         return {k: self.dtsPed[k] for k in keys}
