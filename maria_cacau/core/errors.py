@@ -75,6 +75,14 @@ C002 = AppError(
 
 # ── Sucesso ───────────────────────────────────────────────────────────────────
 
+C005 = AppError(
+    titulo="Link inválido",
+    subtitulo="Não foi possível identificar a planilha",
+    detalhe="O link inserido não é uma URL válida do Google Sheets. "
+            "Cole o link completo da planilha ou apenas o ID.\n\nCódigo do erro: C005",
+)
+"""URL ou ID de planilha inválido."""
+
 C004 = AppError(
     titulo="Certificado não configurado",
     subtitulo="Nenhuma credencial encontrada",

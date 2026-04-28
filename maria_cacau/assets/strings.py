@@ -22,10 +22,11 @@ MNU_ARQUIVO      = "Arquivo"
 MNU_SEGURANCA    = "Segurança"
 MNU_AJUDA        = "Ajuda"
 
-ACT_LER_PLANILHA      = "Ler planilha"
-ACT_CONFIGURAR_CERT   = "Configurar certificado"
-ACT_LIMPAR_CERT       = "Limpar certificado"
-ACT_SOBRE             = "Sobre"
+ACT_CONECTAR_PLANILHA     = "Conectar com planilha"
+ACT_PLANILHAS_CONECTADAS  = "Planilhas conectadas"
+ACT_CONFIGURAR_CERT       = "Configurar certificado"
+ACT_LIMPAR_CERT           = "Limpar certificado"
+ACT_SOBRE                 = "Sobre"
 
 # ── Diálogos ──────────────────────────────────────────────────────────────────
 
@@ -33,6 +34,12 @@ DLG_CERT_TITULO        = "Selecione o certificado"
 DLG_CERT_FILTRO        = "JSON (*.json)"
 DLG_LIMPAR_CERT_TITULO = "Limpar certificado"
 DLG_LIMPAR_CERT_MSG    = "Tem certeza que deseja remover o certificado salvo?"
+
+DLG_CONECTAR_TITULO            = "Conectar com planilha"
+DLG_CONECTAR_LBL_LINK          = "Link da planilha:"
+DLG_CONECTAR_LBL_NOME          = "Nome:"
+DLG_CONECTAR_PLACEHOLDER_LINK  = "https://docs.google.com/spreadsheets/d/..."
+DLG_CONECTAR_PLACEHOLDER_NOME  = "Ex: Maria Cacau"
 
 # ── Labels ────────────────────────────────────────────────────────────────────
 

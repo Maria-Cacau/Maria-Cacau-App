@@ -40,7 +40,7 @@ class GuiProdutos(AuxWidgets):
 
         ## Botões texto:
         btnLayout = QHBoxLayout()
-        self.btAttAtiv = self.bts("Ler planilha")
+        self.btAttAtiv = self.bts(strings.BTN_ATIVAR)
         btnLayout.addWidget(self.btAttAtiv)
 
         btnLayout.addWidget(self.bts("Download"))                                       # v5.0: inativo
