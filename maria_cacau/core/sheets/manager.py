@@ -23,8 +23,8 @@ class SheetsManager:
     def load_cadastro(self) -> None:
         """Lê e processa as 20 datas mais recentes da aba Cadastro (chamado uma vez, no Ativar)."""
         if self._cadastro is None:
-            raw_rows = service.get_cadastro_filtered(n_dates=20)
-            self._cadastro = CadastroAnalyseHandler(raw_rows)
+            raw_rows = service.get_cadastro_filtered()
+            self._cadastro = CadastroAnalyseHandler(raw_rows, show_popup=False)
 
     def get_entregas_for_date(self, date_str: str) -> DataFrame:
         """Lê entregas de uma data específica direto da planilha (sem cache global).
