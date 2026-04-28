@@ -1,3 +1,7 @@
+from maria_cacau import __version__, __year__, __company__
+
+_ver_short = '.'.join(__version__.split('.')[:2])   # '5.0.0' → '5.0'
+
 # ── Botões ────────────────────────────────────────────────────────────────────
 
 BTN_LER_PLANILHA = "Ler planilha"
@@ -50,3 +54,12 @@ DLG_CONECTAR_PLACEHOLDER_NOME  = "Ex: Maria Cacau"
 
 LBL_CPF_INSTRUCAO = "INSIRA O CPF NO CAMPO ACIMA"
 LBL_PERIODO       = "Período:"
+
+# ── Status bar ────────────────────────────────────────────────────────────────
+
+SB_SEM_CREDENCIAIS = "Credenciais não configuradas"
+SB_SEM_PLANILHA    = "Credenciais: configuradas     Nenhuma planilha selecionada"
+SB_PLANILHA        = "Credenciais: configuradas     Planilha selecionada: {nome} — {id}"
+SB_CARREGANDO      = "Realizando consulta..."
+SB_SUCESSO         = "Consulta realizada"
+SB_COPYRIGHT       = f"v{_ver_short}  ·  © {__year__} {__company__}"
