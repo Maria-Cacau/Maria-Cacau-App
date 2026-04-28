@@ -5,8 +5,7 @@ from typing import Final
 from maria_cacau.core.sheets.handlers.cadastro import CadastroAnalyseHandler
 from maria_cacau.core.sheets.service import service
 
-_JSON_PATH = "/Users/kings/Downloads/projeto-contagem-494619-a4373e9b94ae.json"
-_SHEET_ID  = "1T9i35d8EvEwb_Byq_UwHw_qnoHnvRoAYvnds7h6RbJw"
+_SHEET_ID = "1T9i35d8EvEwb_Byq_UwHw_qnoHnvRoAYvnds7h6RbJw"
 
 
 class SheetsManager:
@@ -16,7 +15,7 @@ class SheetsManager:
     def connect(self) -> bool:
         if not service.is_authenticated():
             if not service.load_credentials_from_keychain():
-                service.load_credentials_from_file(_JSON_PATH)
+                raise PermissionError("sem_credenciais")
         service.set_sheet(_SHEET_ID)
         raw_rows = service.get_raw_data("Cadastro")
         self._cadastro = CadastroAnalyseHandler(raw_rows)

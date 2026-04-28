@@ -75,6 +75,14 @@ C002 = AppError(
 
 # ── Sucesso ───────────────────────────────────────────────────────────────────
 
+C004 = AppError(
+    titulo="Certificado não configurado",
+    subtitulo="Nenhuma credencial encontrada",
+    detalhe='Acesse o menu "Segurança → Configurar certificado" e selecione o arquivo .json '
+            "da Service Account para continuar.\n\nCódigo do erro: C004",
+)
+"""Tentativa de conectar sem credenciais salvas no keychain."""
+
 C003 = AppError(
     titulo="Nenhum certificado encontrado",
     subtitulo="Nada para remover",
