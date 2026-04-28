@@ -2,8 +2,8 @@
 
 from typing import Final
 
-from maria_cacau.core.cadastro_analyse_handler import CadastroAnalyseHandler
-from maria_cacau.core.google_sheets_service import service
+from maria_cacau.core.sheets.handlers.cadastro import CadastroAnalyseHandler
+from maria_cacau.core.sheets.service import service
 
 _JSON_PATH = "/Users/kings/Downloads/projeto-contagem-494619-a4373e9b94ae.json"
 _SHEET_ID  = "1T9i35d8EvEwb_Byq_UwHw_qnoHnvRoAYvnds7h6RbJw"

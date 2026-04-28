@@ -12,9 +12,11 @@ Maria-Cacau-Contagem/
 │   ├── __init__.py               # metadados centralizados (versão, copyright, ícones)
 │   ├── __main__.py               # entry point
 │   ├── core/
-│   │   ├── google_sheets_service.py      # autenticação e leitura bruta do Google Sheets
-│   │   ├── cadastro_analyse_handler.py   # processa a aba Cadastro (filtragem, datas, colunas)
-│   │   ├── sheets_manager.py             # orquestra service + handler; singleton `manager`
+│   │   ├── sheets/
+│   │   │   ├── service.py                # autenticação e leitura bruta do Google Sheets
+│   │   │   ├── manager.py                # orquestra service + handler; singleton `manager`
+│   │   │   └── handlers/
+│   │   │       └── cadastro.py           # processa a aba Cadastro (filtragem, datas, colunas)
 │   │   └── errors.py                     # códigos de erro com docstrings
 │   ├── design_system/
 │   │   ├── aux_widgets.py        # factory de widgets reutilizáveis

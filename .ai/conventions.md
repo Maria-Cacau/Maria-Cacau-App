@@ -20,12 +20,12 @@ import sys; sys.path.insert(...)                     # gambiarra
 
 ```python
 # correto
-self.setTxt(strings.TXT_SEM_PLANILHA)
-self.popUp.show_PopUp(errors.A001)
+self.set_text(strings.TXT_SEM_PLANILHA)
+self.popup.show_popup(errors.A001)
 
 # evitar
-self.setTxt("Nenhuma planilha foi selecionada.")
-self.popUp.show_PopUp(["Erro", "Título", "Detalhe"])
+self.set_text("Nenhuma planilha foi selecionada.")
+self.popup.show_popup(["Erro", "Título", "Detalhe"])
 ```
 
 ## Metadados do app
@@ -50,3 +50,14 @@ Usar **layouts Qt** (`QHBoxLayout`, `QVBoxLayout`), nunca `setGeometry` ou posic
 - Snake case: `aux_widgets.py`, `home_view.py`
 - Views sufixadas com `_view`: `cpf_validation_view.py`
 - Futuras view models sufixadas com `_view_model`: `cpf_validation_view_model.py`
+
+## Nomenclatura Python
+- Classes: PascalCase (`GuiMain`, `CadastroAnalyseHandler`)
+- Métodos e funções: snake_case (`set_text`, `get_dates`, `on_ativar`)
+- Constantes de módulo: UPPER_SNAKE_CASE (`_SHEET_ID`, `_SCOPES`)
+
+## Colunas da planilha Google Sheets
+Todos os headers são normalizados para **lowercase** via `_normalize_headers` em `CadastroAnalyseHandler`.
+- Usar sempre lowercase ao referenciar colunas no código: `arq_['pedido']`, `arq_['modal']`, `arq_['$frete']`
+- Exceção: `glbl` (labels de UI) ficam em UPPERCASE — são strings de display, não nomes de coluna
+- A coluna `Prod4` tem header `'-'` na planilha → referenciar como `'-'` no código

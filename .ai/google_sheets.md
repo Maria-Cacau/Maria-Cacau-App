@@ -26,9 +26,9 @@ key     = "google-credentials"
 
 | Classe | Arquivo | Responsabilidade |
 |---|---|---|
-| `GoogleSheetsService` | `core/google_sheets_service.py` | Autenticação + leitura bruta (`get_raw_data`) |
-| `CadastroAnalyseHandler` | `core/cadastro_analyse_handler.py` | Processa a aba Cadastro (filtragem, datas, colunas) |
-| `SheetsManager` | `core/sheets_manager.py` | Orquestra os dois acima; singleton `manager` usado pela UI |
+| `GoogleSheetsService` | `core/sheets/service.py` | Autenticação + leitura bruta (`get_raw_data`) |
+| `CadastroAnalyseHandler` | `core/sheets/handlers/cadastro.py` | Processa a aba Cadastro (filtragem, datas, colunas) |
+| `SheetsManager` | `core/sheets/manager.py` | Orquestra os dois acima; singleton `manager` usado pela UI |
 
 ## Convenções de colunas
 Todos os headers da planilha são normalizados para **lowercase** via `_normalize_headers`.
@@ -49,4 +49,4 @@ Todos os headers da planilha são normalizados para **lowercase** via `_normaliz
 - [x] Planilha compartilhada com a service account
 - [x] Conexão confirmada (`Cadastro`, 15.846 linhas)
 - [x] Integração com UI (`home_view.py` usa `manager`)
-- [ ] UI de configuração (tela para informar o `.json` na primeira vez — por ora hardcoded em `sheets_manager.py`)
+- [ ] UI de configuração (tela para informar o `.json` na primeira vez — por ora hardcoded em `core/sheets/manager.py`)

@@ -5,7 +5,7 @@ from PyQt6.QtWidgets import (QApplication, QHBoxLayout, QMainWindow, QMenu,
                              QMenuBar, QVBoxLayout, QWidget)
 
 from maria_cacau.assets import strings
-from maria_cacau.core.sheets_manager import manager
+from maria_cacau.core.sheets.manager import manager
 from maria_cacau.features.home.sub_features.cpf_validation.cpf_validation_view import \
     GuiValiCpf
 from maria_cacau.features.home.sub_features.freight_query.freight_query_view import \
