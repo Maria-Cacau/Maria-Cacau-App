@@ -52,9 +52,12 @@ O `__init__.py`, o executável gerado e os metadados do pacote leem daqui automa
 ## Assets
 Imagens ficam em `maria_cacau/assets/images/`. Caminhos são relativos à raiz do projeto (de onde `python -m maria_cacau` é executado).
 
-## Google Sheets — primeira execução
+## Google Sheets — configuração inicial
 Na primeira vez, o app precisa do `.json` da Service Account para autenticar.
-O caminho está hardcoded em `maria_cacau/core/sheets/manager.py` (`_JSON_PATH`).
-Após a primeira autenticação, as credenciais são salvas no keychain do SO via `keyring` e o arquivo `.json` não é mais necessário.
 
-> **Pendente:** criar UI de configuração para informar o caminho do `.json` sem precisar editar o código.
+1. Menu **Segurança → Configurar certificado** → selecionar o `.json` da Service Account
+2. Menu **Arquivo → Conectar nova planilha** → colar o link ou ID da planilha
+
+As credenciais são salvas no keychain do SO via `keyring`. Nas próximas execuções, o app autentica automaticamente e as planilhas já conectadas aparecem em **Arquivo → Planilhas conectadas**.
+
+Lista de planilhas salvas: `~/.mariacacau/sheets.json`
