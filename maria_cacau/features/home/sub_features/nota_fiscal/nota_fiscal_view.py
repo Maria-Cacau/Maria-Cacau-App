@@ -130,8 +130,8 @@ class GuiDados(AuxWidgets):
 
     ## Método: Pega as informações e coloca pra vizualização
     def set_resumo(self, arq_:DataFrame) -> None:
-        fret:list = list(arq_["$FRETE"])
-        tot:list = list(arq_["TOTAL"])
+        fret:list = list(arq_["$frete"])
+        tot:list = list(arq_["total"])
         self.max = len(tot)
 
         if self.get_date() in self.allInfos:
@@ -139,7 +139,7 @@ class GuiDados(AuxWidgets):
         else:
             cols:list = list(arq_.columns)
             self.infos = {cols[x]:list(arq_[cols[x]]) for x in range(len(cols))}
-            self.infos["TOTAL"] = [str(round(tot[x] - fret[x])) for x in range(self.max)]
+            self.infos["total"] = [str(round(tot[x] - fret[x])) for x in range(self.max)]
             self.allInfos[self.get_date()] = self.infos
             del cols
 
