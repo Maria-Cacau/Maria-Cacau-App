@@ -21,6 +21,7 @@ Maria-Cacau-Contagem/
 │   │   │   ├── handler.py                # ABC StorageHandler[T] — contrato único de persistência
 │   │   │   ├── security.py               # SecurityStorage — keychain via keyring
 │   │   │   └── cache.py                  # CacheStorage — JSON em ~/.mariacacau/
+│   │   ├── observability.py              # AppEvent enum + singleton `observability` → logs.log
 │   │   └── errors.py                     # códigos de erro com docstrings
 │   ├── design_system/
 │   │   ├── aux_widgets.py        # factory de widgets reutilizáveis
@@ -72,6 +73,27 @@ Barra fixa na base da janela com três estados de cor:
 | Laranja | Consulta em andamento |
 
 Reverte automaticamente para verde 3s após o sucesso.
+
+Durante o estado laranja, um `QTimer` de 1s atualiza o texto com o tempo decorrido na frente da mensagem (ex: `3s  Realizando consulta...`).
+
+## Observabilidade (`observability`)
+
+Módulo `maria_cacau/core/observability.py` — singleton `observability` com enum `AppEvent`.
+
+| Evento | Extra kwargs | Quando |
+|---|---|---|
+| `APP_START` | — | App inicializado |
+| `APP_CLOSE` | — | Janela fechada (`closeEvent`) |
+| `QUERY_ENTREGAS` | `date=`, `duration_s=` | Consulta de entregas com sucesso |
+| `QUERY_PRODUTOS` | `start=`, `end=`, `duration_s=` | Consulta de produtos com sucesso |
+| `CERT_SET` | — | Certificado configurado com sucesso |
+| `SHEET_ADD` | `name=`, `sheet_id=` | Planilha conectada e salva |
+| `BTN_COPY` | `feature=` | Botão Copiar clicado (entregas ou produtos) |
+| `ERROR` | `msg=`, `where=` (opcional), `duration_s=` (opcional) | Qualquer exceção capturada |
+
+Saída: `~/.mariacacau/logs.log` (append-only, formato `YYYY-MM-DD HH:MM:SS  LEVEL  mensagem`).
+
+Para adicionar um novo evento: acrescentar valor ao `AppEvent` e chamar `observability.log(AppEvent.NOVO, ...)`.
 
 ## Fonte única de verdade
 - **Versão, ano e empresa** → `pyproject.toml` (`[project]` e `[tool.maria-cacau]`)
