@@ -1,6 +1,8 @@
 # Desenvolvimento
 
 ## Setup inicial
+
+**macOS / Git Bash:**
 ```bash
 ./scripts/build.sh
 ```
@@ -11,6 +13,12 @@ Detecta macOS ou Windows e:
 4. Libera o direnv com `direnv allow`
 
 Após o setup, abrir um novo terminal na pasta já ativa o venv automaticamente.
+
+**Windows (CMD / PowerShell):**
+```bat
+scripts\build.bat
+```
+Faz o mesmo sem direnv — o VS Code detecta o venv automaticamente.
 
 ## Rodar o app
 ```bash
