@@ -188,7 +188,7 @@ class GuiMain(QMainWindow):
     ## Método: Garante que self.datas está populado (chamado após load_cadastro)
     def _ensure_datas(self) -> None:
         if not self.datas:
-            self.datas = manager.cadastro.get_recent_dates(20)
+            self.datas = manager.cadastro.get_dates()
 
     ## Método: Ação do botão "OK" da área de Produtos
     def on_ok_produtos(self) -> None:
