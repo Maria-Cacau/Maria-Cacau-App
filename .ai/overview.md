@@ -1,10 +1,12 @@
 # Maria Cacau - Contagem
 
 ## O que é
-App desktop para gestão de pedidos e entregas da Maria Cacau. Lê diretamente a planilha Google Sheets e gera resumos para:
+App desktop para gestão de pedidos e entregas da Maria Cacau. Conecta diretamente à planilha Google Sheets e gera resumos para:
 - **Produtos**: contagem de itens por período
 - **Entregas**: resumo diário com inadimplências
 - **Nota Fiscal (Dados)**: dados para emissão SAGE e Melhor Envio
+
+Planilhas são gerenciadas pelo menu **Arquivo**: conectar por URL/ID, salvar localmente em `~/.mariacacau/sheets.json`, e selecionar entre as salvas.
 
 ## Tech Stack
 | Camada | Tecnologia |

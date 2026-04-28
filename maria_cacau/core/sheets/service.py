@@ -1,11 +1,21 @@
 """Autenticação e acesso ao Google Sheets."""
 
 import json
+from datetime import datetime
 from typing import Final
 
 import gspread
 import keyring
 from google.oauth2.service_account import Credentials
+
+def _parse_date(s: str) -> datetime:
+    for fmt in ('%d/%m/%y', '%d/%m/%Y'):
+        try:
+            return datetime.strptime(s, fmt)
+        except ValueError:
+            continue
+    return datetime.min
+
 
 _KEYRING_SERVICE = "maria-cacau"
 _KEYRING_KEY     = "google-credentials"
@@ -67,6 +77,64 @@ class GoogleSheetsService:
             else spreadsheet.sheet1
         )
         return worksheet.get_all_values()
+
+    def get_cadastro_filtered(self, n_dates: int = 20) -> list:
+        """Lê apenas as linhas das N datas mais recentes da aba Cadastro.
+
+        Faz dois passes: lê a coluna DATA para descobrir as datas,
+        depois busca só as linhas relevantes via batch_get.
+        Fallback para get_all_values se a coluna DATA não for encontrada.
+        """
+        spreadsheet = self._client.open_by_key(self._sheet_id)
+        ws = spreadsheet.worksheet('Cadastro')
+
+        # Pass 1: descobre índice da coluna DATA
+        header = ws.row_values(1)
+        data_col_1based = next(
+            (i + 1 for i, h in enumerate(header) if h.strip().upper() == 'DATA'),
+            None,
+        )
+        if data_col_1based is None:
+            return ws.get_all_values()
+
+        # Pass 2: lê só a coluna de data (muito mais leve que ler tudo)
+        date_col = ws.col_values(data_col_1based)  # índice 0 = célula do header
+
+        # Identifica as N datas mais recentes (por data real, não ordem lexicográfica)
+        unique_dates = list({v[:10] for v in date_col[1:] if v and v.strip()})
+        unique_dates.sort(key=_parse_date)
+        recent = set(unique_dates[-n_dates:])
+
+        # Acha os números de linha (1-based) que correspondem a essas datas
+        target_rows = [1]  # sempre inclui o header
+        for idx, val in enumerate(date_col[1:], start=2):
+            if val and val[:10] in recent:
+                target_rows.append(idx)
+
+        if len(target_rows) <= 1:
+            return [header]
+
+        # Agrupa em ranges contíguos para minimizar chamadas de API
+        # ex: [1,2,3,10,11] → ['1:3', '10:11']
+        ranges: list[str] = []
+        start = end = target_rows[0]
+        for r in target_rows[1:]:
+            if r == end + 1:
+                end = r
+            else:
+                ranges.append(f'{start}:{end}')
+                start = end = r
+        ranges.append(f'{start}:{end}')
+
+        # Batch read (limite de 100 ranges por chamada da API)
+        header_len = len(header)
+        rows: list[list] = []
+        for i in range(0, len(ranges), 100):
+            for value_range in ws.batch_get(ranges[i:i + 100]):
+                for row in value_range:
+                    rows.append(row + [''] * (header_len - len(row)))
+
+        return rows
 
 
 service: Final = GoogleSheetsService()

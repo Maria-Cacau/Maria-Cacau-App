@@ -58,6 +58,10 @@ Usar **layouts Qt** (`QHBoxLayout`, `QVBoxLayout`), nunca `setGeometry` ou posic
 
 ## Colunas da planilha Google Sheets
 Todos os headers são normalizados para **lowercase** via `_normalize_headers` em `CadastroAnalyseHandler`.
-- Usar sempre lowercase ao referenciar colunas no código: `arq_['pedido']`, `arq_['modal']`, `arq_['$frete']`
+- Usar sempre lowercase ao referenciar colunas no código: `arq_['pedido']`, `arq_['modalidade']`, `arq_['$frete']`
+- Coluna de data de entrega: `arq_['data']` (header na planilha: `DATA`)
+- Coluna de modalidade: `arq_['modalidade']` (header: `Modalidade`)
+- Coluna de cidade: `arq_['cidade']` (header: `Cidade`, sem UF)
 - Exceção: `glbl` (labels de UI) ficam em UPPERCASE — são strings de display, não nomes de coluna
 - A coluna `Prod4` tem header `'-'` na planilha → referenciar como `'-'` no código
+- Colunas duplicadas são removidas automaticamente ao criar o DataFrame (mantém primeira ocorrência)

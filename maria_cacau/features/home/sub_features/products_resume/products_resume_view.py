@@ -40,7 +40,7 @@ class GuiProdutos(AuxWidgets):
 
         ## Botões texto:
         btnLayout = QHBoxLayout()
-        self.btAttAtiv = self.bts("Ler planilha")
+        self.btAttAtiv = self.bts(strings.BTN_ATIVAR)
         btnLayout.addWidget(self.btAttAtiv)
 
         btnLayout.addWidget(self.bts("Download"))                                       # v5.0: inativo
@@ -127,7 +127,7 @@ class GuiProdutos(AuxWidgets):
     ## Método: Cria o resumo de cada pedido
     def resumo_pedido(self, i_:int, arq_:DataFrame) -> None:
         for l in range(i_):
-            dia = f"\n\nPedido: {arq_['pedido'][l]} | {arq_['modal'][l]} | {arq_['tel'][l]}\n"
+            dia = f"\n\nPedido: {arq_['pedido'][l]} | {arq_['modalidade'][l]} | {arq_['tel'][l]}\n"
             self.merge_cols(list(arq_.loc[l].iloc[4:19]))
             dia += self.dict_to_str(self.pedInd)
             self.pedInd = {}
