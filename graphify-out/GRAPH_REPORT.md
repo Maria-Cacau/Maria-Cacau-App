@@ -1,12 +1,12 @@
 # Graph Report - Maria-Cacau-Contagem  (2026-04-28)
 
 ## Corpus Check
-- 33 files · ~10,555 words
+- 33 files · ~10,563 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 277 nodes · 485 edges · 37 communities detected
-- Extraction: 54% EXTRACTED · 46% INFERRED · 0% AMBIGUOUS · INFERRED: 223 edges (avg confidence: 0.71)
+- 214 nodes · 424 edges · 9 communities detected
+- Extraction: 58% EXTRACTED · 42% INFERRED · 0% AMBIGUOUS · INFERRED: 180 edges (avg confidence: 0.69)
 - Token cost: 0 input · 0 output
 
 ## Community Hubs (Navigation)
@@ -19,291 +19,93 @@
 - [[_COMMUNITY_Community 6|Community 6]]
 - [[_COMMUNITY_Community 7|Community 7]]
 - [[_COMMUNITY_Community 8|Community 8]]
-- [[_COMMUNITY_Community 9|Community 9]]
-- [[_COMMUNITY_Community 10|Community 10]]
-- [[_COMMUNITY_Community 11|Community 11]]
-- [[_COMMUNITY_Community 12|Community 12]]
-- [[_COMMUNITY_Community 28|Community 28]]
-- [[_COMMUNITY_Community 29|Community 29]]
-- [[_COMMUNITY_Community 30|Community 30]]
-- [[_COMMUNITY_Community 31|Community 31]]
-- [[_COMMUNITY_Community 32|Community 32]]
-- [[_COMMUNITY_Community 33|Community 33]]
-- [[_COMMUNITY_Community 34|Community 34]]
-- [[_COMMUNITY_Community 35|Community 35]]
-- [[_COMMUNITY_Community 36|Community 36]]
-- [[_COMMUNITY_Community 37|Community 37]]
-- [[_COMMUNITY_Community 38|Community 38]]
-- [[_COMMUNITY_Community 39|Community 39]]
-- [[_COMMUNITY_Community 40|Community 40]]
-- [[_COMMUNITY_Community 41|Community 41]]
-- [[_COMMUNITY_Community 42|Community 42]]
-- [[_COMMUNITY_Community 43|Community 43]]
-- [[_COMMUNITY_Community 44|Community 44]]
-- [[_COMMUNITY_Community 45|Community 45]]
-- [[_COMMUNITY_Community 46|Community 46]]
-- [[_COMMUNITY_Community 47|Community 47]]
-- [[_COMMUNITY_Community 48|Community 48]]
-- [[_COMMUNITY_Community 49|Community 49]]
-- [[_COMMUNITY_Community 50|Community 50]]
-- [[_COMMUNITY_Community 51|Community 51]]
 
 ## God Nodes (most connected - your core abstractions)
-1. `GuiMain` - 26 edges
+1. `GuiMain` - 25 edges
 2. `AuxWidgets` - 24 edges
 3. `GuiDados` - 24 edges
-4. `GuiPopup` - 23 edges
-5. `GuiProdutos` - 22 edges
-6. `CadastroAnalyseHandler` - 19 edges
-7. `SecurityStorage` - 18 edges
+4. `GuiPopup` - 22 edges
+5. `GuiProdutos` - 19 edges
+6. `SecurityStorage` - 17 edges
+7. `CadastroAnalyseHandler` - 15 edges
 8. `GuiEntregas` - 14 edges
 9. `GoogleSheetsService` - 13 edges
 10. `CacheStorage` - 12 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `Python Desktop Application` --conceptually_related_to--> `Save/Clipboard Icon`  [INFERRED]
-  README.md → maria_cacau/assets/images/salvar-icon.png
-- `Maria Cacau Company` --conceptually_related_to--> `App Background - Maria Cacau Watermark`  [INFERRED]
-  README.md → maria_cacau/assets/images/background.png
-- `Maria Cacau Company` --conceptually_related_to--> `Maria Cacau Logo Icon`  [INFERRED]
-  README.md → maria_cacau/assets/images/logo-icone.png
-- `Maria Cacau Company` --conceptually_related_to--> `Maria Cacau Official Logo`  [INFERRED]
-  README.md → arquivos/imagens/logo-oficial.png
-- `Maria Cacau Company` --conceptually_related_to--> `GitHub Repository Cover Image`  [INFERRED]
-  README.md → arquivos/imagens/Git-Capa.png
-
-## Hyperedges (group relationships)
-- **Main Application UI Panels** — concept_ui_panel_produtos, concept_ui_panel_entregas, concept_ui_panel_dados, concept_ui_validacao_cpf, concept_ui_consulta_frete [INFERRED 0.95]
-- **Core Application Features** — readme_products_summary, readme_deliveries_summary, readme_invoice_data, readme_spreadsheet_database [EXTRACTED 1.00]
-- **Maria Cacau Brand Assets** — asset_logo_icone, asset_background, img_logo_oficial, img_git_capa [INFERRED 0.90]
-- **UI Demo Screenshots** — img_tela_01, img_tela_02, img_tela_03, img_tela_04, doc_tela_principal, print_capturar, print_capturar2, print_capturar3, print_capturar4 [INFERRED 0.90]
+- `Área de consulta de frete: interface gráfica e lógica de consulta.` --uses--> `AuxWidgets`  [INFERRED]
+  features/home/sub_features/freight_query/freight_query_view.py → design_system/aux_widgets.py
+- `Área de validação de CPF: interface gráfica e lógica de verificação.` --uses--> `AuxWidgets`  [INFERRED]
+  features/home/sub_features/cpf_validation/cpf_validation_view.py → design_system/aux_widgets.py
+- `Área de resumo de produtos: contagem de itens por período.` --uses--> `AuxWidgets`  [INFERRED]
+  features/home/sub_features/products_resume/products_resume_view.py → design_system/aux_widgets.py
+- `main()` --calls--> `GuiMain`  [INFERRED]
+  __main__.py → features/home/home_view.py
+- `Entry point da aplicação. Execute com: python -m maria_cacau` --uses--> `GuiMain`  [INFERRED]
+  __main__.py → features/home/home_view.py
 
 ## Communities
 
 ### Community 0 - "Community 0"
+Cohesion: 0.09
+Nodes (23): AppError, certificado_limpo(), certificado_ok(), planilha_conectada(), planilha_ok(), Códigos de erro da aplicação com estrutura AppError., Confirmação de certificado configurado com sucesso., Confirmação de credenciais removidas com sucesso. (+15 more)
+
+### Community 1 - "Community 1"
 Cohesion: 0.11
 Nodes (6): AuxFrame, Frame composto reutilizável com label, entrada de texto e botão de cópia., AuxWidgets, Factory de widgets PyQt6 reutilizáveis em toda a interface., Área de dados para emissão de Nota SAGE e Melhor Envio., QFrame
 
-### Community 1 - "Community 1"
-Cohesion: 0.09
-Nodes (20): Leitura e filtragem da planilha Excel para uso nas features., Processa os dados da aba Cadastro da planilha Google Sheets., AppError, certificado_limpo(), certificado_ok(), planilha_conectada(), planilha_ok(), Códigos de erro da aplicação com estrutura AppError. (+12 more)
-
 ### Community 2 - "Community 2"
-Cohesion: 0.09
-Nodes (12): GoogleSheetsService, Autenticação e acesso ao Google Sheets., Lê linhas da aba Cadastro para um conjunto específico de datas.          Mesmo m, Lê o .json da Service Account, autentica e salva no keychain., Tenta autenticar usando credenciais salvas no keychain. Retorna False se não hou, Define qual planilha vai ser lida pelo ID ou URL do Google Sheets., Retorna as linhas brutas da planilha (lista de listas de strings)., Retorna as linhas brutas da planilha (lista de listas de strings). (+4 more)
+Cohesion: 0.1
+Nodes (11): GoogleSheetsService, Autenticação e acesso ao Google Sheets., Lê linhas da aba Cadastro para um conjunto específico de datas.          Mesmo m, Lê o .json da Service Account, autentica e salva no keychain., Tenta autenticar usando credenciais salvas no keychain. Retorna False se não hou, Remove as credenciais do keychain. Retorna False se não havia nada salvo., Retorna True se uma planilha foi vinculada., Define qual planilha vai ser lida pelo ID ou URL do Google Sheets. (+3 more)
 
 ### Community 3 - "Community 3"
 Cohesion: 0.12
-Nodes (25): App Background - Maria Cacau Watermark, Maria Cacau Logo Icon, Save/Clipboard Icon, Shipping Methods (SEDEX, PAC, JADLOG, MOTOBOY), Consulta Frete Panel (UI), Dados Panel - Order Details (UI), Entregas Panel (UI), Produtos Panel (UI) (+17 more)
+Nodes (12): AuxWidgets, GuiValiCpf, Área de validação de CPF: interface gráfica e lógica de verificação., GuiConsFrete, Área de consulta de frete: interface gráfica e lógica de consulta., _BackgroundWidget, _DialogConectarPlanilha, _extract_sheet_id() (+4 more)
 
 ### Community 4 - "Community 4"
-Cohesion: 0.14
-Nodes (12): AuxWidgets, GuiValiCpf, Área de validação de CPF: interface gráfica e lógica de verificação., GuiConsFrete, Área de consulta de frete: interface gráfica e lógica de consulta., _BackgroundWidget, _DialogConectarPlanilha, _extract_sheet_id() (+4 more)
+Cohesion: 0.15
+Nodes (6): CadastroAnalyseHandler, Orquestra a autenticação e o acesso às abas da planilha., Autentica e aponta para a planilha. Não lê dados ainda., Lê e processa as 20 datas mais recentes da aba Cadastro (chamado uma vez, no Ati, Lê entregas de uma data específica direto da planilha (sem cache global)., SheetsManager
 
 ### Community 5 - "Community 5"
 Cohesion: 0.13
-Nodes (7): ABC, _save_sheet(), Remove as credenciais do keychain. Retorna False se não havia nada salvo., CacheStorage, Backend de cache em arquivo JSON no diretório do usuário., Contrato base para todos os backends de armazenamento., StorageHandler
+Nodes (6): ABC, CacheStorage, Backend de cache em arquivo JSON no diretório do usuário., Contrato base para todos os backends de armazenamento., StorageHandler, Backend de armazenamento seguro via keychain do SO.
 
 ### Community 6 - "Community 6"
-Cohesion: 0.17
-Nodes (8): CadastroAnalyseHandler, Orquestra a autenticação e o acesso às abas da planilha., Autentica e aponta para a planilha. Não lê dados ainda., Lê e processa a aba Cadastro (chamado uma vez, no Ativar)., Lê e processa as 20 datas mais recentes da aba Cadastro (chamado uma vez, no Ati, Lê e processa as 20 datas mais recentes da aba Cadastro (chamado uma vez, no Ati, Lê entregas de uma data específica direto da planilha (sem cache global)., SheetsManager
+Cohesion: 0.21
+Nodes (2): GuiDados, QWidget
 
 ### Community 7 - "Community 7"
-Cohesion: 0.21
-Nodes (1): GuiDados
-
-### Community 8 - "Community 8"
-Cohesion: 0.21
+Cohesion: 0.27
 Nodes (2): GuiProdutos, Área de resumo de produtos: contagem de itens por período.
 
-### Community 9 - "Community 9"
-Cohesion: 0.24
-Nodes (6): GuiMain, _load_sheets(), main(), Entry point da aplicação. Execute com: python -m maria_cacau, QMainWindow, Autentica e aponta para a planilha. Não lê dados ainda.
-
-### Community 10 - "Community 10"
+### Community 8 - "Community 8"
 Cohesion: 1.0
 Nodes (1): Metadados centralizados do pacote maria-cacau.
 
-### Community 11 - "Community 11"
-Cohesion: 1.0
-Nodes (2): App Screenshot - Spreadsheet Load Success Dialog, App Screenshot Print - Spreadsheet Load Success Dialog (Early UI)
-
-### Community 12 - "Community 12"
-Cohesion: 1.0
-Nodes (2): App Screenshot - Spreadsheet Loaded State, App Screenshot Print - Ready State with Date Selector
-
-### Community 28 - "Community 28"
-Cohesion: 1.0
-Nodes (1): Lê o .json da Service Account, autentica e salva no keychain.
-
-### Community 29 - "Community 29"
-Cohesion: 1.0
-Nodes (1): Tenta autenticar usando credenciais salvas no keychain. Retorna False se não hou
-
-### Community 30 - "Community 30"
-Cohesion: 1.0
-Nodes (1): Remove as credenciais do keychain. Retorna False se não havia nada salvo.
-
-### Community 31 - "Community 31"
-Cohesion: 1.0
-Nodes (1): Define qual planilha vai ser lida pelo ID ou URL do Google Sheets.
-
-### Community 32 - "Community 32"
-Cohesion: 1.0
-Nodes (1): Retorna as linhas brutas da planilha (lista de listas de strings).
-
-### Community 33 - "Community 33"
-Cohesion: 1.0
-Nodes (1): Lê apenas as linhas das N datas mais recentes da aba Cadastro.          Faz dois
-
-### Community 34 - "Community 34"
-Cohesion: 1.0
-Nodes (1): Lê o .json da Service Account, autentica e salva no keychain.
-
-### Community 35 - "Community 35"
-Cohesion: 1.0
-Nodes (1): Tenta autenticar usando credenciais salvas no keychain. Retorna False se não hou
-
-### Community 36 - "Community 36"
-Cohesion: 1.0
-Nodes (1): Remove as credenciais do keychain. Retorna False se não havia nada salvo.
-
-### Community 37 - "Community 37"
-Cohesion: 1.0
-Nodes (1): Define qual planilha vai ser lida pelo ID ou URL do Google Sheets.
-
-### Community 38 - "Community 38"
-Cohesion: 1.0
-Nodes (1): Retorna as linhas brutas da planilha (lista de listas de strings).
-
-### Community 39 - "Community 39"
-Cohesion: 1.0
-Nodes (1): Confirmação de certificado configurado com sucesso.
-
-### Community 40 - "Community 40"
-Cohesion: 1.0
-Nodes (1): Confirmação de credenciais removidas com sucesso.
-
-### Community 41 - "Community 41"
-Cohesion: 1.0
-Nodes (1): Confirmação de leitura bem-sucedida da planilha.
-
-### Community 42 - "Community 42"
-Cohesion: 1.0
-Nodes (1): Confirmação de certificado configurado com sucesso.
-
-### Community 43 - "Community 43"
-Cohesion: 1.0
-Nodes (1): Confirmação de credenciais removidas com sucesso.
-
-### Community 44 - "Community 44"
-Cohesion: 1.0
-Nodes (1): Confirmação de leitura bem-sucedida da planilha.
-
-### Community 45 - "Community 45"
-Cohesion: 1.0
-Nodes (1): Confirmação de leitura bem-sucedida da planilha.
-
-### Community 46 - "Community 46"
-Cohesion: 1.0
-Nodes (1): Orquestra a autenticação e o acesso às abas da planilha.
-
-### Community 47 - "Community 47"
-Cohesion: 1.0
-Nodes (1): Autenticação e acesso ao Google Sheets.
-
-### Community 48 - "Community 48"
-Cohesion: 1.0
-Nodes (1): Lê o .json da Service Account, autentica e salva no keychain.
-
-### Community 49 - "Community 49"
-Cohesion: 1.0
-Nodes (1): Tenta autenticar usando credenciais salvas no keychain. Retorna False se não hou
-
-### Community 50 - "Community 50"
-Cohesion: 1.0
-Nodes (1): Define qual planilha vai ser lida pelo ID ou URL do Google Sheets.
-
-### Community 51 - "Community 51"
-Cohesion: 1.0
-Nodes (1): Retorna as linhas brutas da planilha (lista de listas de strings).
-
 ## Knowledge Gaps
-- **52 isolated node(s):** `Metadados centralizados do pacote maria-cacau.`, `Códigos de erro da aplicação com estrutura AppError.`, `Estrutura de uma mensagem de erro/info para exibição no PopUp.`, `Confirmação de certificado configurado com sucesso.`, `Confirmação de credenciais removidas com sucesso.` (+47 more)
+- **9 isolated node(s):** `Metadados centralizados do pacote maria-cacau.`, `Códigos de erro da aplicação com estrutura AppError.`, `Estrutura de uma mensagem de erro/info para exibição no PopUp.`, `Confirmação de certificado configurado com sucesso.`, `Confirmação de credenciais removidas com sucesso.` (+4 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **Thin community `Community 7`** (18 nodes): `._ensure_datas()`, `._on_ativar_dados()`, `._on_ativar_produtos()`, `.on_ok_dados()`, `GuiDados`, `.get_date()`, `.__init__()`, `.navigate()`, `.on_ativar()`, `.on_nav()`, `.on_tab_changed()`, `.set_belga()`, `.set_dates()`, `.set_enabled()`, `.set_resumo()`, `.set_trad()`, `.show_page()`, `.update_nav()`
+- **Thin community `Community 6`** (18 nodes): `.combo_box()`, `.on_ok_dados()`, `.on_ok_entregas()`, `GuiDados`, `.create_frame()`, `.get_date()`, `.__init__()`, `.navigate()`, `.on_ativar()`, `.on_nav()`, `.on_tab_changed()`, `.set_belga()`, `.set_enabled()`, `.set_resumo()`, `.setup_ui()`, `.show_page()`, `.update_nav()`, `QWidget`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 8`** (17 nodes): `.fix_date()`, `products_resume_view.py`, `GuiProdutos`, `.add_to_dict()`, `.dict_to_str()`, `.format_num()`, `.__init__()`, `.merge_cols()`, `.on_ativar()`, `.resumo_dia()`, `.resumo_pedido()`, `.set_dates()`, `.set_enabled()`, `.set_file()`, `.set_resumo()`, `.set_text()`, `Área de resumo de produtos: contagem de itens por período.`
+- **Thin community `Community 7`** (14 nodes): `.fix_date()`, `products_resume_view.py`, `.on_ok_produtos()`, `GuiProdutos`, `.add_to_dict()`, `.dict_to_str()`, `.format_num()`, `.get_date_range()`, `.merge_cols()`, `.resumo_dia()`, `.resumo_pedido()`, `.set_resumo()`, `.set_text()`, `Área de resumo de produtos: contagem de itens por período.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 10`** (2 nodes): `__init__.py`, `Metadados centralizados do pacote maria-cacau.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 11`** (2 nodes): `App Screenshot - Spreadsheet Load Success Dialog`, `App Screenshot Print - Spreadsheet Load Success Dialog (Early UI)`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 12`** (2 nodes): `App Screenshot - Spreadsheet Loaded State`, `App Screenshot Print - Ready State with Date Selector`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 28`** (1 nodes): `Lê o .json da Service Account, autentica e salva no keychain.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 29`** (1 nodes): `Tenta autenticar usando credenciais salvas no keychain. Retorna False se não hou`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 30`** (1 nodes): `Remove as credenciais do keychain. Retorna False se não havia nada salvo.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 31`** (1 nodes): `Define qual planilha vai ser lida pelo ID ou URL do Google Sheets.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 32`** (1 nodes): `Retorna as linhas brutas da planilha (lista de listas de strings).`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 33`** (1 nodes): `Lê apenas as linhas das N datas mais recentes da aba Cadastro.          Faz dois`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 34`** (1 nodes): `Lê o .json da Service Account, autentica e salva no keychain.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 35`** (1 nodes): `Tenta autenticar usando credenciais salvas no keychain. Retorna False se não hou`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 36`** (1 nodes): `Remove as credenciais do keychain. Retorna False se não havia nada salvo.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 37`** (1 nodes): `Define qual planilha vai ser lida pelo ID ou URL do Google Sheets.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 38`** (1 nodes): `Retorna as linhas brutas da planilha (lista de listas de strings).`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 39`** (1 nodes): `Confirmação de certificado configurado com sucesso.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 40`** (1 nodes): `Confirmação de credenciais removidas com sucesso.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 41`** (1 nodes): `Confirmação de leitura bem-sucedida da planilha.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 42`** (1 nodes): `Confirmação de certificado configurado com sucesso.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 43`** (1 nodes): `Confirmação de credenciais removidas com sucesso.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 44`** (1 nodes): `Confirmação de leitura bem-sucedida da planilha.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 45`** (1 nodes): `Confirmação de leitura bem-sucedida da planilha.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 46`** (1 nodes): `Orquestra a autenticação e o acesso às abas da planilha.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 47`** (1 nodes): `Autenticação e acesso ao Google Sheets.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 48`** (1 nodes): `Lê o .json da Service Account, autentica e salva no keychain.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 49`** (1 nodes): `Tenta autenticar usando credenciais salvas no keychain. Retorna False se não hou`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 50`** (1 nodes): `Define qual planilha vai ser lida pelo ID ou URL do Google Sheets.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 51`** (1 nodes): `Retorna as linhas brutas da planilha (lista de listas de strings).`
+- **Thin community `Community 8`** (2 nodes): `__init__.py`, `Metadados centralizados do pacote maria-cacau.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `GuiMain` connect `Community 9` to `Community 1`, `Community 4`, `Community 5`, `Community 6`, `Community 7`, `Community 8`?**
-  _High betweenness centrality (0.120) - this node is a cross-community bridge._
-- **Why does `GuiPopup` connect `Community 1` to `Community 0`, `Community 9`, `Community 4`, `Community 6`?**
-  _High betweenness centrality (0.109) - this node is a cross-community bridge._
-- **Why does `CacheStorage` connect `Community 5` to `Community 9`, `Community 4`?**
-  _High betweenness centrality (0.093) - this node is a cross-community bridge._
+- **Why does `GuiMain` connect `Community 0` to `Community 3`, `Community 4`, `Community 5`, `Community 6`, `Community 7`?**
+  _High betweenness centrality (0.193) - this node is a cross-community bridge._
+- **Why does `GuiPopup` connect `Community 0` to `Community 1`, `Community 3`, `Community 4`, `Community 6`, `Community 7`?**
+  _High betweenness centrality (0.166) - this node is a cross-community bridge._
+- **Why does `CacheStorage` connect `Community 5` to `Community 0`, `Community 3`?**
+  _High betweenness centrality (0.148) - this node is a cross-community bridge._
 - **Are the 9 inferred relationships involving `GuiMain` (e.g. with `Entry point da aplicação. Execute com: python -m maria_cacau` and `CacheStorage`) actually correct?**
   _`GuiMain` has 9 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 12 inferred relationships involving `AuxWidgets` (e.g. with `AuxFrame` and `Frame composto reutilizável com label, entrada de texto e botão de cópia.`) actually correct?**
   _`AuxWidgets` has 12 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 7 inferred relationships involving `GuiDados` (e.g. with `_DialogConectarPlanilha` and `_BackgroundWidget`) actually correct?**
   _`GuiDados` has 7 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 18 inferred relationships involving `GuiPopup` (e.g. with `CadastroAnalyseHandler` and `Processa os dados da aba Cadastro da planilha Google Sheets.`) actually correct?**
-  _`GuiPopup` has 18 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 17 inferred relationships involving `GuiPopup` (e.g. with `CadastroAnalyseHandler` and `Processa os dados da aba Cadastro da planilha Google Sheets.`) actually correct?**
+  _`GuiPopup` has 17 INFERRED edges - model-reasoned connections that need verification._
