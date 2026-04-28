@@ -117,6 +117,15 @@ def certificado_limpo() -> AppError:
     )
 
 
+def planilha_conectada(nome: str) -> AppError:
+    """Confirmação de planilha selecionada com sucesso."""
+    return AppError(
+        titulo="Concluído",
+        subtitulo="Planilha selecionada",
+        detalhe=f'"{nome}" foi selecionada com sucesso.',
+    )
+
+
 def planilha_ok(linhas: int) -> AppError:
     """Confirmação de leitura bem-sucedida da planilha."""
     return AppError(
