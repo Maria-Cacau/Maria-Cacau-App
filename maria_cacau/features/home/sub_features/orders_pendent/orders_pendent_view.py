@@ -95,7 +95,7 @@ class GuiEntregas(AuxWidgets):
             tipo:list = quant.index.tolist()
 
             entregas:str = ''
-            for x in range(len(quant)): entregas += f'\n{tipo[x]} = {quant[x]}'
+            for x in range(len(quant)): entregas += f'\n{tipo[x]} = {quant.iloc[x]}'
 
             pag:Series = arq_[self.col[4]]
 
