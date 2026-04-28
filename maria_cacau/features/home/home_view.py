@@ -1,6 +1,7 @@
 """Janela principal da aplicação e orquestração das sub-features."""
 
 import re
+from datetime import datetime
 from pathlib import Path
 
 from PyQt6.QtGui import QAction, QIcon, QPainter, QPixmap
@@ -170,20 +171,11 @@ class GuiMain(QMainWindow):
     ## Ações de botão:
         self.gEntregas.btOk.clicked.connect(self.on_ok_entregas)
 
-        self.gProdutos.btAttAtiv.clicked.connect(self._on_ativar_produtos)
-        self.gProdutos.btAttAtiv.setEnabled(False)
         self.gProdutos.btOk.clicked.connect(self.on_ok_produtos)
 
         self.gDados.btAttAtiv.clicked.connect(self._on_ativar_dados)
         self.gDados.btAttAtiv.setEnabled(False)
         self.gDados.btOk.clicked.connect(self.on_ok_dados)
-
-    ## Método: Ativar produtos — lê Cadastro (lazy) e popula datas
-    def _on_ativar_produtos(self) -> None:
-        manager.load_cadastro()
-        self._ensure_datas()
-        self.gProdutos.set_dates(self.datas)
-        self.gProdutos.on_ativar()
 
     ## Método: Ativar dados — lê Cadastro (lazy) e popula datas
     def _on_ativar_dados(self) -> None:
@@ -200,15 +192,41 @@ class GuiMain(QMainWindow):
 
     ## Método: Ação do botão "OK" da área de Produtos
     def on_ok_produtos(self) -> None:
+        if not service.is_connected():
+            GuiPopup().show_popup(errors.C004)
+            return
+
+        manager.load_cadastro()
+        self._ensure_datas()
+
+        start_str, end_str = self.gProdutos.get_date_range()
+
+        def _parse(s: str) -> datetime:
+            for fmt in ('%d/%m/%y', '%d/%m/%Y'):
+                try:
+                    return datetime.strptime(s, fmt)
+                except ValueError:
+                    continue
+            return datetime.min
+
+        start_dt, end_dt = _parse(start_str), _parse(end_str)
+        filtered = {d: c for d, c in self.datas.items() if start_dt <= _parse(d) <= end_dt}
+
+        if not filtered:
+            self.gProdutos.set_text(f'Sem pedidos entre {start_str} e {end_str}.')
+            return
+
+        self.gProdutos.res = ''
+        self.gProdutos.pedGeral = {}
+
         dia: str = ''
-        for d in sorted(self.datas):
-            dia += f"\n\nDia {self.gProdutos.fix_date(d[:10])} - {self.datas[d]} pedido(s)\n"
-            dia += self.gProdutos.resumo_dia(d, self.datas[d], manager.cadastro.get_data(manager.cadastro.get_col("produtos"), d))
+        for d in sorted(filtered, key=_parse):
+            dia += f"\n\nDia {self.gProdutos.fix_date(d[:10])} - {filtered[d]} pedido(s)\n"
+            dia += self.gProdutos.resumo_dia(d, filtered[d], manager.cadastro.get_data(manager.cadastro.get_col("produtos"), d))
             self.gProdutos.pedDia = {}
 
-        self.gProdutos.set_resumo(dia)
+        self.gProdutos.set_resumo(start_str, end_str, sum(filtered.values()), dia)
         self.gProdutos.btCopiarTxt.setEnabled(True)
-        self.gProdutos.btOk.setEnabled(False)
         del dia, d
 
     ## Método: ação do botão "OK" da área de Entregas
@@ -272,9 +290,6 @@ class GuiMain(QMainWindow):
         self._update_planilha_check(sheet_id)
         GuiPopup().show_popup(errors.planilha_conectada(nome), "I")
 
-        self.gProdutos.btAttAtiv.setEnabled(True)
-        self.gProdutos.set_text(strings.TXT_ATIVAR_INSTRUCAO)
-
         self.gDados.btAttAtiv.setEnabled(True)
 
     ## Método: Adiciona uma planilha ao submenu como item checkable
@@ -300,8 +315,6 @@ class GuiMain(QMainWindow):
         self._update_planilha_check(sheet_id)
         nome = self._sheet_actions[sheet_id].text()
         GuiPopup().show_popup(errors.planilha_conectada(nome), "I")
-        self.gProdutos.btAttAtiv.setEnabled(True)
-        self.gProdutos.set_text(strings.TXT_ATIVAR_INSTRUCAO)
         self.gDados.btAttAtiv.setEnabled(True)
 
     ## Método: Resolve o nome da planilha — detecta duplicata e oferece renomear.
