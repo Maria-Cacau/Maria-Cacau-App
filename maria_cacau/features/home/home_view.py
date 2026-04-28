@@ -1,8 +1,7 @@
 """Janela principal da aplicação e orquestração das sub-features."""
 
-import json
-import pathlib
 import re
+from pathlib import Path
 
 from PyQt6.QtGui import QAction, QIcon, QPainter, QPixmap
 from PyQt6.QtWidgets import (QApplication, QDialog, QDialogButtonBox,
@@ -12,6 +11,7 @@ from PyQt6.QtWidgets import (QApplication, QDialog, QDialogButtonBox,
 
 from maria_cacau.assets import strings
 from maria_cacau.core import errors
+from maria_cacau.core.storage.cache import CacheStorage
 from maria_cacau.core.sheets.manager import manager
 from maria_cacau.core.sheets.service import service
 from maria_cacau.design_system.gui_popup import GuiPopup
@@ -21,7 +21,8 @@ from maria_cacau.features.home.sub_features.nota_fiscal.nota_fiscal_view import 
 from maria_cacau.features.home.sub_features.orders_pendent.orders_pendent_view import GuiEntregas
 from maria_cacau.features.home.sub_features.products_resume.products_resume_view import GuiProdutos
 
-_SHEETS_FILE = pathlib.Path.home() / '.mariacacau' / 'sheets.json'
+_SHEETS_KEY   = 'sheets'
+_sheets_cache = CacheStorage(Path.home() / '.mariacacau')
 
 
 def _extract_sheet_id(url: str) -> str | None:
@@ -358,17 +359,12 @@ class GuiMain(QMainWindow):
         else:
             GuiPopup().show_popup(errors.C003)
 
-    ## Método: Carrega planilhas salvas do arquivo local
+    ## Método: Carrega planilhas salvas do cache local
     @staticmethod
     def _load_sheets() -> list:
-        if not _SHEETS_FILE.exists():
-            return []
-        try:
-            return json.loads(_SHEETS_FILE.read_text(encoding='utf-8'))
-        except Exception:
-            return []
+        return _sheets_cache.retrieve(_SHEETS_KEY) or []
 
-    ## Método: Salva planilha conectada no arquivo local (cria ou atualiza nome)
+    ## Método: Salva planilha conectada no cache local (cria ou atualiza nome)
     @staticmethod
     def _save_sheet(nome: str, sheet_id: str) -> None:
         sheets = GuiMain._load_sheets()
@@ -378,8 +374,4 @@ class GuiMain(QMainWindow):
                 break
         else:
             sheets.append({'nome': nome, 'sheet_id': sheet_id})
-        _SHEETS_FILE.parent.mkdir(parents=True, exist_ok=True)
-        _SHEETS_FILE.write_text(
-            json.dumps(sheets, ensure_ascii=False, indent=2),
-            encoding='utf-8',
-        )
+        _sheets_cache.save(sheets, _SHEETS_KEY)
