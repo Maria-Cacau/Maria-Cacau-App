@@ -37,7 +37,8 @@ Maria-Cacau-Contagem/
 │               ├── nota_fiscal/
 │               ├── products_resume/
 │               ├── orders_pendent/
-│               └── freight_query/
+│               ├── freight_query/
+│               └── status_bar/        # barra de status global (credenciais, planilha, loading)
 ├── pyproject.toml                # fonte única de verdade para deps e metadados
 └── ...
 ```
@@ -57,8 +58,23 @@ Futuramente cada feature pode ter `view.py` + `view_model.py` (Clean Architectur
 `service.py` define as chaves (`_KEYRING_SERVICE`, `_KEYRING_KEY`) mas delega as operações ao `SecurityStorage`.
 `home_view.py` usa `CacheStorage` para persistir e ler a lista de planilhas conectadas.
 
+## Threading
+Consultas ao Google Sheets rodam em `QThread` via `_Worker` + `_run_async` em `home_view.py`.
+O `gspread.Client` é um singleton não thread-safe — `_set_busy` bloqueia todos os botões OK enquanto uma consulta estiver em andamento, prevenindo requisições concorrentes.
+
+## Status bar (`GuiStatusBar`)
+Barra fixa na base da janela com três estados de cor:
+
+| Cor | Condição |
+|---|---|
+| Amarelo | Credenciais não configuradas **ou** nenhuma planilha selecionada |
+| Verde | Credenciais OK + planilha conectada (estado padrão) |
+| Laranja | Consulta em andamento |
+
+Reverte automaticamente para verde 3s após o sucesso.
+
 ## Fonte única de verdade
-- **Versão e metadados do pacote** → `pyproject.toml`
-- **Metadados do app** (nome exibido, copyright, caminhos de ícone) → `maria_cacau/__init__.py`
+- **Versão, ano e empresa** → `pyproject.toml` (`[project]` e `[tool.maria-cacau]`)
+- **Metadados do app** (nome exibido, copyright, ícones) → `maria_cacau/__init__.py` (lê do pyproject.toml)
 - **Textos de UI** → `maria_cacau/assets/strings.py`
 - **Erros** → `maria_cacau/core/errors.py`
