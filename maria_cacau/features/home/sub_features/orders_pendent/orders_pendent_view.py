@@ -2,8 +2,8 @@
 
 from pandas.core.frame import DataFrame
 from pandas.core.series import Series
-from PyQt6.QtCore import QDate
-from PyQt6.QtWidgets import QDateEdit, QHBoxLayout, QVBoxLayout
+from PyQt6.QtCore import QDate, Qt
+from PyQt6.QtWidgets import QDateEdit, QHBoxLayout, QSizePolicy, QVBoxLayout
 
 from maria_cacau.assets import strings
 from maria_cacau.core import errors
@@ -37,13 +37,17 @@ class GuiEntregas(AuxWidgets):
         mainLayout.addLayout(contentLayout)
 
         btnLayout = QHBoxLayout()
+        btnLayout.setAlignment(Qt.AlignmentFlag.AlignVCenter)
 
         self.dts = QDateEdit(QDate.currentDate())
         self.dts.setDisplayFormat("dd/MM/yy")
         self.dts.setCalendarPopup(True)
-        btnLayout.addWidget(self.dts)
+        self.dts.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
 
         self.btOk = self.bts(strings.BTN_OK)
+        self.dts.setFixedHeight(self.btOk.sizeHint().height())
+
+        btnLayout.addWidget(self.dts)
         btnLayout.addWidget(self.btOk)
 
         self.btCopiarTxt = self.bts(strings.BTN_COPIAR)
