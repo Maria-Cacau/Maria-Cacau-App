@@ -55,7 +55,51 @@ E001 = AppError(
 """Erro genérico não tratado."""
 
 
+# ── Credenciais ──────────────────────────────────────────────────────────────
+
+C001 = AppError(
+    titulo="Configuração cancelada",
+    subtitulo="Nenhum arquivo selecionado",
+    detalhe="Nenhum arquivo foi selecionado. Tente novamente.\n\nCódigo do erro: C001",
+)
+"""Usuário cancelou o seletor de arquivo."""
+
+C002 = AppError(
+    titulo="Erro ao configurar certificado",
+    subtitulo="Arquivo inválido",
+    detalhe="O arquivo selecionado não é um certificado válido. "
+            "Selecione o arquivo .json da Service Account.\n\nCódigo do erro: C002",
+)
+"""Arquivo selecionado não é um JSON válido de Service Account."""
+
+
 # ── Sucesso ───────────────────────────────────────────────────────────────────
+
+C003 = AppError(
+    titulo="Nenhum certificado encontrado",
+    subtitulo="Nada para remover",
+    detalhe="Não há nenhum certificado salvo no sistema.\n\nCódigo do erro: C003",
+)
+"""Nenhuma credencial encontrada no keychain ao tentar limpar."""
+
+
+def certificado_ok() -> AppError:
+    """Confirmação de certificado configurado com sucesso."""
+    return AppError(
+        titulo="Concluído",
+        subtitulo="Certificado configurado com sucesso",
+        detalhe="As credenciais foram salvas e já estão prontas para uso.",
+    )
+
+
+def certificado_limpo() -> AppError:
+    """Confirmação de credenciais removidas com sucesso."""
+    return AppError(
+        titulo="Concluído",
+        subtitulo="Certificado removido com sucesso",
+        detalhe="As credenciais foram removidas do sistema.",
+    )
+
 
 def planilha_ok(linhas: int) -> AppError:
     """Confirmação de leitura bem-sucedida da planilha."""
