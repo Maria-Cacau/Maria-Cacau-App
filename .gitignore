@@ -79,3 +79,18 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+
+
+# Graphify
+# optional: commit for shared extraction speed, skip to keep repo small
+graphify-out/cache/
+
+# mtime-based, invalid after git clone - always gitignore this
+graphify-out/manifest.json
+
+# local token tracking, not useful to share
+graphify-out/cost.json
+
+
+# Obsidian
+*/obsidian
