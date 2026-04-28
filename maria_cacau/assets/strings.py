@@ -50,3 +50,12 @@ DLG_CONECTAR_PLACEHOLDER_NOME  = "Ex: Maria Cacau"
 
 LBL_CPF_INSTRUCAO = "INSIRA O CPF NO CAMPO ACIMA"
 LBL_PERIODO       = "Período:"
+
+# ── Status bar ────────────────────────────────────────────────────────────────
+
+SB_SEM_PLANILHA = "Nenhuma planilha selecionada"
+SB_PLANILHA     = "Planilha selecionada: {nome} — {id}"
+SB_CREDENCIAIS  = "Credenciais: cadastradas"
+SB_CARREGANDO   = "Realizando consulta..."
+SB_SUCESSO      = "Consulta realizada"
+SB_COPYRIGHT    = "v5.0  ·  © 2020 KINGS"
