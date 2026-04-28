@@ -14,7 +14,7 @@ BTN_SALVAR       = "Salvar"
 TXT_SEM_PLANILHA         = "Nenhuma planilha foi selecionada."
 TXT_ATIVAR_INSTRUCAO     = 'Pressiona "ativar" para desbloquear essa área.'
 TXT_OK_INSTRUCAO_ENTREGAS = 'Selecione uma data e pressione "OK" para gerar o resumo.'
-TXT_OK_INSTRUCAO_PRODUTOS = 'Selecione o perodo de datas e pressione "OK" para gerar o resumo dos produtos.'
+TXT_OK_INSTRUCAO_PRODUTOS = 'Selecione o intervalo de datas e pressione "OK" para gerar o resumo dos produtos.'
 
 # ── Menus ─────────────────────────────────────────────────────────────────────
 
