@@ -42,7 +42,11 @@ class GuiProdutos(AuxWidgets):
 
         periodoLayout.addWidget(self.lbl(strings.LBL_PERIODO, 12))
 
-        self.dtsStart = QDateEdit(QDate.currentDate())
+        today = QDate.currentDate()
+        week_start = today.addDays(-(today.dayOfWeek() - 1))
+        week_end   = today.addDays(7 - today.dayOfWeek())
+
+        self.dtsStart = QDateEdit(week_start)
         self.dtsStart.setDisplayFormat("dd/MM/yy")
         self.dtsStart.setCalendarPopup(True)
         self.dtsStart.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
@@ -50,7 +54,7 @@ class GuiProdutos(AuxWidgets):
 
         periodoLayout.addWidget(self.lbl("-", 12))
 
-        self.dtsEnd = QDateEdit(QDate.currentDate())
+        self.dtsEnd = QDateEdit(week_end)
         self.dtsEnd.setDisplayFormat("dd/MM/yy")
         self.dtsEnd.setCalendarPopup(True)
         self.dtsEnd.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
