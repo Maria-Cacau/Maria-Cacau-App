@@ -18,11 +18,12 @@ App desktop para gestão de pedidos e entregas da Maria Cacau. Lê diretamente a
 
 </br>
 
-- [Plataforma e Requisitos](#plataforma-e-requisitos)
-- [Como rodar](#como-rodar)
-- [Demo](#demo)
-- [Autor](#autor)
-- [Empresa](#empresa)
+- [Maria Cacau - Contagem](#maria-cacau---contagem)
+  - [Plataforma e Requisitos](#plataforma-e-requisitos)
+  - [Como rodar](#como-rodar)
+  - [Demo](#demo)
+  - [Autor](#autor)
+  - [Empresa](#empresa)
 
 ## Plataforma e Requisitos
 
@@ -37,7 +38,7 @@ O projeto roda em macOS e Windows.
 ## Como rodar
 
 > [!NOTE]
-> Se estiver no VS Code, basta mandar rodar o projeto — o `__main__.py` será acionado automaticamente.
+> Se estiver no VS Code, basta mandar rodar o projeto — o `__main__.py` será [acionado automaticamente](.vscode/launch.json).
 
 **macOS:**
 
