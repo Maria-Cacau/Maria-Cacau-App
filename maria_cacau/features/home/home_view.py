@@ -123,10 +123,9 @@ class GuiMain(QMainWindow):
 
         self.statusBar = GuiStatusBar()
         self.setStatusBar(self.statusBar)
-        if service.is_authenticated():
-            self.statusBar.set_credentials(True)
 
         self.setup_ui(root)
+        self._auto_connect()
 
         self.datas: dict = {}
         self.dtEnt: str = ''
@@ -198,6 +197,23 @@ class GuiMain(QMainWindow):
         self.gDados.btAttAtiv.clicked.connect(self._on_ativar_dados)
         self.gDados.btAttAtiv.setEnabled(False)
         self.gDados.btOk.clicked.connect(self.on_ok_dados)
+
+    ## Método: Tenta conectar automaticamente à planilha mais recente ao iniciar
+    def _auto_connect(self) -> None:
+        sheets = self._load_sheets()
+        if not sheets:
+            if service.is_authenticated():
+                self.statusBar.set_credentials(True)
+            return
+        latest = sheets[-1]
+        try:
+            manager.connect(latest['sheet_id'])
+            self._update_planilha_check(latest['sheet_id'])
+            self.statusBar.set_credentials(True)
+            self.statusBar.set_sheet(latest['nome'], latest['sheet_id'])
+            self.gDados.btAttAtiv.setEnabled(True)
+        except PermissionError:
+            pass
 
     ## Método: Ativar dados — lê Cadastro (lazy) e popula datas
     def _on_ativar_dados(self) -> None:

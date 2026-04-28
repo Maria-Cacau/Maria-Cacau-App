@@ -9,49 +9,65 @@ from maria_cacau.assets import strings
 class GuiStatusBar(QStatusBar):
     _READY   = '#388e3c'
     _LOADING = '#C27D18'
+    _WARN    = '#A07800'
 
     def __init__(self) -> None:
         super().__init__()
         self.setSizeGripEnabled(False)
 
-        self._lbl_info = QLabel(strings.SB_SEM_PLANILHA)
+        self._lbl_info = QLabel(strings.SB_SEM_CREDENCIAIS)
         self.addWidget(self._lbl_info)
-
         self.addPermanentWidget(QLabel(strings.SB_COPYRIGHT))
 
-        self._sheet_text: str = strings.SB_SEM_PLANILHA
-        self._cred_text:  str = ''
+        self._has_cred:  bool = False
+        self._has_sheet: bool = False
+        self._sheet_fmt: str  = ''
 
-        self._set_color(self._READY)
-
-    ## Atualiza o nome e id da planilha conectada
-    def set_sheet(self, name: str, sheet_id: str) -> None:
-        self._sheet_text = strings.SB_PLANILHA.format(nome=name, id=sheet_id)
-        self._update_info()
+        self._set_color(self._WARN)
 
     ## Atualiza o status das credenciais
     def set_credentials(self, ok: bool) -> None:
-        self._cred_text = f'  |  {strings.SB_CREDENCIAIS}' if ok else ''
+        self._has_cred = ok
         self._update_info()
+        self._update_color()
+
+    ## Atualiza o nome e id da planilha conectada
+    def set_sheet(self, name: str, sheet_id: str) -> None:
+        self._has_sheet = True
+        self._sheet_fmt = strings.SB_PLANILHA.format(nome=name, id=sheet_id)
+        self._update_info()
+        self._update_color()
 
     ## Muda para o estado de carregamento (laranja)
     def set_loading(self, msg: str = '') -> None:
         self._lbl_info.setText(msg or strings.SB_CARREGANDO)
         self._set_color(self._LOADING)
 
-    ## Mostra mensagem de sucesso (verde) e reverte para o estado normal após 3s
+    ## Mostra mensagem de sucesso e reverte para o estado normal após 3s
     def set_success(self, msg: str = '') -> None:
         self._lbl_info.setText(msg or strings.SB_SUCESSO)
         self._set_color(self._READY)
-        QTimer.singleShot(3000, self._update_info)
+        QTimer.singleShot(3000, self._restore)
 
-    ## Volta para o estado padrão (verde)
+    ## Volta para o estado normal
     def set_ready(self) -> None:
+        self._restore()
+
+    def _restore(self) -> None:
         self._update_info()
-        self._set_color(self._READY)
+        self._update_color()
 
     def _update_info(self) -> None:
-        self._lbl_info.setText(self._sheet_text + self._cred_text)
+        if not self._has_cred:
+            self._lbl_info.setText(strings.SB_SEM_CREDENCIAIS)
+        elif self._has_sheet:
+            self._lbl_info.setText(self._sheet_fmt)
+        else:
+            self._lbl_info.setText(strings.SB_SEM_PLANILHA)
+
+    def _update_color(self) -> None:
+        ready = self._has_cred and self._has_sheet
+        self._set_color(self._READY if ready else self._WARN)
 
     def _set_color(self, color: str) -> None:
         self.setStyleSheet(f"""
