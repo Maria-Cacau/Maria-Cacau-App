@@ -1,10 +1,11 @@
+"""Autenticação e acesso ao Google Sheets."""
+
 import json
 from typing import Final
 
 import gspread
 import keyring
 from google.oauth2.service_account import Credentials
-from pandas import DataFrame
 
 _KEYRING_SERVICE = "maria-cacau"
 _KEYRING_KEY     = "google-credentials"
@@ -12,8 +13,6 @@ _SCOPES          = ["https://www.googleapis.com/auth/spreadsheets.readonly"]
 
 
 class GoogleSheetsService:
-    """Responsável pela autenticação e leitura da planilha do Google Sheets."""
-
     def __init__(self) -> None:
         self._client: gspread.Client = None
         self._sheet_id: str = None
@@ -50,16 +49,15 @@ class GoogleSheetsService:
         """Define qual planilha vai ser lida pelo ID ou URL do Google Sheets."""
         self._sheet_id = sheet_id
 
-    def get_data(self, worksheet_name: str = None) -> DataFrame:
-        """Retorna os dados da planilha como DataFrame."""
+    def get_raw_data(self, worksheet_name: str = None) -> list:
+        """Retorna as linhas brutas da planilha (lista de listas de strings)."""
         spreadsheet = self._client.open_by_key(self._sheet_id)
         worksheet = (
             spreadsheet.worksheet(worksheet_name)
             if worksheet_name
             else spreadsheet.sheet1
         )
-        records = worksheet.get_all_records()
-        return DataFrame(records)
+        return worksheet.get_all_values()
 
 
 service: Final = GoogleSheetsService()

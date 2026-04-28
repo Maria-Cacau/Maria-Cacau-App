@@ -1,12 +1,12 @@
 # Integração Google Sheets
 
 ## Objetivo
-Substituir o fluxo manual (exportar Excel → abrir no app) por leitura direta da planilha do Google Sheets.
+Leitura direta da planilha compartilhada no Google Drive — sem exportar Excel.
 
 ## Autenticação
 Usa **Service Account** — conta de serviço criada no Google Cloud (projeto "Projeto Contagem").
 - O `.json` da service account **não vai no repositório** (está no `.gitignore`)
-- Na primeira execução o usuário informa o caminho do `.json`
+- Na primeira execução o app lê o `.json` no caminho hardcoded em `sheets_manager.py`
 - O conteúdo é salvo criptografado no keychain do SO via `keyring`
 - Nas próximas execuções o app lê direto do keychain, sem precisar do arquivo
 
@@ -17,24 +17,36 @@ service = "maria-cacau"
 key     = "google-credentials"
 ```
 
-## Classe principal
-`maria_cacau/core/google_sheets_service.py` → `GoogleSheetsService`
+## Planilha
+- **ID:** `1T9i35d8EvEwb_Byq_UwHw_qnoHnvRoAYvnds7h6RbJw`
+- **Aba:** `Cadastro` (≈ 15.846 linhas, 110 colunas)
+- Conexão confirmada e funcionando
 
-| Método | Descrição |
-|---|---|
-| `load_credentials_from_file(path)` | Primeira vez: lê o .json e salva no keychain |
-| `load_credentials_from_keychain()` | Demais vezes: autentica direto do keychain |
-| `set_sheet(sheet_id)` | Define a planilha pelo ID ou URL |
-| `get_data(worksheet_name)` | Retorna os dados como DataFrame |
+## Arquitetura em três camadas
 
-## Permissões necessárias
-A empresa precisa compartilhar a planilha com o e-mail da service account (formato `nome@projeto-id.iam.gserviceaccount.com`) com permissão de **Leitor**.
+| Classe | Arquivo | Responsabilidade |
+|---|---|---|
+| `GoogleSheetsService` | `core/google_sheets_service.py` | Autenticação + leitura bruta (`get_raw_data`) |
+| `CadastroAnalyseHandler` | `core/cadastro_analyse_handler.py` | Processa a aba Cadastro (filtragem, datas, colunas) |
+| `SheetsManager` | `core/sheets_manager.py` | Orquestra os dois acima; singleton `manager` usado pela UI |
+
+## Convenções de colunas
+Todos os headers da planilha são normalizados para **lowercase** via `_normalize_headers`.
+- Primeira coluna (sem header) → `pedido`
+- `Prod4` tem header `'-'` na planilha → usa `'-'` no `colsFiltro["produtos"]` e `colsFiltro["belga"]`
+- `glbl` (labels de UI) ficam em **UPPERCASE** — são strings de display, não nomes de coluna
+
+## Fluxo ao clicar "Ler planilha"
+1. `manager.connect()` → autentica (keychain ou arquivo) → lê aba `Cadastro` → cria `CadastroAnalyseHandler`
+2. `manager.cadastro.get_recent_dates(20)` → retorna as 20 datas mais recentes
+3. UI é ativada com essas 20 datas
 
 ## Status
 - [x] Google Cloud project criado ("Projeto Contagem")
 - [x] Sheets API habilitada
 - [x] Service Account criada
 - [x] Credenciais `.json` baixadas
-- [ ] Planilha compartilhada com a service account ← aguardando
-- [ ] Integração com `analisePlan.py`
-- [ ] UI de configuração (tela para informar o `.json` na primeira vez)
+- [x] Planilha compartilhada com a service account
+- [x] Conexão confirmada (`Cadastro`, 15.846 linhas)
+- [x] Integração com UI (`home_view.py` usa `manager`)
+- [ ] UI de configuração (tela para informar o `.json` na primeira vez — por ora hardcoded em `sheets_manager.py`)
