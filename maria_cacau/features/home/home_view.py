@@ -1,21 +1,20 @@
 """Janela principal da aplicação e orquestração das sub-features."""
 
 from PyQt6.QtGui import QAction, QIcon, QPainter, QPixmap
-from PyQt6.QtWidgets import (QApplication, QHBoxLayout, QMainWindow, QMenu,
-                             QMenuBar, QVBoxLayout, QWidget)
+from PyQt6.QtWidgets import (QApplication, QFileDialog, QHBoxLayout,
+                             QMainWindow, QMenu, QMenuBar, QVBoxLayout,
+                             QWidget)
 
 from maria_cacau.assets import strings
+from maria_cacau.core import errors
 from maria_cacau.core.sheets.manager import manager
-from maria_cacau.features.home.sub_features.cpf_validation.cpf_validation_view import \
-    GuiValiCpf
-from maria_cacau.features.home.sub_features.freight_query.freight_query_view import \
-    GuiConsFrete
-from maria_cacau.features.home.sub_features.nota_fiscal.nota_fiscal_view import \
-    GuiDados
-from maria_cacau.features.home.sub_features.orders_pendent.orders_pendent_view import \
-    GuiEntregas
-from maria_cacau.features.home.sub_features.products_resume.products_resume_view import \
-    GuiProdutos
+from maria_cacau.core.sheets.service import service
+from maria_cacau.design_system.gui_popup import GuiPopup
+from maria_cacau.features.home.sub_features.cpf_validation.cpf_validation_view import GuiValiCpf
+from maria_cacau.features.home.sub_features.freight_query.freight_query_view import GuiConsFrete
+from maria_cacau.features.home.sub_features.nota_fiscal.nota_fiscal_view import GuiDados
+from maria_cacau.features.home.sub_features.orders_pendent.orders_pendent_view import GuiEntregas
+from maria_cacau.features.home.sub_features.products_resume.products_resume_view import GuiProdutos
 
 
 class _BackgroundWidget(QWidget):
@@ -65,17 +64,30 @@ class GuiMain(QMainWindow):
     def setup_ui(self, root:QWidget) -> None:
     ## ------------------------------------------------------------------------------------------------
     ## Barra do menu:
-        self.mnConfig = QMenu("Arquivo", self.menubar)
+        self.mnConfig = QMenu(strings.MNU_ARQUIVO, self.menubar)
         self.menubar.addAction(self.mnConfig.menuAction())
 
-        self.actLerPlan = QAction("Ler planilha", self)
+        self.actLerPlan = QAction(strings.ACT_LER_PLANILHA, self)
         self.mnConfig.addAction(self.actLerPlan)
         self.actLerPlan.triggered.connect(self.on_ler_planilha)
 
-        self.mnAjuda = QMenu("Ajuda", self.menubar)
+        self.mnSeguranca = QMenu(strings.MNU_SEGURANCA, self.menubar)
+        self.menubar.addAction(self.mnSeguranca.menuAction())
+
+        self.actCertificado = QAction(strings.ACT_CONFIGURAR_CERT, self)
+        self.actCertificado.setMenuRole(QAction.MenuRole.NoRole)
+        self.mnSeguranca.addAction(self.actCertificado)
+        self.actCertificado.triggered.connect(self.on_configurar_certificado)
+
+        self.actLimparCertificado = QAction(strings.ACT_LIMPAR_CERT, self)
+        self.actLimparCertificado.setMenuRole(QAction.MenuRole.NoRole)
+        self.mnSeguranca.addAction(self.actLimparCertificado)
+        self.actLimparCertificado.triggered.connect(self.on_limpar_certificado)
+
+        self.mnAjuda = QMenu(strings.MNU_AJUDA, self.menubar)
         self.menubar.addAction(self.mnAjuda.menuAction())
 
-        self.actSobre = QAction("Sobre", self)
+        self.actSobre = QAction(strings.ACT_SOBRE, self)
         self.mnAjuda.addAction(self.actSobre)
 
     ## ------------------------------------------------------------------------------------------------
@@ -145,10 +157,42 @@ class GuiMain(QMainWindow):
             del arq
         del dt
 
+    ## Método: Ação do menu "Configurar certificado"
+    def on_configurar_certificado(self) -> None:
+        path, _ = QFileDialog.getOpenFileName(self, strings.DLG_CERT_TITULO, "", strings.DLG_CERT_FILTRO)
+        if not path:
+            GuiPopup().show_popup(errors.C001)
+            return
+        try:
+            service.load_credentials_from_file(path)
+            GuiPopup().show_popup(errors.certificado_ok(), "I")
+        except Exception:
+            GuiPopup().show_popup(errors.C002)
+
+    ## Método: Ação do menu "Limpar certificado"
+    def on_limpar_certificado(self) -> None:
+        from PyQt6.QtWidgets import QMessageBox
+        confirm = QMessageBox.question(
+            self, strings.DLG_LIMPAR_CERT_TITULO,
+            strings.DLG_LIMPAR_CERT_MSG,
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+        )
+        if confirm != QMessageBox.StandardButton.Yes:
+            return
+        if service.clear_credentials():
+            GuiPopup().show_popup(errors.certificado_limpo(), "I")
+        else:
+            GuiPopup().show_popup(errors.C003)
+
     ## Método: Ação do botão "Ler planilha"
     def on_ler_planilha(self) -> None:
         if "Ler planilha" == self.gDados.btAttAtiv.text():
-            if manager.connect():
+            try:
+                manager.connect()
+            except PermissionError:
+                GuiPopup().show_popup(errors.C004)
+                return
+            if manager.cadastro:
                 self.datas = manager.cadastro.get_recent_dates(20)
 
                 self.gEntregas.set_cols(manager.cadastro.get_col("entrega"))
