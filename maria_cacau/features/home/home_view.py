@@ -4,6 +4,7 @@ import re
 from datetime import datetime
 from pathlib import Path
 
+from PyQt6.QtCore import QObject, QThread, pyqtSignal
 from PyQt6.QtGui import QAction, QIcon, QPainter, QPixmap
 from PyQt6.QtWidgets import (QApplication, QDialog, QDialogButtonBox,
                              QFileDialog, QFormLayout, QHBoxLayout, QInputDialog,
@@ -21,9 +22,25 @@ from maria_cacau.features.home.sub_features.freight_query.freight_query_view imp
 from maria_cacau.features.home.sub_features.nota_fiscal.nota_fiscal_view import GuiDados
 from maria_cacau.features.home.sub_features.orders_pendent.orders_pendent_view import GuiEntregas
 from maria_cacau.features.home.sub_features.products_resume.products_resume_view import GuiProdutos
+from maria_cacau.features.home.sub_features.status_bar.status_bar_view import GuiStatusBar
 
 _SHEETS_KEY   = 'sheets'
 _sheets_cache = CacheStorage(Path.home() / '.mariacacau')
+
+
+class _Worker(QObject):
+    finished = pyqtSignal(object)
+    error    = pyqtSignal(Exception)
+
+    def __init__(self, fn) -> None:
+        super().__init__()
+        self._fn = fn
+
+    def run(self) -> None:
+        try:
+            self.finished.emit(self._fn())
+        except Exception as e:
+            self.error.emit(e)
 
 
 def _extract_sheet_id(url: str) -> str | None:
@@ -103,6 +120,11 @@ class GuiMain(QMainWindow):
         self.gDados = GuiDados()
         self.gVeriCpf = GuiValiCpf()
         self.gConsCep = GuiConsFrete()
+
+        self.statusBar = GuiStatusBar()
+        self.setStatusBar(self.statusBar)
+        if service.is_authenticated():
+            self.statusBar.set_credentials(True)
 
         self.setup_ui(root)
 
@@ -190,15 +212,56 @@ class GuiMain(QMainWindow):
         if not self.datas:
             self.datas = manager.cadastro.get_dates()
 
+    ## Método: bloqueia/desbloqueia todos os inputs de consulta da aplicação
+    def _set_busy(self, busy: bool) -> None:
+        enabled = not busy
+        self.gEntregas.btOk.setEnabled(enabled)
+        self.gProdutos.btOk.setEnabled(enabled)
+
+    ## Método: executa fn em background; chama on_done(result) ou on_error(exc) na main thread
+    def _run_async(self, fn, on_done, on_error=None) -> None:
+        self._thread = QThread()
+        self._worker = _Worker(fn)
+        self._worker.moveToThread(self._thread)
+        self._thread.started.connect(self._worker.run)
+        self._worker.finished.connect(on_done)
+        self._worker.finished.connect(self._thread.quit)
+        self._worker.finished.connect(self._worker.deleteLater)
+        self._thread.finished.connect(self._thread.deleteLater)
+        if on_error:
+            self._worker.error.connect(on_error)
+        else:
+            self._worker.error.connect(lambda _: (self.statusBar.set_ready(), GuiPopup().show_popup(errors.E001)))
+        self._thread.start()
+
     ## Método: Ação do botão "OK" da área de Produtos
     def on_ok_produtos(self) -> None:
         if not service.is_connected():
             GuiPopup().show_popup(errors.C004)
             return
 
-        manager.load_cadastro()
-        self._ensure_datas()
+        if manager.cadastro is not None:
+            self._ensure_datas()
+            self._show_produtos()
+            return
 
+        self.statusBar.set_loading()
+        self._set_busy(True)
+
+        def _on_done(_):
+            self._set_busy(False)
+            self._ensure_datas()
+            self._show_produtos()
+
+        def _on_error(_):
+            self._set_busy(False)
+            self.statusBar.set_ready()
+            GuiPopup().show_popup(errors.E001)
+
+        self._run_async(manager.load_cadastro, _on_done, _on_error)
+
+    ## Método: filtra e exibe o resumo de produtos (sempre na main thread)
+    def _show_produtos(self) -> None:
         start_str, end_str = self.gProdutos.get_date_range()
 
         def _parse(s: str) -> datetime:
@@ -214,6 +277,7 @@ class GuiMain(QMainWindow):
 
         if not filtered:
             self.gProdutos.set_text(f'Sem pedidos entre {start_str} e {end_str}.')
+            self.statusBar.set_ready()
             return
 
         self.gProdutos.res = ''
@@ -227,6 +291,7 @@ class GuiMain(QMainWindow):
 
         self.gProdutos.set_resumo(start_str, end_str, sum(filtered.values()), dia)
         self.gProdutos.btCopiarTxt.setEnabled(True)
+        self.statusBar.set_success()
         del dia, d
 
     ## Método: ação do botão "OK" da área de Entregas
@@ -239,15 +304,30 @@ class GuiMain(QMainWindow):
             return
         if dt in self.gEntregas.resumos:
             self.gEntregas.set_text(self.gEntregas.resumos[dt])
-        else:
-            arq = manager.get_entregas_for_date(dt)
+            self.dtEnt = dt
+            return
+
+        self.statusBar.set_loading()
+        self._set_busy(True)
+
+        def _on_done(arq):
+            self._set_busy(False)
             if arq.empty:
+                self.statusBar.set_ready()
                 self.gEntregas.set_text(f'Sem entregas para {dt}.')
                 return
             self.gEntregas.set_resumo(dt, arq)
             self.gEntregas.set_text(self.gEntregas.res)
             self.gEntregas.btCopiarTxt.setEnabled(True)
-        self.dtEnt = dt
+            self.dtEnt = dt
+            self.statusBar.set_success()
+
+        def _on_error(_):
+            self._set_busy(False)
+            self.statusBar.set_ready()
+            GuiPopup().show_popup(errors.E001)
+
+        self._run_async(lambda: manager.get_entregas_for_date(dt), _on_done, _on_error)
 
     ## Método: ação do botão OK da área de Dados
     def on_ok_dados(self) -> None:
@@ -290,6 +370,9 @@ class GuiMain(QMainWindow):
         self._update_planilha_check(sheet_id)
         GuiPopup().show_popup(errors.planilha_conectada(nome), "I")
 
+        self.statusBar.set_sheet(nome, sheet_id)
+        self.statusBar.set_credentials(True)
+
         self.gDados.btAttAtiv.setEnabled(True)
 
     ## Método: Adiciona uma planilha ao submenu como item checkable
@@ -315,6 +398,9 @@ class GuiMain(QMainWindow):
         self._update_planilha_check(sheet_id)
         nome = self._sheet_actions[sheet_id].text()
         GuiPopup().show_popup(errors.planilha_conectada(nome), "I")
+
+        self.statusBar.set_sheet(nome, sheet_id)
+
         self.gDados.btAttAtiv.setEnabled(True)
 
     ## Método: Resolve o nome da planilha — detecta duplicata e oferece renomear.
