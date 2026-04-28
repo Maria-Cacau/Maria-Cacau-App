@@ -187,7 +187,12 @@ class GuiMain(QMainWindow):
     ## Método: Ação do botão "Ler planilha"
     def on_ler_planilha(self) -> None:
         if "Ler planilha" == self.gDados.btAttAtiv.text():
-            if manager.connect():
+            try:
+                manager.connect()
+            except PermissionError:
+                GuiPopup().show_popup(errors.C004)
+                return
+            if manager.cadastro:
                 self.datas = manager.cadastro.get_recent_dates(20)
 
                 self.gEntregas.set_cols(manager.cadastro.get_col("entrega"))
