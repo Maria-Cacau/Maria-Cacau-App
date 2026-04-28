@@ -4,6 +4,7 @@ from pandas.core.frame import DataFrame
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QHBoxLayout, QTabWidget, QVBoxLayout, QWidget
 
+from maria_cacau.assets import strings
 from maria_cacau.design_system.aux_frames import AuxFrame
 from maria_cacau.design_system.aux_widgets import AuxWidgets
 
@@ -56,7 +57,7 @@ class GuiDados(AuxWidgets):
         ## Botões:
         btnLayout = QHBoxLayout()
 
-        self.btAttAtiv = self.bts("Ler planilha")
+        self.btAttAtiv = self.bts(strings.BTN_ATIVAR)
         btnLayout.addWidget(self.btAttAtiv)
 
         self.dts = self.combo_box()
@@ -91,7 +92,7 @@ class GuiDados(AuxWidgets):
     ## Método: ação do botão Ativar (Ler planilha)
     def on_ativar(self) -> None:
         self.set_enabled(True)
-        self.btAttAtiv.setText("Atualizar")
+        self.btAttAtiv.setText(strings.BTN_ATUALIZAR)
         self.btAttAtiv.setEnabled(False)                                                                # v5.0: Modo atualizar indisponível
 
     ## Método: ação de quando muda de aba

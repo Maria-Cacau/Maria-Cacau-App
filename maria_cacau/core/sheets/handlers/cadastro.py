@@ -36,6 +36,9 @@ class CadastroAnalyseHandler:
         headers = self._normalize_headers(raw_rows[0])
         df = DataFrame(raw_rows[1:], columns=headers)
 
+        if df.columns.duplicated().any():
+            df = df.loc[:, ~df.columns.duplicated()]
+
         available_cols = [c for c in all_cols if c in df.columns]
         self.arq = df[df['pedido'] != ''][available_cols].reset_index(drop=True)
 
