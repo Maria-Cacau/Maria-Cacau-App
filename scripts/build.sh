@@ -49,6 +49,7 @@ else
 fi
 
 # Instala o pacote e suas dependências
+python -m pip install --upgrade pip
 pip install -e .
 
 # Libera o direnv para ativar automaticamente (só se disponível)
