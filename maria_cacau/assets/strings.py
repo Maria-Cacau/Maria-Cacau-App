@@ -63,4 +63,3 @@ SB_PLANILHA        = "Credenciais: configuradas     Planilha selecionada: {nome}
 SB_CARREGANDO      = "Realizando consulta..."
 SB_SUCESSO         = "Consulta realizada"
 SB_COPYRIGHT       = f"v{_ver_short}  ·  © {__year__} {__company__}"
-SB_COPYRIGHT    = "v5.0  ·  © 2020 KINGS"
