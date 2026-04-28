@@ -22,7 +22,7 @@ MNU_ARQUIVO      = "Arquivo"
 MNU_SEGURANCA    = "Segurança"
 MNU_AJUDA        = "Ajuda"
 
-ACT_CONECTAR_PLANILHA     = "Conectar com planilha"
+ACT_CONECTAR_PLANILHA     = "Conectar nova planilha"
 ACT_PLANILHAS_CONECTADAS  = "Planilhas conectadas"
 ACT_CONFIGURAR_CERT       = "Configurar certificado"
 ACT_LIMPAR_CERT           = "Limpar certificado"
@@ -34,6 +34,11 @@ DLG_CERT_TITULO        = "Selecione o certificado"
 DLG_CERT_FILTRO        = "JSON (*.json)"
 DLG_LIMPAR_CERT_TITULO = "Limpar certificado"
 DLG_LIMPAR_CERT_MSG    = "Tem certeza que deseja remover o certificado salvo?"
+
+DLG_PLANILHA_EXISTENTE_TITULO  = "Planilha já cadastrada"
+DLG_PLANILHA_EXISTENTE_MSG     = 'Esta planilha já está salva com o nome "{nome}". Deseja renomear?'
+DLG_RENOMEAR_TITULO            = "Renomear planilha"
+DLG_RENOMEAR_MSG               = "Novo nome:"
 
 DLG_CONECTAR_TITULO            = "Conectar com planilha"
 DLG_CONECTAR_LBL_LINK          = "Link da planilha:"
