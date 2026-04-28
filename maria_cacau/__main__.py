@@ -1,20 +1,18 @@
-######    Gui Reis   -   guisreis25@gmail.com    ######    COPYRIGHT © 2020 KINGS
-
-# -*- coding: utf-8 -*-
+"""Entry point da aplicação. Execute com: python -m maria_cacau"""
 
 import sys
 
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QApplication
 
-from maria_cacau.features.home.home_view import Gui_main
+from maria_cacau.features.home.home_view import GuiMain
 
 
 def main():
     app = QApplication(sys.argv)
     app.styleHints().setColorScheme(Qt.ColorScheme.Light)
 
-    win = Gui_main()
+    win = GuiMain()
 
     win.show()
     sys.exit(app.exec())
