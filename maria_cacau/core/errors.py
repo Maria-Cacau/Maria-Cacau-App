@@ -1,3 +1,5 @@
+"""Códigos de erro da aplicação com estrutura AppError."""
+
 from typing import NamedTuple
 
 
