@@ -1,12 +1,11 @@
 """Janela principal da aplicação e orquestração das sub-features."""
 
 from PyQt6.QtGui import QAction, QIcon, QPainter, QPixmap
-from PyQt6.QtWidgets import (QApplication, QFileDialog, QHBoxLayout,
-                             QMainWindow, QMenu, QMenuBar, QVBoxLayout,
-                             QWidget)
+from PyQt6.QtWidgets import (QApplication, QHBoxLayout, QMainWindow, QMenu,
+                             QMenuBar, QVBoxLayout, QWidget)
 
 from maria_cacau.assets import strings
-from maria_cacau.core.analisePlan import Analise
+from maria_cacau.core.sheets.manager import manager
 from maria_cacau.features.home.sub_features.cpf_validation.cpf_validation_view import \
     GuiValiCpf
 from maria_cacau.features.home.sub_features.freight_query.freight_query_view import \
@@ -53,8 +52,6 @@ class GuiMain(QMainWindow):
         self.gDados = GuiDados()
         self.gVeriCpf = GuiValiCpf()
         self.gConsCep = GuiConsFrete()
-
-        self.aAna = Analise()
 
         self.setup_ui(root)
 
@@ -116,7 +113,7 @@ class GuiMain(QMainWindow):
         dia:str = ''
         for d in sorted(self.datas):
             dia += f"\n\nDia {self.gProdutos.fix_date(d[:10])} - {self.datas[d]} pedido(s)\n"
-            dia += self.gProdutos.resumo_dia(d, self.datas[d], self.aAna.get_data(self.aAna.get_col("Produtos"),d))
+            dia += self.gProdutos.resumo_dia(d, self.datas[d], manager.cadastro.get_data(manager.cadastro.get_col("produtos"), d))
             self.gProdutos.pedDia = {}
 
         self.gProdutos.set_resumo(dia)
@@ -130,7 +127,7 @@ class GuiMain(QMainWindow):
         if self.dtEnt != dt:
             if dt in self.gEntregas.resumos: self.gEntregas.set_text(self.gEntregas.resumos[dt])
             else:
-                self.gEntregas.set_resumo(dt, self.aAna.get_data(self.aAna.get_col("Entrega"),dt))
+                self.gEntregas.set_resumo(dt, manager.cadastro.get_data(manager.cadastro.get_col("entrega"), dt))
                 self.gEntregas.set_text(self.gEntregas.res)
                 if not self.gEntregas.btCopiarTxt.isEnabled():
                     self.gEntregas.btCopiarTxt.setEnabled(True)
@@ -141,8 +138,8 @@ class GuiMain(QMainWindow):
     def on_ok_dados(self) -> None:
         dt:str = self.gDados.get_date()
         if self.dtDados != dt:
-            arq = self.aAna.get_dados(self.aAna.get_col("Sage"), dt)
-            arq['Belga'] = self.gDados.set_belga(self.aAna.get_dados(self.aAna.get_col("Belga"), dt))
+            arq = manager.cadastro.get_dados(manager.cadastro.get_col("sage"), dt)
+            arq['belga'] = self.gDados.set_belga(manager.cadastro.get_dados(manager.cadastro.get_col("belga"), dt))
             self.gDados.set_resumo(arq)
             self.dtDados = dt
             del arq
@@ -151,11 +148,10 @@ class GuiMain(QMainWindow):
     ## Método: Ação do botão "Ler planilha"
     def on_ler_planilha(self) -> None:
         if "Ler planilha" == self.gDados.btAttAtiv.text():
-            locArq:tuple = QFileDialog.getOpenFileName(self, "Escolha o arquivo Excel padronizado")
-            if self.aAna.load_file(locArq[0]):
-                self.datas = self.aAna.get_dates()
+            if manager.connect():
+                self.datas = manager.cadastro.get_recent_dates(20)
 
-                self.gEntregas.set_cols(self.aAna.get_col("Entrega"))
+                self.gEntregas.set_cols(manager.cadastro.get_col("entrega"))
                 self.gEntregas.set_dates(self.datas)
                 self.gEntregas.btAttAtiv.clicked.connect(self.gEntregas.on_ativar)
                 self.gEntregas.btAttAtiv.setText(strings.BTN_ATIVAR)
@@ -167,9 +163,8 @@ class GuiMain(QMainWindow):
                 self.gProdutos.set_text(strings.TXT_ATIVAR_INSTRUCAO)
 
                 self.gDados.set_dates(self.datas)
-                self.gDados.set_trad(self.aAna.get_col("gSage"), self.aAna.get_col("gLbl"))
+                self.gDados.set_trad(manager.cadastro.get_col("gsage"), manager.cadastro.get_col("glbl"))
                 self.gDados.btAttAtiv.clicked.connect(self.gDados.on_ativar)
                 self.gDados.btAttAtiv.setText(strings.BTN_ATIVAR)
 
                 self.actLerPlan.setEnabled(False)
-            del locArq

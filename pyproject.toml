@@ -11,6 +11,8 @@ dependencies = [
     "PyQt6",
     "pandas",
     "openpyxl",
+    "gspread",
+    "keyring",
 ]
 
 [project.scripts]
