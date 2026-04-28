@@ -1,6 +1,7 @@
 """Janela principal da aplicação e orquestração das sub-features."""
 
 import re
+import time
 from datetime import datetime
 from pathlib import Path
 
@@ -13,6 +14,7 @@ from PyQt6.QtWidgets import (QApplication, QDialog, QDialogButtonBox,
 
 from maria_cacau.assets import strings
 from maria_cacau.core import errors
+from maria_cacau.core.observability import AppEvent, observability
 from maria_cacau.core.storage.cache import CacheStorage
 from maria_cacau.core.sheets.manager import manager
 from maria_cacau.core.sheets.service import service
@@ -126,12 +128,17 @@ class GuiMain(QMainWindow):
 
         self.setup_ui(root)
         self._auto_connect()
+        observability.log(AppEvent.APP_START)
 
         self.datas: dict = {}
         self.dtEnt: str = ''
         self.dtDados: str = ''
 
         del tamTela, self.gVeriCpf, self.gConsCep
+
+    def closeEvent(self, event) -> None:
+        observability.log(AppEvent.APP_CLOSE)
+        super().closeEvent(event)
 
     ## Método: configura a interface
     def setup_ui(self, root: QWidget) -> None:
@@ -191,8 +198,10 @@ class GuiMain(QMainWindow):
     ## ------------------------------------------------------------------------------------------------
     ## Ações de botão:
         self.gEntregas.btOk.clicked.connect(self.on_ok_entregas)
+        self.gEntregas.btCopiarTxt.clicked.connect(lambda: observability.log(AppEvent.BTN_COPY, feature='entregas'))
 
         self.gProdutos.btOk.clicked.connect(self.on_ok_produtos)
+        self.gProdutos.btCopiarTxt.clicked.connect(lambda: observability.log(AppEvent.BTN_COPY, feature='produtos'))
 
         self.gDados.btAttAtiv.clicked.connect(self._on_ativar_dados)
         self.gDados.btAttAtiv.setEnabled(False)
@@ -247,7 +256,11 @@ class GuiMain(QMainWindow):
         if on_error:
             self._worker.error.connect(on_error)
         else:
-            self._worker.error.connect(lambda _: (self.statusBar.set_ready(), GuiPopup().show_popup(errors.E001)))
+            self._worker.error.connect(lambda exc: (
+                observability.log(AppEvent.ERROR, msg=str(exc)),
+                self.statusBar.set_ready(),
+                GuiPopup().show_popup(errors.E001),
+            ))
         self._thread.start()
 
     ## Método: Ação do botão "OK" da área de Produtos
@@ -256,9 +269,11 @@ class GuiMain(QMainWindow):
             GuiPopup().show_popup(errors.C004)
             return
 
+        _start = time.time()
+
         if manager.cadastro is not None:
             self._ensure_datas()
-            self._show_produtos()
+            self._show_produtos(_start)
             return
 
         self.statusBar.set_loading()
@@ -267,17 +282,18 @@ class GuiMain(QMainWindow):
         def _on_done(_):
             self._set_busy(False)
             self._ensure_datas()
-            self._show_produtos()
+            self._show_produtos(_start)
 
-        def _on_error(_):
+        def _on_error(exc):
             self._set_busy(False)
             self.statusBar.set_ready()
+            observability.log(AppEvent.ERROR, msg=str(exc), where='produtos', duration_s=round(time.time() - _start, 1))
             GuiPopup().show_popup(errors.E001)
 
         self._run_async(manager.load_cadastro, _on_done, _on_error)
 
     ## Método: filtra e exibe o resumo de produtos (sempre na main thread)
-    def _show_produtos(self) -> None:
+    def _show_produtos(self, _start: float = 0.0) -> None:
         start_str, end_str = self.gProdutos.get_date_range()
 
         def _parse(s: str) -> datetime:
@@ -307,6 +323,7 @@ class GuiMain(QMainWindow):
 
         self.gProdutos.set_resumo(start_str, end_str, sum(filtered.values()), dia)
         self.gProdutos.btCopiarTxt.setEnabled(True)
+        observability.log(AppEvent.QUERY_PRODUTOS, start=start_str, end=end_str, duration_s=round(time.time() - _start, 1))
         self.statusBar.set_success()
         del dia, d
 
@@ -325,6 +342,7 @@ class GuiMain(QMainWindow):
 
         self.statusBar.set_loading()
         self._set_busy(True)
+        _start = time.time()
 
         def _on_done(arq):
             self._set_busy(False)
@@ -336,11 +354,13 @@ class GuiMain(QMainWindow):
             self.gEntregas.set_text(self.gEntregas.res)
             self.gEntregas.btCopiarTxt.setEnabled(True)
             self.dtEnt = dt
+            observability.log(AppEvent.QUERY_ENTREGAS, date=dt, duration_s=round(time.time() - _start, 1))
             self.statusBar.set_success()
 
-        def _on_error(_):
+        def _on_error(exc):
             self._set_busy(False)
             self.statusBar.set_ready()
+            observability.log(AppEvent.ERROR, msg=str(exc), where='entregas', duration_s=round(time.time() - _start, 1))
             GuiPopup().show_popup(errors.E001)
 
         self._run_async(lambda: manager.get_entregas_for_date(dt), _on_done, _on_error)
@@ -369,7 +389,8 @@ class GuiMain(QMainWindow):
 
         try:
             manager.connect(sheet_id)
-        except PermissionError:
+        except PermissionError as exc:
+            observability.log(AppEvent.ERROR, msg=str(exc), where='on_conectar_planilha')
             GuiPopup().show_popup(errors.C004)
             return
 
@@ -377,6 +398,7 @@ class GuiMain(QMainWindow):
         if nome is None:
             return
         self._save_sheet(nome, sheet_id)
+        observability.log(AppEvent.SHEET_ADD, name=nome, sheet_id=sheet_id)
 
         if sheet_id not in self._sheet_actions:
             self._add_planilha_menu(nome, sheet_id)
@@ -447,8 +469,10 @@ class GuiMain(QMainWindow):
             return
         try:
             service.load_credentials_from_file(path)
+            observability.log(AppEvent.CERT_SET)
             GuiPopup().show_popup(errors.certificado_ok(), "I")
-        except Exception:
+        except Exception as exc:
+            observability.log(AppEvent.ERROR, msg=str(exc), where='on_configurar_certificado')
             GuiPopup().show_popup(errors.C002)
 
     ## Método: Ação do menu "Limpar certificado"

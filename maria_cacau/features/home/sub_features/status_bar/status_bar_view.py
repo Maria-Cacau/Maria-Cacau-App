@@ -22,6 +22,12 @@ class GuiStatusBar(QStatusBar):
         self._has_cred:  bool = False
         self._has_sheet: bool = False
         self._sheet_fmt: str  = ''
+        self._loading_msg: str = ''
+        self._elapsed: int = 0
+
+        self._timer = QTimer(self)
+        self._timer.setInterval(1000)
+        self._timer.timeout.connect(self._tick)
 
         self._set_color(self._WARN)
 
@@ -38,20 +44,29 @@ class GuiStatusBar(QStatusBar):
         self._update_info()
         self._update_color()
 
-    ## Muda para o estado de carregamento (laranja)
+    ## Muda para o estado de carregamento (laranja) e inicia o cronômetro
     def set_loading(self, msg: str = '') -> None:
-        self._lbl_info.setText(msg or strings.SB_CARREGANDO)
+        self._loading_msg = msg or strings.SB_CARREGANDO
+        self._elapsed = 0
+        self._lbl_info.setText(f'0s  {self._loading_msg}')
         self._set_color(self._LOADING)
+        self._timer.start()
 
     ## Mostra mensagem de sucesso e reverte para o estado normal após 3s
     def set_success(self, msg: str = '') -> None:
+        self._timer.stop()
         self._lbl_info.setText(msg or strings.SB_SUCESSO)
         self._set_color(self._READY)
         QTimer.singleShot(3000, self._restore)
 
     ## Volta para o estado normal
     def set_ready(self) -> None:
+        self._timer.stop()
         self._restore()
+
+    def _tick(self) -> None:
+        self._elapsed += 1
+        self._lbl_info.setText(f'{self._elapsed}s  {self._loading_msg}')
 
     def _restore(self) -> None:
         self._update_info()
