@@ -74,7 +74,7 @@
       "source_file": "__init__.py",
       "source_location": "L1",
       "id": "init_py",
-      "community": 7,
+      "community": 9,
       "norm_label": "__init__.py"
     },
     {
@@ -82,7 +82,7 @@
       "file_type": "rationale",
       "source_file": "__init__.py",
       "source_location": "L1",
-      "community": 7,
+      "community": 9,
       "norm_label": "metadados centralizados do pacote maria-cacau.",
       "id": "maria_cacau_init_rationale_1"
     },
@@ -92,7 +92,7 @@
       "source_file": "__main__.py",
       "source_location": "L1",
       "id": "main_py",
-      "community": 6,
+      "community": 3,
       "norm_label": "__main__.py"
     },
     {
@@ -101,7 +101,7 @@
       "source_file": "__main__.py",
       "source_location": "L11",
       "id": "maria_cacau_main_main",
-      "community": 6,
+      "community": 3,
       "norm_label": "main()"
     },
     {
@@ -109,7 +109,7 @@
       "file_type": "rationale",
       "source_file": "__main__.py",
       "source_location": "L1",
-      "community": 6,
+      "community": 3,
       "norm_label": "entry point da aplicacao. execute com: python -m maria_cacau",
       "id": "maria_cacau_main_rationale_1"
     },
@@ -119,7 +119,7 @@
       "source_file": "core/__init__.py",
       "source_location": "L1",
       "id": "core_init_py",
-      "community": 10,
+      "community": 12,
       "norm_label": "__init__.py"
     },
     {
@@ -128,7 +128,7 @@
       "source_file": "core/errors.py",
       "source_location": "L1",
       "id": "core_errors_py",
-      "community": 0,
+      "community": 1,
       "norm_label": "errors.py"
     },
     {
@@ -137,7 +137,7 @@
       "source_file": "core/errors.py",
       "source_location": "L6",
       "id": "core_errors_apperror",
-      "community": 0,
+      "community": 1,
       "norm_label": "apperror"
     },
     {
@@ -146,34 +146,34 @@
       "source_file": "",
       "source_location": "",
       "id": "namedtuple",
-      "community": 0,
+      "community": 1,
       "norm_label": "namedtuple"
     },
     {
       "label": "certificado_ok()",
       "file_type": "code",
       "source_file": "core/errors.py",
-      "source_location": "L86",
+      "source_location": "L94",
       "id": "core_errors_certificado_ok",
-      "community": 0,
+      "community": 1,
       "norm_label": "certificado_ok()"
     },
     {
       "label": "certificado_limpo()",
       "file_type": "code",
       "source_file": "core/errors.py",
-      "source_location": "L95",
+      "source_location": "L103",
       "id": "core_errors_certificado_limpo",
-      "community": 0,
+      "community": 1,
       "norm_label": "certificado_limpo()"
     },
     {
       "label": "planilha_ok()",
       "file_type": "code",
       "source_file": "core/errors.py",
-      "source_location": "L104",
+      "source_location": "L112",
       "id": "core_errors_planilha_ok",
-      "community": 0,
+      "community": 1,
       "norm_label": "planilha_ok()"
     },
     {
@@ -181,7 +181,7 @@
       "file_type": "rationale",
       "source_file": "core/errors.py",
       "source_location": "L1",
-      "community": 0,
+      "community": 1,
       "norm_label": "codigos de erro da aplicacao com estrutura apperror.",
       "id": "core_errors_rationale_1"
     },
@@ -190,7 +190,7 @@
       "file_type": "rationale",
       "source_file": "core/errors.py",
       "source_location": "L7",
-      "community": 0,
+      "community": 1,
       "norm_label": "estrutura de uma mensagem de erro/info para exibicao no popup.",
       "id": "core_errors_rationale_7"
     },
@@ -198,27 +198,27 @@
       "label": "Confirma\u00e7\u00e3o de certificado configurado com sucesso.",
       "file_type": "rationale",
       "source_file": "core/errors.py",
-      "source_location": "L87",
-      "id": "core_errors_rationale_87",
-      "community": 0,
+      "source_location": "L95",
+      "id": "core_errors_rationale_95",
+      "community": 1,
       "norm_label": "confirmacao de certificado configurado com sucesso."
     },
     {
       "label": "Confirma\u00e7\u00e3o de credenciais removidas com sucesso.",
       "file_type": "rationale",
       "source_file": "core/errors.py",
-      "source_location": "L96",
-      "id": "core_errors_rationale_96",
-      "community": 0,
+      "source_location": "L104",
+      "id": "core_errors_rationale_104",
+      "community": 1,
       "norm_label": "confirmacao de credenciais removidas com sucesso."
     },
     {
       "label": "Confirma\u00e7\u00e3o de leitura bem-sucedida da planilha.",
       "file_type": "rationale",
       "source_file": "core/errors.py",
-      "source_location": "L105",
-      "id": "core_errors_rationale_105",
-      "community": 0,
+      "source_location": "L113",
+      "id": "core_errors_rationale_113",
+      "community": 1,
       "norm_label": "confirmacao de leitura bem-sucedida da planilha."
     },
     {
@@ -227,7 +227,7 @@
       "source_file": "core/sheets/service.py",
       "source_location": "L1",
       "id": "core_sheets_service_py",
-      "community": 4,
+      "community": 6,
       "norm_label": "service.py"
     },
     {
@@ -236,7 +236,7 @@
       "source_file": "core/sheets/service.py",
       "source_location": "L15",
       "id": "sheets_service_googlesheetsservice",
-      "community": 4,
+      "community": 6,
       "norm_label": "googlesheetsservice"
     },
     {
@@ -245,7 +245,7 @@
       "source_file": "core/sheets/service.py",
       "source_location": "L16",
       "id": "sheets_service_googlesheetsservice_init",
-      "community": 4,
+      "community": 6,
       "norm_label": ".__init__()"
     },
     {
@@ -254,7 +254,7 @@
       "source_file": "core/sheets/service.py",
       "source_location": "L22",
       "id": "sheets_service_googlesheetsservice_load_credentials_from_file",
-      "community": 4,
+      "community": 6,
       "norm_label": ".load_credentials_from_file()"
     },
     {
@@ -263,7 +263,7 @@
       "source_file": "core/sheets/service.py",
       "source_location": "L29",
       "id": "sheets_service_googlesheetsservice_load_credentials_from_keychain",
-      "community": 4,
+      "community": 6,
       "norm_label": ".load_credentials_from_keychain()"
     },
     {
@@ -272,7 +272,7 @@
       "source_file": "core/sheets/service.py",
       "source_location": "L37",
       "id": "sheets_service_googlesheetsservice_authenticate",
-      "community": 4,
+      "community": 6,
       "norm_label": "._authenticate()"
     },
     {
@@ -281,7 +281,7 @@
       "source_file": "core/sheets/service.py",
       "source_location": "L43",
       "id": "sheets_service_googlesheetsservice_is_authenticated",
-      "community": 4,
+      "community": 6,
       "norm_label": ".is_authenticated()"
     },
     {
@@ -290,7 +290,7 @@
       "source_file": "core/sheets/service.py",
       "source_location": "L46",
       "id": "sheets_service_googlesheetsservice_clear_credentials",
-      "community": 0,
+      "community": 1,
       "norm_label": ".clear_credentials()"
     },
     {
@@ -299,7 +299,7 @@
       "source_file": "core/sheets/service.py",
       "source_location": "L57",
       "id": "sheets_service_googlesheetsservice_set_sheet",
-      "community": 4,
+      "community": 6,
       "norm_label": ".set_sheet()"
     },
     {
@@ -308,7 +308,7 @@
       "source_file": "core/sheets/service.py",
       "source_location": "L61",
       "id": "sheets_service_googlesheetsservice_get_raw_data",
-      "community": 4,
+      "community": 6,
       "norm_label": ".get_raw_data()"
     },
     {
@@ -316,54 +316,54 @@
       "file_type": "rationale",
       "source_file": "core/sheets/service.py",
       "source_location": "L1",
-      "id": "sheets_service_rationale_1",
-      "community": 4,
-      "norm_label": "autenticacao e acesso ao google sheets."
+      "community": 6,
+      "norm_label": "autenticacao e acesso ao google sheets.",
+      "id": "sheets_service_rationale_1"
     },
     {
       "label": "L\u00ea o .json da Service Account, autentica e salva no keychain.",
       "file_type": "rationale",
       "source_file": "core/sheets/service.py",
       "source_location": "L23",
-      "id": "sheets_service_rationale_23",
-      "community": 4,
-      "norm_label": "le o .json da service account, autentica e salva no keychain."
+      "community": 6,
+      "norm_label": "le o .json da service account, autentica e salva no keychain.",
+      "id": "sheets_service_rationale_23"
     },
     {
       "label": "Tenta autenticar usando credenciais salvas no keychain. Retorna False se n\u00e3o hou",
       "file_type": "rationale",
       "source_file": "core/sheets/service.py",
       "source_location": "L30",
-      "id": "sheets_service_rationale_30",
-      "community": 4,
-      "norm_label": "tenta autenticar usando credenciais salvas no keychain. retorna false se nao hou"
+      "community": 6,
+      "norm_label": "tenta autenticar usando credenciais salvas no keychain. retorna false se nao hou",
+      "id": "sheets_service_rationale_30"
     },
     {
       "label": "Remove as credenciais do keychain. Retorna False se n\u00e3o havia nada salvo.",
       "file_type": "rationale",
       "source_file": "core/sheets/service.py",
       "source_location": "L47",
-      "id": "sheets_service_rationale_47",
-      "community": 0,
-      "norm_label": "remove as credenciais do keychain. retorna false se nao havia nada salvo."
+      "community": 1,
+      "norm_label": "remove as credenciais do keychain. retorna false se nao havia nada salvo.",
+      "id": "sheets_service_rationale_47"
     },
     {
       "label": "Define qual planilha vai ser lida pelo ID ou URL do Google Sheets.",
       "file_type": "rationale",
       "source_file": "core/sheets/service.py",
       "source_location": "L58",
-      "id": "sheets_service_rationale_58",
-      "community": 4,
-      "norm_label": "define qual planilha vai ser lida pelo id ou url do google sheets."
+      "community": 6,
+      "norm_label": "define qual planilha vai ser lida pelo id ou url do google sheets.",
+      "id": "sheets_service_rationale_58"
     },
     {
       "label": "Retorna as linhas brutas da planilha (lista de listas de strings).",
       "file_type": "rationale",
       "source_file": "core/sheets/service.py",
       "source_location": "L62",
-      "id": "sheets_service_rationale_62",
-      "community": 4,
-      "norm_label": "retorna as linhas brutas da planilha (lista de listas de strings)."
+      "community": 6,
+      "norm_label": "retorna as linhas brutas da planilha (lista de listas de strings).",
+      "id": "sheets_service_rationale_62"
     },
     {
       "label": "__init__.py",
@@ -371,7 +371,7 @@
       "source_file": "core/sheets/__init__.py",
       "source_location": "L1",
       "id": "core_sheets_init_py",
-      "community": 11,
+      "community": 13,
       "norm_label": "__init__.py"
     },
     {
@@ -387,7 +387,7 @@
       "label": "SheetsManager",
       "file_type": "code",
       "source_file": "core/sheets/manager.py",
-      "source_location": "L12",
+      "source_location": "L11",
       "id": "sheets_manager_sheetsmanager",
       "community": 4,
       "norm_label": "sheetsmanager"
@@ -396,7 +396,7 @@
       "label": ".__init__()",
       "file_type": "code",
       "source_file": "core/sheets/manager.py",
-      "source_location": "L13",
+      "source_location": "L12",
       "id": "sheets_manager_sheetsmanager_init",
       "community": 4,
       "norm_label": ".__init__()"
@@ -405,16 +405,16 @@
       "label": ".connect()",
       "file_type": "code",
       "source_file": "core/sheets/manager.py",
-      "source_location": "L16",
+      "source_location": "L15",
       "id": "sheets_manager_sheetsmanager_connect",
-      "community": 4,
+      "community": 6,
       "norm_label": ".connect()"
     },
     {
       "label": "cadastro()",
       "file_type": "code",
       "source_file": "core/sheets/manager.py",
-      "source_location": "L26",
+      "source_location": "L25",
       "id": "sheets_manager_cadastro",
       "community": 4,
       "norm_label": "cadastro()"
@@ -424,9 +424,9 @@
       "file_type": "rationale",
       "source_file": "core/sheets/manager.py",
       "source_location": "L1",
-      "id": "sheets_manager_rationale_1",
       "community": 4,
-      "norm_label": "orquestra a autenticacao e o acesso as abas da planilha."
+      "norm_label": "orquestra a autenticacao e o acesso as abas da planilha.",
+      "id": "sheets_manager_rationale_1"
     },
     {
       "label": "cadastro.py",
@@ -434,7 +434,7 @@
       "source_file": "core/sheets/handlers/cadastro.py",
       "source_location": "L1",
       "id": "core_sheets_handlers_cadastro_py",
-      "community": 0,
+      "community": 1,
       "norm_label": "cadastro.py"
     },
     {
@@ -443,7 +443,7 @@
       "source_file": "core/sheets/handlers/cadastro.py",
       "source_location": "L12",
       "id": "handlers_cadastro_cadastroanalysehandler",
-      "community": 2,
+      "community": 4,
       "norm_label": "cadastroanalysehandler"
     },
     {
@@ -452,7 +452,7 @@
       "source_file": "core/sheets/handlers/cadastro.py",
       "source_location": "L13",
       "id": "handlers_cadastro_cadastroanalysehandler_init",
-      "community": 0,
+      "community": 1,
       "norm_label": ".__init__()"
     },
     {
@@ -461,7 +461,7 @@
       "source_file": "core/sheets/handlers/cadastro.py",
       "source_location": "L53",
       "id": "handlers_cadastro_cadastroanalysehandler_get_col",
-      "community": 2,
+      "community": 4,
       "norm_label": ".get_col()"
     },
     {
@@ -470,7 +470,7 @@
       "source_file": "core/sheets/handlers/cadastro.py",
       "source_location": "L57",
       "id": "handlers_cadastro_cadastroanalysehandler_get_dates",
-      "community": 2,
+      "community": 4,
       "norm_label": ".get_dates()"
     },
     {
@@ -479,7 +479,7 @@
       "source_file": "core/sheets/handlers/cadastro.py",
       "source_location": "L61",
       "id": "handlers_cadastro_cadastroanalysehandler_get_recent_dates",
-      "community": 2,
+      "community": 7,
       "norm_label": ".get_recent_dates()"
     },
     {
@@ -488,7 +488,7 @@
       "source_file": "core/sheets/handlers/cadastro.py",
       "source_location": "L66",
       "id": "handlers_cadastro_cadastroanalysehandler_get_data",
-      "community": 2,
+      "community": 4,
       "norm_label": ".get_data()"
     },
     {
@@ -497,7 +497,7 @@
       "source_file": "core/sheets/handlers/cadastro.py",
       "source_location": "L73",
       "id": "handlers_cadastro_cadastroanalysehandler_get_dados",
-      "community": 2,
+      "community": 4,
       "norm_label": ".get_dados()"
     },
     {
@@ -506,7 +506,7 @@
       "source_file": "core/sheets/handlers/cadastro.py",
       "source_location": "L78",
       "id": "handlers_cadastro_normalize_headers",
-      "community": 0,
+      "community": 1,
       "norm_label": "_normalize_headers()"
     },
     {
@@ -514,9 +514,9 @@
       "file_type": "rationale",
       "source_file": "core/sheets/handlers/cadastro.py",
       "source_location": "L1",
-      "id": "handlers_cadastro_rationale_1",
-      "community": 0,
-      "norm_label": "processa os dados da aba cadastro da planilha google sheets."
+      "community": 1,
+      "norm_label": "processa os dados da aba cadastro da planilha google sheets.",
+      "id": "handlers_cadastro_rationale_1"
     },
     {
       "label": "__init__.py",
@@ -524,7 +524,7 @@
       "source_file": "core/sheets/handlers/__init__.py",
       "source_location": "L1",
       "id": "core_sheets_handlers_init_py",
-      "community": 12,
+      "community": 14,
       "norm_label": "__init__.py"
     },
     {
@@ -533,7 +533,7 @@
       "source_file": "design_system/gui_popup.py",
       "source_location": "L1",
       "id": "design_system_gui_popup_py",
-      "community": 0,
+      "community": 1,
       "norm_label": "gui_popup.py"
     },
     {
@@ -542,7 +542,7 @@
       "source_file": "design_system/gui_popup.py",
       "source_location": "L9",
       "id": "design_system_gui_popup_guipopup",
-      "community": 0,
+      "community": 1,
       "norm_label": "guipopup"
     },
     {
@@ -551,7 +551,7 @@
       "source_file": "",
       "source_location": "",
       "id": "qmessagebox",
-      "community": 0,
+      "community": 1,
       "norm_label": "qmessagebox"
     },
     {
@@ -560,7 +560,7 @@
       "source_file": "design_system/gui_popup.py",
       "source_location": "L11",
       "id": "design_system_gui_popup_guipopup_init",
-      "community": 0,
+      "community": 1,
       "norm_label": ".__init__()"
     },
     {
@@ -569,7 +569,7 @@
       "source_file": "design_system/gui_popup.py",
       "source_location": "L16",
       "id": "design_system_gui_popup_guipopup_setup_ui",
-      "community": 0,
+      "community": 1,
       "norm_label": ".setup_ui()"
     },
     {
@@ -578,7 +578,7 @@
       "source_file": "design_system/gui_popup.py",
       "source_location": "L28",
       "id": "design_system_gui_popup_guipopup_show_popup",
-      "community": 0,
+      "community": 1,
       "norm_label": ".show_popup()"
     },
     {
@@ -586,7 +586,7 @@
       "file_type": "rationale",
       "source_file": "design_system/gui_popup.py",
       "source_location": "L1",
-      "community": 0,
+      "community": 1,
       "norm_label": "janela de popup para exibicao de erros e informacoes ao usuario.",
       "id": "design_system_gui_popup_rationale_1"
     },
@@ -596,7 +596,7 @@
       "source_file": "design_system/__init__.py",
       "source_location": "L1",
       "id": "design_system_init_py",
-      "community": 13,
+      "community": 15,
       "norm_label": "__init__.py"
     },
     {
@@ -605,7 +605,7 @@
       "source_file": "design_system/aux_frames.py",
       "source_location": "L1",
       "id": "design_system_aux_frames_py",
-      "community": 1,
+      "community": 0,
       "norm_label": "aux_frames.py"
     },
     {
@@ -614,7 +614,7 @@
       "source_file": "design_system/aux_frames.py",
       "source_location": "L8",
       "id": "design_system_aux_frames_auxframe",
-      "community": 1,
+      "community": 0,
       "norm_label": "auxframe"
     },
     {
@@ -623,7 +623,7 @@
       "source_file": "",
       "source_location": "",
       "id": "qframe",
-      "community": 1,
+      "community": 0,
       "norm_label": "qframe"
     },
     {
@@ -632,7 +632,7 @@
       "source_file": "",
       "source_location": "",
       "id": "auxwidgets",
-      "community": 1,
+      "community": 0,
       "norm_label": "auxwidgets"
     },
     {
@@ -641,7 +641,7 @@
       "source_file": "design_system/aux_frames.py",
       "source_location": "L10",
       "id": "design_system_aux_frames_auxframe_init",
-      "community": 1,
+      "community": 0,
       "norm_label": ".__init__()"
     },
     {
@@ -650,7 +650,7 @@
       "source_file": "design_system/aux_frames.py",
       "source_location": "L15",
       "id": "design_system_aux_frames_auxframe_setup_ui",
-      "community": 1,
+      "community": 0,
       "norm_label": ".setup_ui()"
     },
     {
@@ -659,7 +659,7 @@
       "source_file": "design_system/aux_frames.py",
       "source_location": "L28",
       "id": "design_system_aux_frames_auxframe_bt_action",
-      "community": 1,
+      "community": 0,
       "norm_label": ".bt_action()"
     },
     {
@@ -668,7 +668,7 @@
       "source_file": "design_system/aux_frames.py",
       "source_location": "L33",
       "id": "design_system_aux_frames_auxframe_get_text",
-      "community": 1,
+      "community": 0,
       "norm_label": ".get_text()"
     },
     {
@@ -677,7 +677,7 @@
       "source_file": "design_system/aux_frames.py",
       "source_location": "L36",
       "id": "design_system_aux_frames_auxframe_set_text",
-      "community": 1,
+      "community": 0,
       "norm_label": ".set_text()"
     },
     {
@@ -685,7 +685,7 @@
       "file_type": "rationale",
       "source_file": "design_system/aux_frames.py",
       "source_location": "L1",
-      "community": 1,
+      "community": 0,
       "norm_label": "frame composto reutilizavel com label, entrada de texto e botao de copia.",
       "id": "design_system_aux_frames_rationale_1"
     },
@@ -695,7 +695,7 @@
       "source_file": "design_system/aux_widgets.py",
       "source_location": "L1",
       "id": "design_system_aux_widgets_py",
-      "community": 1,
+      "community": 0,
       "norm_label": "aux_widgets.py"
     },
     {
@@ -704,7 +704,7 @@
       "source_file": "design_system/aux_widgets.py",
       "source_location": "L9",
       "id": "design_system_aux_widgets_auxwidgets",
-      "community": 1,
+      "community": 0,
       "norm_label": "auxwidgets"
     },
     {
@@ -713,7 +713,7 @@
       "source_file": "design_system/aux_widgets.py",
       "source_location": "L11",
       "id": "design_system_aux_widgets_auxwidgets_init",
-      "community": 1,
+      "community": 0,
       "norm_label": ".__init__()"
     },
     {
@@ -722,7 +722,7 @@
       "source_file": "design_system/aux_widgets.py",
       "source_location": "L15",
       "id": "design_system_aux_widgets_auxwidgets_lbl",
-      "community": 1,
+      "community": 0,
       "norm_label": ".lbl()"
     },
     {
@@ -731,7 +731,7 @@
       "source_file": "design_system/aux_widgets.py",
       "source_location": "L23",
       "id": "design_system_aux_widgets_auxwidgets_bts",
-      "community": 1,
+      "community": 0,
       "norm_label": ".bts()"
     },
     {
@@ -740,7 +740,7 @@
       "source_file": "design_system/aux_widgets.py",
       "source_location": "L29",
       "id": "design_system_aux_widgets_auxwidgets_button_img",
-      "community": 1,
+      "community": 0,
       "norm_label": ".button_img()"
     },
     {
@@ -749,7 +749,7 @@
       "source_file": "design_system/aux_widgets.py",
       "source_location": "L37",
       "id": "design_system_aux_widgets_auxwidgets_line_edit",
-      "community": 1,
+      "community": 0,
       "norm_label": ".line_edit()"
     },
     {
@@ -758,7 +758,7 @@
       "source_file": "design_system/aux_widgets.py",
       "source_location": "L45",
       "id": "design_system_aux_widgets_auxwidgets_text_view",
-      "community": 1,
+      "community": 0,
       "norm_label": ".text_view()"
     },
     {
@@ -767,7 +767,7 @@
       "source_file": "design_system/aux_widgets.py",
       "source_location": "L51",
       "id": "design_system_aux_widgets_auxwidgets_graph_view",
-      "community": 1,
+      "community": 0,
       "norm_label": ".graph_view()"
     },
     {
@@ -776,7 +776,7 @@
       "source_file": "design_system/aux_widgets.py",
       "source_location": "L57",
       "id": "design_system_aux_widgets_auxwidgets_group_box",
-      "community": 2,
+      "community": 8,
       "norm_label": ".group_box()"
     },
     {
@@ -785,7 +785,7 @@
       "source_file": "design_system/aux_widgets.py",
       "source_location": "L75",
       "id": "design_system_aux_widgets_auxwidgets_combo_box",
-      "community": 1,
+      "community": 0,
       "norm_label": ".combo_box()"
     },
     {
@@ -794,7 +794,7 @@
       "source_file": "design_system/aux_widgets.py",
       "source_location": "L83",
       "id": "design_system_aux_widgets_auxwidgets_fix_date",
-      "community": 5,
+      "community": 7,
       "norm_label": ".fix_date()"
     },
     {
@@ -803,7 +803,7 @@
       "source_file": "design_system/aux_widgets.py",
       "source_location": "L86",
       "id": "design_system_aux_widgets_auxwidgets_on_copy",
-      "community": 1,
+      "community": 0,
       "norm_label": ".on_copy()"
     },
     {
@@ -811,7 +811,7 @@
       "file_type": "rationale",
       "source_file": "design_system/aux_widgets.py",
       "source_location": "L1",
-      "community": 1,
+      "community": 0,
       "norm_label": "factory de widgets pyqt6 reutilizaveis em toda a interface.",
       "id": "design_system_aux_widgets_rationale_1"
     },
@@ -821,7 +821,7 @@
       "source_file": "features/__init__.py",
       "source_location": "L1",
       "id": "features_init_py",
-      "community": 14,
+      "community": 16,
       "norm_label": "__init__.py"
     },
     {
@@ -830,7 +830,7 @@
       "source_file": "features/home/__init__.py",
       "source_location": "L1",
       "id": "features_home_init_py",
-      "community": 15,
+      "community": 17,
       "norm_label": "__init__.py"
     },
     {
@@ -839,7 +839,7 @@
       "source_file": "features/home/home_view.py",
       "source_location": "L1",
       "id": "features_home_home_view_py",
-      "community": 6,
+      "community": 3,
       "norm_label": "home_view.py"
     },
     {
@@ -848,7 +848,7 @@
       "source_file": "features/home/home_view.py",
       "source_location": "L20",
       "id": "home_home_view_backgroundwidget",
-      "community": 6,
+      "community": 3,
       "norm_label": "_backgroundwidget"
     },
     {
@@ -857,7 +857,7 @@
       "source_file": "",
       "source_location": "",
       "id": "qwidget",
-      "community": 6,
+      "community": 3,
       "norm_label": "qwidget"
     },
     {
@@ -866,7 +866,7 @@
       "source_file": "features/home/home_view.py",
       "source_location": "L21",
       "id": "home_home_view_backgroundwidget_init",
-      "community": 6,
+      "community": 3,
       "norm_label": ".__init__()"
     },
     {
@@ -875,7 +875,7 @@
       "source_file": "features/home/home_view.py",
       "source_location": "L25",
       "id": "home_home_view_backgroundwidget_paintevent",
-      "community": 6,
+      "community": 3,
       "norm_label": ".paintevent()"
     },
     {
@@ -884,7 +884,7 @@
       "source_file": "features/home/home_view.py",
       "source_location": "L30",
       "id": "home_home_view_guimain",
-      "community": 6,
+      "community": 3,
       "norm_label": "guimain"
     },
     {
@@ -893,7 +893,7 @@
       "source_file": "",
       "source_location": "",
       "id": "qmainwindow",
-      "community": 6,
+      "community": 3,
       "norm_label": "qmainwindow"
     },
     {
@@ -902,7 +902,7 @@
       "source_file": "features/home/home_view.py",
       "source_location": "L32",
       "id": "home_home_view_guimain_init",
-      "community": 6,
+      "community": 3,
       "norm_label": ".__init__()"
     },
     {
@@ -911,61 +911,61 @@
       "source_file": "features/home/home_view.py",
       "source_location": "L64",
       "id": "home_home_view_guimain_setup_ui",
-      "community": 6,
+      "community": 3,
       "norm_label": ".setup_ui()"
     },
     {
       "label": ".on_ok_produtos()",
       "file_type": "code",
       "source_file": "features/home/home_view.py",
-      "source_location": "L122",
+      "source_location": "L124",
       "id": "home_home_view_guimain_on_ok_produtos",
-      "community": 2,
+      "community": 4,
       "norm_label": ".on_ok_produtos()"
     },
     {
       "label": ".on_ok_entregas()",
       "file_type": "code",
       "source_file": "features/home/home_view.py",
-      "source_location": "L135",
+      "source_location": "L137",
       "id": "home_home_view_guimain_on_ok_entregas",
-      "community": 2,
+      "community": 4,
       "norm_label": ".on_ok_entregas()"
     },
     {
       "label": ".on_ok_dados()",
       "file_type": "code",
       "source_file": "features/home/home_view.py",
-      "source_location": "L148",
+      "source_location": "L150",
       "id": "home_home_view_guimain_on_ok_dados",
-      "community": 2,
+      "community": 4,
       "norm_label": ".on_ok_dados()"
     },
     {
       "label": ".on_configurar_certificado()",
       "file_type": "code",
       "source_file": "features/home/home_view.py",
-      "source_location": "L159",
+      "source_location": "L161",
       "id": "home_home_view_guimain_on_configurar_certificado",
-      "community": 0,
+      "community": 1,
       "norm_label": ".on_configurar_certificado()"
     },
     {
       "label": ".on_limpar_certificado()",
       "file_type": "code",
       "source_file": "features/home/home_view.py",
-      "source_location": "L171",
+      "source_location": "L173",
       "id": "home_home_view_guimain_on_limpar_certificado",
-      "community": 0,
+      "community": 1,
       "norm_label": ".on_limpar_certificado()"
     },
     {
       "label": ".on_ler_planilha()",
       "file_type": "code",
       "source_file": "features/home/home_view.py",
-      "source_location": "L186",
+      "source_location": "L188",
       "id": "home_home_view_guimain_on_ler_planilha",
-      "community": 2,
+      "community": 7,
       "norm_label": ".on_ler_planilha()"
     },
     {
@@ -973,7 +973,7 @@
       "file_type": "rationale",
       "source_file": "features/home/home_view.py",
       "source_location": "L1",
-      "community": 6,
+      "community": 3,
       "norm_label": "janela principal da aplicacao e orquestracao das sub-features.",
       "id": "home_home_view_rationale_1"
     },
@@ -983,7 +983,7 @@
       "source_file": "features/home/sub_features/__init__.py",
       "source_location": "L1",
       "id": "features_home_sub_features_init_py",
-      "community": 16,
+      "community": 18,
       "norm_label": "__init__.py"
     },
     {
@@ -992,7 +992,7 @@
       "source_file": "features/home/sub_features/orders_pendent/orders_pendent_view.py",
       "source_location": "L1",
       "id": "features_home_sub_features_orders_pendent_orders_pendent_view_py",
-      "community": 0,
+      "community": 7,
       "norm_label": "orders_pendent_view.py"
     },
     {
@@ -1001,7 +1001,7 @@
       "source_file": "features/home/sub_features/orders_pendent/orders_pendent_view.py",
       "source_location": "L13",
       "id": "orders_pendent_orders_pendent_view_guientregas",
-      "community": 0,
+      "community": 7,
       "norm_label": "guientregas"
     },
     {
@@ -1010,7 +1010,7 @@
       "source_file": "features/home/sub_features/orders_pendent/orders_pendent_view.py",
       "source_location": "L15",
       "id": "orders_pendent_orders_pendent_view_guientregas_init",
-      "community": 0,
+      "community": 7,
       "norm_label": ".__init__()"
     },
     {
@@ -1019,7 +1019,7 @@
       "source_file": "features/home/sub_features/orders_pendent/orders_pendent_view.py",
       "source_location": "L32",
       "id": "orders_pendent_orders_pendent_view_guientregas_setup_ui",
-      "community": 1,
+      "community": 0,
       "norm_label": ".setup_ui()"
     },
     {
@@ -1028,7 +1028,7 @@
       "source_file": "features/home/sub_features/orders_pendent/orders_pendent_view.py",
       "source_location": "L64",
       "id": "orders_pendent_orders_pendent_view_guientregas_set_enabled",
-      "community": 0,
+      "community": 7,
       "norm_label": ".set_enabled()"
     },
     {
@@ -1037,7 +1037,7 @@
       "source_file": "features/home/sub_features/orders_pendent/orders_pendent_view.py",
       "source_location": "L70",
       "id": "orders_pendent_orders_pendent_view_guientregas_on_ativar",
-      "community": 0,
+      "community": 7,
       "norm_label": ".on_ativar()"
     },
     {
@@ -1046,7 +1046,7 @@
       "source_file": "features/home/sub_features/orders_pendent/orders_pendent_view.py",
       "source_location": "L77",
       "id": "orders_pendent_orders_pendent_view_guientregas_get_date",
-      "community": 0,
+      "community": 7,
       "norm_label": ".get_date()"
     },
     {
@@ -1055,7 +1055,7 @@
       "source_file": "features/home/sub_features/orders_pendent/orders_pendent_view.py",
       "source_location": "L80",
       "id": "orders_pendent_orders_pendent_view_guientregas_set_dates",
-      "community": 5,
+      "community": 7,
       "norm_label": ".set_dates()"
     },
     {
@@ -1064,7 +1064,7 @@
       "source_file": "features/home/sub_features/orders_pendent/orders_pendent_view.py",
       "source_location": "L86",
       "id": "orders_pendent_orders_pendent_view_guientregas_set_text",
-      "community": 0,
+      "community": 7,
       "norm_label": ".set_text()"
     },
     {
@@ -1073,7 +1073,7 @@
       "source_file": "features/home/sub_features/orders_pendent/orders_pendent_view.py",
       "source_location": "L89",
       "id": "orders_pendent_orders_pendent_view_guientregas_set_cols",
-      "community": 2,
+      "community": 7,
       "norm_label": ".set_cols()"
     },
     {
@@ -1082,7 +1082,7 @@
       "source_file": "features/home/sub_features/orders_pendent/orders_pendent_view.py",
       "source_location": "L92",
       "id": "orders_pendent_orders_pendent_view_guientregas_set_resumo",
-      "community": 0,
+      "community": 1,
       "norm_label": ".set_resumo()"
     },
     {
@@ -1090,7 +1090,7 @@
       "file_type": "rationale",
       "source_file": "features/home/sub_features/orders_pendent/orders_pendent_view.py",
       "source_location": "L1",
-      "community": 0,
+      "community": 7,
       "norm_label": "area de entregas pendentes: resumo diario com inadimplencias.",
       "id": "orders_pendent_orders_pendent_view_rationale_1"
     },
@@ -1100,7 +1100,7 @@
       "source_file": "features/home/sub_features/orders_pendent/__init__.py",
       "source_location": "L1",
       "id": "features_home_sub_features_orders_pendent_init_py",
-      "community": 17,
+      "community": 19,
       "norm_label": "__init__.py"
     },
     {
@@ -1109,7 +1109,7 @@
       "source_file": "features/home/sub_features/freight_query/__init__.py",
       "source_location": "L1",
       "id": "features_home_sub_features_freight_query_init_py",
-      "community": 18,
+      "community": 20,
       "norm_label": "__init__.py"
     },
     {
@@ -1118,7 +1118,7 @@
       "source_file": "features/home/sub_features/freight_query/freight_query_view.py",
       "source_location": "L1",
       "id": "features_home_sub_features_freight_query_freight_query_view_py",
-      "community": 1,
+      "community": 0,
       "norm_label": "freight_query_view.py"
     },
     {
@@ -1127,7 +1127,7 @@
       "source_file": "features/home/sub_features/freight_query/freight_query_view.py",
       "source_location": "L8",
       "id": "freight_query_freight_query_view_guiconsfrete",
-      "community": 1,
+      "community": 0,
       "norm_label": "guiconsfrete"
     },
     {
@@ -1136,7 +1136,7 @@
       "source_file": "features/home/sub_features/freight_query/freight_query_view.py",
       "source_location": "L10",
       "id": "freight_query_freight_query_view_guiconsfrete_init",
-      "community": 1,
+      "community": 0,
       "norm_label": ".__init__()"
     },
     {
@@ -1145,7 +1145,7 @@
       "source_file": "features/home/sub_features/freight_query/freight_query_view.py",
       "source_location": "L19",
       "id": "freight_query_freight_query_view_guiconsfrete_setup_ui",
-      "community": 1,
+      "community": 0,
       "norm_label": ".setup_ui()"
     },
     {
@@ -1153,7 +1153,7 @@
       "file_type": "rationale",
       "source_file": "features/home/sub_features/freight_query/freight_query_view.py",
       "source_location": "L1",
-      "community": 1,
+      "community": 0,
       "norm_label": "area de consulta de frete: interface grafica e logica de consulta.",
       "id": "freight_query_freight_query_view_rationale_1"
     },
@@ -1163,7 +1163,7 @@
       "source_file": "features/home/sub_features/cpf_validation/__init__.py",
       "source_location": "L1",
       "id": "features_home_sub_features_cpf_validation_init_py",
-      "community": 19,
+      "community": 21,
       "norm_label": "__init__.py"
     },
     {
@@ -1172,7 +1172,7 @@
       "source_file": "features/home/sub_features/cpf_validation/cpf_validation_view.py",
       "source_location": "L1",
       "id": "features_home_sub_features_cpf_validation_cpf_validation_view_py",
-      "community": 6,
+      "community": 3,
       "norm_label": "cpf_validation_view.py"
     },
     {
@@ -1181,7 +1181,7 @@
       "source_file": "features/home/sub_features/cpf_validation/cpf_validation_view.py",
       "source_location": "L10",
       "id": "cpf_validation_cpf_validation_view_guivalicpf",
-      "community": 6,
+      "community": 3,
       "norm_label": "guivalicpf"
     },
     {
@@ -1190,7 +1190,7 @@
       "source_file": "features/home/sub_features/cpf_validation/cpf_validation_view.py",
       "source_location": "L12",
       "id": "cpf_validation_cpf_validation_view_guivalicpf_init",
-      "community": 6,
+      "community": 3,
       "norm_label": ".__init__()"
     },
     {
@@ -1199,7 +1199,7 @@
       "source_file": "features/home/sub_features/cpf_validation/cpf_validation_view.py",
       "source_location": "L21",
       "id": "cpf_validation_cpf_validation_view_guivalicpf_setup_ui",
-      "community": 6,
+      "community": 3,
       "norm_label": ".setup_ui()"
     },
     {
@@ -1207,7 +1207,7 @@
       "file_type": "rationale",
       "source_file": "features/home/sub_features/cpf_validation/cpf_validation_view.py",
       "source_location": "L1",
-      "community": 6,
+      "community": 3,
       "norm_label": "area de validacao de cpf: interface grafica e logica de verificacao.",
       "id": "cpf_validation_cpf_validation_view_rationale_1"
     },
@@ -1217,7 +1217,7 @@
       "source_file": "features/home/sub_features/products_resume/__init__.py",
       "source_location": "L1",
       "id": "features_home_sub_features_products_resume_init_py",
-      "community": 20,
+      "community": 22,
       "norm_label": "__init__.py"
     },
     {
@@ -1253,7 +1253,7 @@
       "source_file": "features/home/sub_features/products_resume/products_resume_view.py",
       "source_location": "L33",
       "id": "products_resume_products_resume_view_guiprodutos_setup_ui",
-      "community": 1,
+      "community": 0,
       "norm_label": ".setup_ui()"
     },
     {
@@ -1379,7 +1379,7 @@
       "source_file": "features/home/sub_features/nota_fiscal/__init__.py",
       "source_location": "L1",
       "id": "features_home_sub_features_nota_fiscal_init_py",
-      "community": 21,
+      "community": 23,
       "norm_label": "__init__.py"
     },
     {
@@ -1388,7 +1388,7 @@
       "source_file": "features/home/sub_features/nota_fiscal/nota_fiscal_view.py",
       "source_location": "L1",
       "id": "features_home_sub_features_nota_fiscal_nota_fiscal_view_py",
-      "community": 1,
+      "community": 0,
       "norm_label": "nota_fiscal_view.py"
     },
     {
@@ -1397,7 +1397,7 @@
       "source_file": "features/home/sub_features/nota_fiscal/nota_fiscal_view.py",
       "source_location": "L11",
       "id": "nota_fiscal_nota_fiscal_view_guidados",
-      "community": 2,
+      "community": 8,
       "norm_label": "guidados"
     },
     {
@@ -1406,7 +1406,7 @@
       "source_file": "features/home/sub_features/nota_fiscal/nota_fiscal_view.py",
       "source_location": "L13",
       "id": "nota_fiscal_nota_fiscal_view_guidados_init",
-      "community": 2,
+      "community": 8,
       "norm_label": ".__init__()"
     },
     {
@@ -1415,7 +1415,7 @@
       "source_file": "features/home/sub_features/nota_fiscal/nota_fiscal_view.py",
       "source_location": "L36",
       "id": "nota_fiscal_nota_fiscal_view_guidados_setup_ui",
-      "community": 1,
+      "community": 0,
       "norm_label": ".setup_ui()"
     },
     {
@@ -1424,7 +1424,7 @@
       "source_file": "features/home/sub_features/nota_fiscal/nota_fiscal_view.py",
       "source_location": "L85",
       "id": "nota_fiscal_nota_fiscal_view_guidados_set_enabled",
-      "community": 2,
+      "community": 8,
       "norm_label": ".set_enabled()"
     },
     {
@@ -1433,7 +1433,7 @@
       "source_file": "features/home/sub_features/nota_fiscal/nota_fiscal_view.py",
       "source_location": "L92",
       "id": "nota_fiscal_nota_fiscal_view_guidados_on_ativar",
-      "community": 2,
+      "community": 8,
       "norm_label": ".on_ativar()"
     },
     {
@@ -1442,7 +1442,7 @@
       "source_file": "features/home/sub_features/nota_fiscal/nota_fiscal_view.py",
       "source_location": "L98",
       "id": "nota_fiscal_nota_fiscal_view_guidados_on_tab_changed",
-      "community": 2,
+      "community": 8,
       "norm_label": ".on_tab_changed()"
     },
     {
@@ -1451,7 +1451,7 @@
       "source_file": "features/home/sub_features/nota_fiscal/nota_fiscal_view.py",
       "source_location": "L104",
       "id": "nota_fiscal_nota_fiscal_view_guidados_on_nav",
-      "community": 2,
+      "community": 8,
       "norm_label": ".on_nav()"
     },
     {
@@ -1460,7 +1460,7 @@
       "source_file": "features/home/sub_features/nota_fiscal/nota_fiscal_view.py",
       "source_location": "L109",
       "id": "nota_fiscal_nota_fiscal_view_guidados_navigate",
-      "community": 2,
+      "community": 8,
       "norm_label": ".navigate()"
     },
     {
@@ -1469,7 +1469,7 @@
       "source_file": "features/home/sub_features/nota_fiscal/nota_fiscal_view.py",
       "source_location": "L116",
       "id": "nota_fiscal_nota_fiscal_view_guidados_get_date",
-      "community": 2,
+      "community": 4,
       "norm_label": ".get_date()"
     },
     {
@@ -1478,7 +1478,7 @@
       "source_file": "features/home/sub_features/nota_fiscal/nota_fiscal_view.py",
       "source_location": "L119",
       "id": "nota_fiscal_nota_fiscal_view_guidados_set_dates",
-      "community": 5,
+      "community": 7,
       "norm_label": ".set_dates()"
     },
     {
@@ -1487,7 +1487,7 @@
       "source_file": "features/home/sub_features/nota_fiscal/nota_fiscal_view.py",
       "source_location": "L125",
       "id": "nota_fiscal_nota_fiscal_view_guidados_set_trad",
-      "community": 2,
+      "community": 7,
       "norm_label": ".set_trad()"
     },
     {
@@ -1496,7 +1496,7 @@
       "source_file": "features/home/sub_features/nota_fiscal/nota_fiscal_view.py",
       "source_location": "L128",
       "id": "nota_fiscal_nota_fiscal_view_guidados_set_belga",
-      "community": 2,
+      "community": 4,
       "norm_label": ".set_belga()"
     },
     {
@@ -1505,7 +1505,7 @@
       "source_file": "features/home/sub_features/nota_fiscal/nota_fiscal_view.py",
       "source_location": "L132",
       "id": "nota_fiscal_nota_fiscal_view_guidados_set_resumo",
-      "community": 2,
+      "community": 4,
       "norm_label": ".set_resumo()"
     },
     {
@@ -1514,7 +1514,7 @@
       "source_file": "features/home/sub_features/nota_fiscal/nota_fiscal_view.py",
       "source_location": "L157",
       "id": "nota_fiscal_nota_fiscal_view_guidados_show_page",
-      "community": 2,
+      "community": 8,
       "norm_label": ".show_page()"
     },
     {
@@ -1523,7 +1523,7 @@
       "source_file": "features/home/sub_features/nota_fiscal/nota_fiscal_view.py",
       "source_location": "L161",
       "id": "nota_fiscal_nota_fiscal_view_guidados_update_nav",
-      "community": 2,
+      "community": 8,
       "norm_label": ".update_nav()"
     },
     {
@@ -1532,7 +1532,7 @@
       "source_file": "features/home/sub_features/nota_fiscal/nota_fiscal_view.py",
       "source_location": "L171",
       "id": "nota_fiscal_nota_fiscal_view_guidados_create_frame",
-      "community": 1,
+      "community": 0,
       "norm_label": ".create_frame()"
     },
     {
@@ -1540,7 +1540,7 @@
       "file_type": "rationale",
       "source_file": "features/home/sub_features/nota_fiscal/nota_fiscal_view.py",
       "source_location": "L1",
-      "community": 1,
+      "community": 0,
       "norm_label": "area de dados para emissao de nota sage e melhor envio.",
       "id": "nota_fiscal_nota_fiscal_view_rationale_1"
     },
@@ -1550,7 +1550,7 @@
       "source_file": "assets/__init__.py",
       "source_location": "L1",
       "id": "assets_init_py",
-      "community": 22,
+      "community": 24,
       "norm_label": "__init__.py"
     },
     {
@@ -1559,15 +1559,42 @@
       "source_file": "assets/strings.py",
       "source_location": "L1",
       "id": "assets_strings_py",
-      "community": 23,
+      "community": 25,
       "norm_label": "strings.py"
+    },
+    {
+      "label": "Confirma\u00e7\u00e3o de certificado configurado com sucesso.",
+      "file_type": "rationale",
+      "source_file": "core/errors.py",
+      "source_location": "L87",
+      "community": 26,
+      "norm_label": "confirmacao de certificado configurado com sucesso.",
+      "id": "core_errors_rationale_87"
+    },
+    {
+      "label": "Confirma\u00e7\u00e3o de credenciais removidas com sucesso.",
+      "file_type": "rationale",
+      "source_file": "core/errors.py",
+      "source_location": "L96",
+      "community": 27,
+      "norm_label": "confirmacao de credenciais removidas com sucesso.",
+      "id": "core_errors_rationale_96"
+    },
+    {
+      "label": "Confirma\u00e7\u00e3o de leitura bem-sucedida da planilha.",
+      "file_type": "rationale",
+      "source_file": "core/errors.py",
+      "source_location": "L105",
+      "community": 28,
+      "norm_label": "confirmacao de leitura bem-sucedida da planilha.",
+      "id": "core_errors_rationale_105"
     },
     {
       "label": "Leitura e filtragem da planilha Excel para uso nas features.",
       "file_type": "rationale",
       "source_file": "core/analisePlan.py",
       "source_location": "L1",
-      "community": 0,
+      "community": 1,
       "norm_label": "leitura e filtragem da planilha excel para uso nas features.",
       "id": "core_analiseplan_rationale_1"
     },
@@ -1576,7 +1603,7 @@
       "file_type": "rationale",
       "source_file": "core/errors.py",
       "source_location": "L61",
-      "community": 24,
+      "community": 29,
       "norm_label": "confirmacao de leitura bem-sucedida da planilha.",
       "id": "core_errors_rationale_61"
     },
@@ -1585,7 +1612,7 @@
       "file_type": "rationale",
       "source_file": "core/sheets_manager.py",
       "source_location": "L1",
-      "community": 25,
+      "community": 30,
       "norm_label": "orquestra a autenticacao e o acesso as abas da planilha.",
       "id": "core_sheets_manager_rationale_1"
     },
@@ -1594,7 +1621,7 @@
       "file_type": "rationale",
       "source_file": "core/cadastro_analyse_handler.py",
       "source_location": "L1",
-      "community": 0,
+      "community": 1,
       "norm_label": "processa os dados da aba cadastro da planilha google sheets.",
       "id": "core_cadastro_analyse_handler_rationale_1"
     },
@@ -1603,7 +1630,7 @@
       "file_type": "rationale",
       "source_file": "core/google_sheets_service.py",
       "source_location": "L1",
-      "community": 26,
+      "community": 31,
       "norm_label": "autenticacao e acesso ao google sheets.",
       "id": "core_google_sheets_service_rationale_1"
     },
@@ -1612,7 +1639,7 @@
       "file_type": "rationale",
       "source_file": "core/google_sheets_service.py",
       "source_location": "L23",
-      "community": 27,
+      "community": 32,
       "norm_label": "le o .json da service account, autentica e salva no keychain.",
       "id": "core_google_sheets_service_rationale_23"
     },
@@ -1621,7 +1648,7 @@
       "file_type": "rationale",
       "source_file": "core/google_sheets_service.py",
       "source_location": "L30",
-      "community": 28,
+      "community": 33,
       "norm_label": "tenta autenticar usando credenciais salvas no keychain. retorna false se nao hou",
       "id": "core_google_sheets_service_rationale_30"
     },
@@ -1630,7 +1657,7 @@
       "file_type": "rationale",
       "source_file": "core/google_sheets_service.py",
       "source_location": "L49",
-      "community": 29,
+      "community": 34,
       "norm_label": "define qual planilha vai ser lida pelo id ou url do google sheets.",
       "id": "core_google_sheets_service_rationale_49"
     },
@@ -1639,7 +1666,7 @@
       "file_type": "rationale",
       "source_file": "core/google_sheets_service.py",
       "source_location": "L53",
-      "community": 30,
+      "community": 35,
       "norm_label": "retorna as linhas brutas da planilha (lista de listas de strings).",
       "id": "core_google_sheets_service_rationale_53"
     },
@@ -1652,7 +1679,7 @@
       "captured_at": null,
       "author": "Gui Reis",
       "contributor": null,
-      "community": 3,
+      "community": 2,
       "norm_label": "maria cacau - contagem (readme)",
       "id": "readme_mariacacau"
     },
@@ -1666,7 +1693,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Application built in Python 3.13+ to analyze spreadsheets used as a database, filtering data to generate summaries of products, deliveries, and invoice data.",
-      "community": 3,
+      "community": 2,
       "norm_label": "python desktop application",
       "id": "readme_python_app"
     },
@@ -1679,7 +1706,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 3,
+      "community": 2,
       "norm_label": "maria cacau company",
       "id": "readme_mariacacau_company"
     },
@@ -1692,7 +1719,7 @@
       "captured_at": null,
       "author": "Gui Reis",
       "contributor": null,
-      "community": 3,
+      "community": 2,
       "norm_label": "gui reis (author)",
       "id": "readme_gui_reis"
     },
@@ -1705,7 +1732,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 3,
+      "community": 2,
       "norm_label": "direnv (dependency)",
       "id": "readme_direnv"
     },
@@ -1718,7 +1745,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 3,
+      "community": 2,
       "norm_label": "spreadsheet as database",
       "id": "readme_spreadsheet_database"
     },
@@ -1731,7 +1758,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 3,
+      "community": 2,
       "norm_label": "products summary feature",
       "id": "readme_products_summary"
     },
@@ -1744,7 +1771,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 3,
+      "community": 2,
       "norm_label": "deliveries summary feature",
       "id": "readme_deliveries_summary"
     },
@@ -1757,7 +1784,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 3,
+      "community": 2,
       "norm_label": "invoice data (nota fiscal) feature",
       "id": "readme_invoice_data"
     },
@@ -1770,7 +1797,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 3,
+      "community": 2,
       "norm_label": "save/clipboard icon",
       "id": "asset_salvar_icon"
     },
@@ -1783,7 +1810,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 3,
+      "community": 2,
       "norm_label": "app background - maria cacau watermark",
       "id": "asset_background"
     },
@@ -1796,7 +1823,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 3,
+      "community": 2,
       "norm_label": "maria cacau logo icon",
       "id": "asset_logo_icone"
     },
@@ -1809,7 +1836,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 3,
+      "community": 2,
       "norm_label": "main screen - full ui layout (documentation)",
       "id": "doc_tela_principal"
     },
@@ -1822,7 +1849,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 3,
+      "community": 2,
       "norm_label": "github repository cover image",
       "id": "img_git_capa"
     },
@@ -1835,7 +1862,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 3,
+      "community": 2,
       "norm_label": "maria cacau official logo",
       "id": "img_logo_oficial"
     },
@@ -1848,7 +1875,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 3,
+      "community": 2,
       "norm_label": "app screenshot - populated data view",
       "id": "img_tela_04"
     },
@@ -1861,7 +1888,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 3,
+      "community": 2,
       "norm_label": "app screenshot - empty initial state",
       "id": "img_tela_01"
     },
@@ -1874,7 +1901,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 9,
+      "community": 11,
       "norm_label": "app screenshot - spreadsheet loaded state",
       "id": "img_tela_03"
     },
@@ -1887,7 +1914,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 8,
+      "community": 10,
       "norm_label": "app screenshot - spreadsheet load success dialog",
       "id": "img_tela_02"
     },
@@ -1900,7 +1927,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 3,
+      "community": 2,
       "norm_label": "app screenshot print - populated products and deliveries",
       "id": "print_capturar4"
     },
@@ -1913,7 +1940,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 8,
+      "community": 10,
       "norm_label": "app screenshot print - spreadsheet load success dialog (early ui)",
       "id": "print_capturar2"
     },
@@ -1926,7 +1953,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 9,
+      "community": 11,
       "norm_label": "app screenshot print - ready state with date selector",
       "id": "print_capturar3"
     },
@@ -1939,7 +1966,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 3,
+      "community": 2,
       "norm_label": "app screenshot print - empty initial state (v5.0)",
       "id": "print_capturar"
     },
@@ -1952,7 +1979,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 3,
+      "community": 2,
       "norm_label": "produtos panel (ui)",
       "id": "concept_ui_panel_produtos"
     },
@@ -1965,7 +1992,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 3,
+      "community": 2,
       "norm_label": "entregas panel (ui)",
       "id": "concept_ui_panel_entregas"
     },
@@ -1978,7 +2005,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 3,
+      "community": 2,
       "norm_label": "dados panel - order details (ui)",
       "id": "concept_ui_panel_dados"
     },
@@ -1991,7 +2018,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 3,
+      "community": 2,
       "norm_label": "validacao cpf panel (ui)",
       "id": "concept_ui_validacao_cpf"
     },
@@ -2004,7 +2031,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 3,
+      "community": 2,
       "norm_label": "consulta frete panel (ui)",
       "id": "concept_ui_consulta_frete"
     },
@@ -2017,7 +2044,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 3,
+      "community": 2,
       "norm_label": "shipping methods (sedex, pac, jadlog, motoboy)",
       "id": "concept_shipping_methods"
     }
@@ -2099,7 +2126,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "core/errors.py",
-      "source_location": "L86",
+      "source_location": "L94",
       "weight": 1.0,
       "_src": "core_errors_py",
       "_tgt": "core_errors_certificado_ok",
@@ -2111,7 +2138,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "core/errors.py",
-      "source_location": "L95",
+      "source_location": "L103",
       "weight": 1.0,
       "_src": "core_errors_py",
       "_tgt": "core_errors_certificado_limpo",
@@ -2123,7 +2150,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "core/errors.py",
-      "source_location": "L104",
+      "source_location": "L112",
       "weight": 1.0,
       "_src": "core_errors_py",
       "_tgt": "core_errors_planilha_ok",
@@ -2159,7 +2186,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "core/errors.py",
-      "source_location": "L88",
+      "source_location": "L96",
       "weight": 1.0,
       "_src": "core_errors_certificado_ok",
       "_tgt": "core_errors_apperror",
@@ -2171,7 +2198,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "core/errors.py",
-      "source_location": "L97",
+      "source_location": "L105",
       "weight": 1.0,
       "_src": "core_errors_certificado_limpo",
       "_tgt": "core_errors_apperror",
@@ -2183,7 +2210,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "core/errors.py",
-      "source_location": "L106",
+      "source_location": "L114",
       "weight": 1.0,
       "_src": "core_errors_planilha_ok",
       "_tgt": "core_errors_apperror",
@@ -2231,12 +2258,12 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "core/errors.py",
-      "source_location": "L87",
+      "source_location": "L95",
       "weight": 1.0,
-      "_src": "core_errors_rationale_87",
+      "_src": "core_errors_rationale_95",
       "_tgt": "core_errors_certificado_ok",
       "source": "core_errors_certificado_ok",
-      "target": "core_errors_rationale_87",
+      "target": "core_errors_rationale_95",
       "confidence_score": 1.0
     },
     {
@@ -2246,8 +2273,8 @@
       "source_file": "features/home/home_view.py",
       "source_location": "L166",
       "weight": 1.0,
-      "_src": "home_home_view_guimain_on_configurar_certificado",
-      "_tgt": "core_errors_certificado_ok",
+      "_src": "core_errors_certificado_ok",
+      "_tgt": "home_home_view_guimain_on_configurar_certificado",
       "source": "core_errors_certificado_ok",
       "target": "home_home_view_guimain_on_configurar_certificado"
     },
@@ -2255,12 +2282,12 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "core/errors.py",
-      "source_location": "L96",
+      "source_location": "L104",
       "weight": 1.0,
-      "_src": "core_errors_rationale_96",
+      "_src": "core_errors_rationale_104",
       "_tgt": "core_errors_certificado_limpo",
       "source": "core_errors_certificado_limpo",
-      "target": "core_errors_rationale_96",
+      "target": "core_errors_rationale_104",
       "confidence_score": 1.0
     },
     {
@@ -2270,8 +2297,8 @@
       "source_file": "features/home/home_view.py",
       "source_location": "L181",
       "weight": 1.0,
-      "_src": "home_home_view_guimain_on_limpar_certificado",
-      "_tgt": "core_errors_certificado_limpo",
+      "_src": "core_errors_certificado_limpo",
+      "_tgt": "home_home_view_guimain_on_limpar_certificado",
       "source": "core_errors_certificado_limpo",
       "target": "home_home_view_guimain_on_limpar_certificado"
     },
@@ -2279,12 +2306,12 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "core/errors.py",
-      "source_location": "L105",
+      "source_location": "L113",
       "weight": 1.0,
-      "_src": "core_errors_rationale_105",
+      "_src": "core_errors_rationale_113",
       "_tgt": "core_errors_planilha_ok",
       "source": "core_errors_planilha_ok",
-      "target": "core_errors_rationale_105",
+      "target": "core_errors_rationale_113",
       "confidence_score": 1.0
     },
     {
@@ -2294,8 +2321,8 @@
       "source_file": "core/sheets/handlers/cadastro.py",
       "source_location": "L50",
       "weight": 1.0,
-      "_src": "handlers_cadastro_cadastroanalysehandler_init",
-      "_tgt": "core_errors_planilha_ok",
+      "_src": "core_errors_planilha_ok",
+      "_tgt": "handlers_cadastro_cadastroanalysehandler_init",
       "source": "core_errors_planilha_ok",
       "target": "handlers_cadastro_cadastroanalysehandler_init"
     },
@@ -2447,25 +2474,25 @@
       "relation": "calls",
       "confidence": "INFERRED",
       "confidence_score": 0.8,
-      "source_file": "core/sheets/manager.py",
-      "source_location": "L19",
+      "source_file": "features/home/home_view.py",
+      "source_location": "L165",
       "weight": 1.0,
-      "_src": "sheets_manager_sheetsmanager_connect",
-      "_tgt": "sheets_service_googlesheetsservice_load_credentials_from_file",
+      "_src": "sheets_service_googlesheetsservice_load_credentials_from_file",
+      "_tgt": "home_home_view_guimain_on_configurar_certificado",
       "source": "sheets_service_googlesheetsservice_load_credentials_from_file",
-      "target": "sheets_manager_sheetsmanager_connect"
+      "target": "home_home_view_guimain_on_configurar_certificado"
     },
     {
       "relation": "calls",
       "confidence": "INFERRED",
       "confidence_score": 0.8,
-      "source_file": "features/home/home_view.py",
-      "source_location": "L165",
+      "source_file": "core/sheets/manager.py",
+      "source_location": "L19",
       "weight": 1.0,
-      "_src": "home_home_view_guimain_on_configurar_certificado",
-      "_tgt": "sheets_service_googlesheetsservice_load_credentials_from_file",
+      "_src": "sheets_service_googlesheetsservice_load_credentials_from_file",
+      "_tgt": "sheets_manager_sheetsmanager_connect",
       "source": "sheets_service_googlesheetsservice_load_credentials_from_file",
-      "target": "home_home_view_guimain_on_configurar_certificado"
+      "target": "sheets_manager_sheetsmanager_connect"
     },
     {
       "relation": "calls",
@@ -2498,8 +2525,8 @@
       "source_file": "core/sheets/manager.py",
       "source_location": "L18",
       "weight": 1.0,
-      "_src": "sheets_manager_sheetsmanager_connect",
-      "_tgt": "sheets_service_googlesheetsservice_load_credentials_from_keychain",
+      "_src": "sheets_service_googlesheetsservice_load_credentials_from_keychain",
+      "_tgt": "sheets_manager_sheetsmanager_connect",
       "source": "sheets_service_googlesheetsservice_load_credentials_from_keychain",
       "target": "sheets_manager_sheetsmanager_connect"
     },
@@ -2510,8 +2537,8 @@
       "source_file": "core/sheets/manager.py",
       "source_location": "L17",
       "weight": 1.0,
-      "_src": "sheets_manager_sheetsmanager_connect",
-      "_tgt": "sheets_service_googlesheetsservice_is_authenticated",
+      "_src": "sheets_service_googlesheetsservice_is_authenticated",
+      "_tgt": "sheets_manager_sheetsmanager_connect",
       "source": "sheets_service_googlesheetsservice_is_authenticated",
       "target": "sheets_manager_sheetsmanager_connect"
     },
@@ -2534,8 +2561,8 @@
       "source_file": "features/home/home_view.py",
       "source_location": "L180",
       "weight": 1.0,
-      "_src": "home_home_view_guimain_on_limpar_certificado",
-      "_tgt": "sheets_service_googlesheetsservice_clear_credentials",
+      "_src": "sheets_service_googlesheetsservice_clear_credentials",
+      "_tgt": "home_home_view_guimain_on_limpar_certificado",
       "source": "sheets_service_googlesheetsservice_clear_credentials",
       "target": "home_home_view_guimain_on_limpar_certificado"
     },
@@ -2558,8 +2585,8 @@
       "source_file": "core/sheets/manager.py",
       "source_location": "L20",
       "weight": 1.0,
-      "_src": "sheets_manager_sheetsmanager_connect",
-      "_tgt": "sheets_service_googlesheetsservice_set_sheet",
+      "_src": "sheets_service_googlesheetsservice_set_sheet",
+      "_tgt": "sheets_manager_sheetsmanager_connect",
       "source": "sheets_service_googlesheetsservice_set_sheet",
       "target": "sheets_manager_sheetsmanager_connect"
     },
@@ -2582,8 +2609,8 @@
       "source_file": "core/sheets/manager.py",
       "source_location": "L21",
       "weight": 1.0,
-      "_src": "sheets_manager_sheetsmanager_connect",
-      "_tgt": "sheets_service_googlesheetsservice_get_raw_data",
+      "_src": "sheets_service_googlesheetsservice_get_raw_data",
+      "_tgt": "sheets_manager_sheetsmanager_connect",
       "source": "sheets_service_googlesheetsservice_get_raw_data",
       "target": "sheets_manager_sheetsmanager_connect"
     },
@@ -2591,7 +2618,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "core/sheets/manager.py",
-      "source_location": "L12",
+      "source_location": "L11",
       "weight": 1.0,
       "_src": "core_sheets_manager_py",
       "_tgt": "sheets_manager_sheetsmanager",
@@ -2603,7 +2630,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "core/sheets/manager.py",
-      "source_location": "L26",
+      "source_location": "L25",
       "weight": 1.0,
       "_src": "core_sheets_manager_py",
       "_tgt": "sheets_manager_cadastro",
@@ -2627,7 +2654,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "core/sheets/manager.py",
-      "source_location": "L13",
+      "source_location": "L12",
       "weight": 1.0,
       "_src": "sheets_manager_sheetsmanager",
       "_tgt": "sheets_manager_sheetsmanager_init",
@@ -2639,7 +2666,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "core/sheets/manager.py",
-      "source_location": "L16",
+      "source_location": "L15",
       "weight": 1.0,
       "_src": "sheets_manager_sheetsmanager",
       "_tgt": "sheets_manager_sheetsmanager_connect",
@@ -2655,9 +2682,9 @@
       "weight": 0.8,
       "_src": "sheets_manager_sheetsmanager",
       "_tgt": "handlers_cadastro_cadastroanalysehandler",
+      "confidence_score": 0.5,
       "source": "sheets_manager_sheetsmanager",
-      "target": "handlers_cadastro_cadastroanalysehandler",
-      "confidence_score": 0.5
+      "target": "handlers_cadastro_cadastroanalysehandler"
     },
     {
       "relation": "calls",
@@ -2678,8 +2705,8 @@
       "source_file": "design_system/aux_frames.py",
       "source_location": "L24",
       "weight": 1.0,
-      "_src": "design_system_aux_frames_auxframe_setup_ui",
-      "_tgt": "sheets_manager_sheetsmanager_connect",
+      "_src": "sheets_manager_sheetsmanager_connect",
+      "_tgt": "design_system_aux_frames_auxframe_setup_ui",
       "source": "sheets_manager_sheetsmanager_connect",
       "target": "design_system_aux_frames_auxframe_setup_ui"
     },
@@ -2690,8 +2717,8 @@
       "source_file": "features/home/home_view.py",
       "source_location": "L72",
       "weight": 1.0,
-      "_src": "home_home_view_guimain_setup_ui",
-      "_tgt": "sheets_manager_sheetsmanager_connect",
+      "_src": "sheets_manager_sheetsmanager_connect",
+      "_tgt": "home_home_view_guimain_setup_ui",
       "source": "sheets_manager_sheetsmanager_connect",
       "target": "home_home_view_guimain_setup_ui"
     },
@@ -2702,8 +2729,8 @@
       "source_file": "features/home/home_view.py",
       "source_location": "L188",
       "weight": 1.0,
-      "_src": "home_home_view_guimain_on_ler_planilha",
-      "_tgt": "sheets_manager_sheetsmanager_connect",
+      "_src": "sheets_manager_sheetsmanager_connect",
+      "_tgt": "home_home_view_guimain_on_ler_planilha",
       "source": "sheets_manager_sheetsmanager_connect",
       "target": "home_home_view_guimain_on_ler_planilha"
     },
@@ -2714,8 +2741,8 @@
       "source_file": "features/home/sub_features/orders_pendent/orders_pendent_view.py",
       "source_location": "L53",
       "weight": 1.0,
-      "_src": "orders_pendent_orders_pendent_view_guientregas_setup_ui",
-      "_tgt": "sheets_manager_sheetsmanager_connect",
+      "_src": "sheets_manager_sheetsmanager_connect",
+      "_tgt": "orders_pendent_orders_pendent_view_guientregas_setup_ui",
       "source": "sheets_manager_sheetsmanager_connect",
       "target": "orders_pendent_orders_pendent_view_guientregas_setup_ui"
     },
@@ -2726,8 +2753,8 @@
       "source_file": "features/home/sub_features/products_resume/products_resume_view.py",
       "source_location": "L50",
       "weight": 1.0,
-      "_src": "products_resume_products_resume_view_guiprodutos_setup_ui",
-      "_tgt": "sheets_manager_sheetsmanager_connect",
+      "_src": "sheets_manager_sheetsmanager_connect",
+      "_tgt": "products_resume_products_resume_view_guiprodutos_setup_ui",
       "source": "sheets_manager_sheetsmanager_connect",
       "target": "products_resume_products_resume_view_guiprodutos_setup_ui"
     },
@@ -2738,8 +2765,8 @@
       "source_file": "features/home/sub_features/nota_fiscal/nota_fiscal_view.py",
       "source_location": "L53",
       "weight": 1.0,
-      "_src": "nota_fiscal_nota_fiscal_view_guidados_setup_ui",
-      "_tgt": "sheets_manager_sheetsmanager_connect",
+      "_src": "sheets_manager_sheetsmanager_connect",
+      "_tgt": "nota_fiscal_nota_fiscal_view_guidados_setup_ui",
       "source": "sheets_manager_sheetsmanager_connect",
       "target": "nota_fiscal_nota_fiscal_view_guidados_setup_ui"
     },
@@ -2751,9 +2778,9 @@
       "weight": 0.8,
       "_src": "sheets_manager_rationale_1",
       "_tgt": "handlers_cadastro_cadastroanalysehandler",
+      "confidence_score": 0.5,
       "source": "sheets_manager_rationale_1",
-      "target": "handlers_cadastro_cadastroanalysehandler",
-      "confidence_score": 0.5
+      "target": "handlers_cadastro_cadastroanalysehandler"
     },
     {
       "relation": "contains",
@@ -2871,9 +2898,9 @@
       "weight": 0.8,
       "_src": "handlers_cadastro_cadastroanalysehandler",
       "_tgt": "design_system_gui_popup_guipopup",
+      "confidence_score": 0.5,
       "source": "handlers_cadastro_cadastroanalysehandler",
-      "target": "design_system_gui_popup_guipopup",
-      "confidence_score": 0.5
+      "target": "design_system_gui_popup_guipopup"
     },
     {
       "relation": "calls",
@@ -2918,8 +2945,8 @@
       "source_file": "features/home/home_view.py",
       "source_location": "L126",
       "weight": 1.0,
-      "_src": "home_home_view_guimain_on_ok_produtos",
-      "_tgt": "handlers_cadastro_cadastroanalysehandler_get_col",
+      "_src": "handlers_cadastro_cadastroanalysehandler_get_col",
+      "_tgt": "home_home_view_guimain_on_ok_produtos",
       "source": "handlers_cadastro_cadastroanalysehandler_get_col",
       "target": "home_home_view_guimain_on_ok_produtos"
     },
@@ -2930,8 +2957,8 @@
       "source_file": "features/home/home_view.py",
       "source_location": "L140",
       "weight": 1.0,
-      "_src": "home_home_view_guimain_on_ok_entregas",
-      "_tgt": "handlers_cadastro_cadastroanalysehandler_get_col",
+      "_src": "handlers_cadastro_cadastroanalysehandler_get_col",
+      "_tgt": "home_home_view_guimain_on_ok_entregas",
       "source": "handlers_cadastro_cadastroanalysehandler_get_col",
       "target": "home_home_view_guimain_on_ok_entregas"
     },
@@ -2942,8 +2969,8 @@
       "source_file": "features/home/home_view.py",
       "source_location": "L151",
       "weight": 1.0,
-      "_src": "home_home_view_guimain_on_ok_dados",
-      "_tgt": "handlers_cadastro_cadastroanalysehandler_get_col",
+      "_src": "handlers_cadastro_cadastroanalysehandler_get_col",
+      "_tgt": "home_home_view_guimain_on_ok_dados",
       "source": "handlers_cadastro_cadastroanalysehandler_get_col",
       "target": "home_home_view_guimain_on_ok_dados"
     },
@@ -2954,8 +2981,8 @@
       "source_file": "features/home/home_view.py",
       "source_location": "L191",
       "weight": 1.0,
-      "_src": "home_home_view_guimain_on_ler_planilha",
-      "_tgt": "handlers_cadastro_cadastroanalysehandler_get_col",
+      "_src": "handlers_cadastro_cadastroanalysehandler_get_col",
+      "_tgt": "home_home_view_guimain_on_ler_planilha",
       "source": "handlers_cadastro_cadastroanalysehandler_get_col",
       "target": "home_home_view_guimain_on_ler_planilha"
     },
@@ -2966,8 +2993,8 @@
       "source_file": "features/home/home_view.py",
       "source_location": "L189",
       "weight": 1.0,
-      "_src": "home_home_view_guimain_on_ler_planilha",
-      "_tgt": "handlers_cadastro_cadastroanalysehandler_get_recent_dates",
+      "_src": "handlers_cadastro_cadastroanalysehandler_get_recent_dates",
+      "_tgt": "home_home_view_guimain_on_ler_planilha",
       "source": "handlers_cadastro_cadastroanalysehandler_get_recent_dates",
       "target": "home_home_view_guimain_on_ler_planilha"
     },
@@ -2990,8 +3017,8 @@
       "source_file": "features/home/home_view.py",
       "source_location": "L126",
       "weight": 1.0,
-      "_src": "home_home_view_guimain_on_ok_produtos",
-      "_tgt": "handlers_cadastro_cadastroanalysehandler_get_data",
+      "_src": "handlers_cadastro_cadastroanalysehandler_get_data",
+      "_tgt": "home_home_view_guimain_on_ok_produtos",
       "source": "handlers_cadastro_cadastroanalysehandler_get_data",
       "target": "home_home_view_guimain_on_ok_produtos"
     },
@@ -3002,8 +3029,8 @@
       "source_file": "features/home/home_view.py",
       "source_location": "L140",
       "weight": 1.0,
-      "_src": "home_home_view_guimain_on_ok_entregas",
-      "_tgt": "handlers_cadastro_cadastroanalysehandler_get_data",
+      "_src": "handlers_cadastro_cadastroanalysehandler_get_data",
+      "_tgt": "home_home_view_guimain_on_ok_entregas",
       "source": "handlers_cadastro_cadastroanalysehandler_get_data",
       "target": "home_home_view_guimain_on_ok_entregas"
     },
@@ -3014,8 +3041,8 @@
       "source_file": "features/home/home_view.py",
       "source_location": "L151",
       "weight": 1.0,
-      "_src": "home_home_view_guimain_on_ok_dados",
-      "_tgt": "handlers_cadastro_cadastroanalysehandler_get_dados",
+      "_src": "handlers_cadastro_cadastroanalysehandler_get_dados",
+      "_tgt": "home_home_view_guimain_on_ok_dados",
       "source": "handlers_cadastro_cadastroanalysehandler_get_dados",
       "target": "home_home_view_guimain_on_ok_dados"
     },
@@ -3027,9 +3054,9 @@
       "weight": 0.8,
       "_src": "handlers_cadastro_rationale_1",
       "_tgt": "design_system_gui_popup_guipopup",
+      "confidence_score": 0.5,
       "source": "handlers_cadastro_rationale_1",
-      "target": "design_system_gui_popup_guipopup",
-      "confidence_score": 0.5
+      "target": "design_system_gui_popup_guipopup"
     },
     {
       "relation": "contains",
@@ -3109,11 +3136,11 @@
       "source_file": "features/home/home_view.py",
       "source_location": "L12",
       "weight": 0.8,
-      "_src": "home_home_view_backgroundwidget",
-      "_tgt": "design_system_gui_popup_guipopup",
+      "_src": "design_system_gui_popup_guipopup",
+      "_tgt": "home_home_view_backgroundwidget",
+      "confidence_score": 0.5,
       "source": "design_system_gui_popup_guipopup",
-      "target": "home_home_view_backgroundwidget",
-      "confidence_score": 0.5
+      "target": "home_home_view_backgroundwidget"
     },
     {
       "relation": "uses",
@@ -3121,11 +3148,11 @@
       "source_file": "features/home/home_view.py",
       "source_location": "L12",
       "weight": 0.8,
-      "_src": "home_home_view_guimain",
-      "_tgt": "design_system_gui_popup_guipopup",
+      "_src": "design_system_gui_popup_guipopup",
+      "_tgt": "home_home_view_guimain",
+      "confidence_score": 0.5,
       "source": "design_system_gui_popup_guipopup",
-      "target": "home_home_view_guimain",
-      "confidence_score": 0.5
+      "target": "home_home_view_guimain"
     },
     {
       "relation": "uses",
@@ -3133,11 +3160,11 @@
       "source_file": "features/home/home_view.py",
       "source_location": "L12",
       "weight": 0.8,
-      "_src": "home_home_view_rationale_1",
-      "_tgt": "design_system_gui_popup_guipopup",
+      "_src": "design_system_gui_popup_guipopup",
+      "_tgt": "home_home_view_rationale_1",
+      "confidence_score": 0.5,
       "source": "design_system_gui_popup_guipopup",
-      "target": "home_home_view_rationale_1",
-      "confidence_score": 0.5
+      "target": "home_home_view_rationale_1"
     },
     {
       "relation": "uses",
@@ -3170,8 +3197,8 @@
       "source_file": "features/home/home_view.py",
       "source_location": "L162",
       "weight": 1.0,
-      "_src": "home_home_view_guimain_on_configurar_certificado",
-      "_tgt": "design_system_gui_popup_guipopup",
+      "_src": "design_system_gui_popup_guipopup",
+      "_tgt": "home_home_view_guimain_on_configurar_certificado",
       "source": "design_system_gui_popup_guipopup",
       "target": "home_home_view_guimain_on_configurar_certificado"
     },
@@ -3182,10 +3209,22 @@
       "source_file": "features/home/home_view.py",
       "source_location": "L181",
       "weight": 1.0,
-      "_src": "home_home_view_guimain_on_limpar_certificado",
-      "_tgt": "design_system_gui_popup_guipopup",
+      "_src": "design_system_gui_popup_guipopup",
+      "_tgt": "home_home_view_guimain_on_limpar_certificado",
       "source": "design_system_gui_popup_guipopup",
       "target": "home_home_view_guimain_on_limpar_certificado"
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "features/home/home_view.py",
+      "source_location": "L193",
+      "weight": 1.0,
+      "_src": "home_home_view_guimain_on_ler_planilha",
+      "_tgt": "design_system_gui_popup_guipopup",
+      "source": "design_system_gui_popup_guipopup",
+      "target": "home_home_view_guimain_on_ler_planilha"
     },
     {
       "relation": "calls",
@@ -3205,8 +3244,8 @@
       "source_file": "core/analisePlan.py",
       "source_location": "L11",
       "weight": 0.8,
-      "_src": "core_analiseplan_rationale_1",
-      "_tgt": "design_system_gui_popup_guipopup",
+      "_src": "design_system_gui_popup_guipopup",
+      "_tgt": "core_analiseplan_rationale_1",
       "confidence_score": 0.5,
       "source": "design_system_gui_popup_guipopup",
       "target": "core_analiseplan_rationale_1"
@@ -3242,8 +3281,8 @@
       "source_file": "features/home/home_view.py",
       "source_location": "L162",
       "weight": 1.0,
-      "_src": "home_home_view_guimain_on_configurar_certificado",
-      "_tgt": "design_system_gui_popup_guipopup_show_popup",
+      "_src": "design_system_gui_popup_guipopup_show_popup",
+      "_tgt": "home_home_view_guimain_on_configurar_certificado",
       "source": "design_system_gui_popup_guipopup_show_popup",
       "target": "home_home_view_guimain_on_configurar_certificado"
     },
@@ -3254,10 +3293,22 @@
       "source_file": "features/home/home_view.py",
       "source_location": "L181",
       "weight": 1.0,
-      "_src": "home_home_view_guimain_on_limpar_certificado",
-      "_tgt": "design_system_gui_popup_guipopup_show_popup",
+      "_src": "design_system_gui_popup_guipopup_show_popup",
+      "_tgt": "home_home_view_guimain_on_limpar_certificado",
       "source": "design_system_gui_popup_guipopup_show_popup",
       "target": "home_home_view_guimain_on_limpar_certificado"
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "features/home/home_view.py",
+      "source_location": "L193",
+      "weight": 1.0,
+      "_src": "home_home_view_guimain_on_ler_planilha",
+      "_tgt": "design_system_gui_popup_guipopup_show_popup",
+      "source": "design_system_gui_popup_guipopup_show_popup",
+      "target": "home_home_view_guimain_on_ler_planilha"
     },
     {
       "relation": "calls",
@@ -4415,7 +4466,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "features/home/home_view.py",
-      "source_location": "L122",
+      "source_location": "L124",
       "weight": 1.0,
       "_src": "home_home_view_guimain",
       "_tgt": "home_home_view_guimain_on_ok_produtos",
@@ -4427,7 +4478,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "features/home/home_view.py",
-      "source_location": "L135",
+      "source_location": "L137",
       "weight": 1.0,
       "_src": "home_home_view_guimain",
       "_tgt": "home_home_view_guimain_on_ok_entregas",
@@ -4439,7 +4490,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "features/home/home_view.py",
-      "source_location": "L148",
+      "source_location": "L150",
       "weight": 1.0,
       "_src": "home_home_view_guimain",
       "_tgt": "home_home_view_guimain_on_ok_dados",
@@ -4451,7 +4502,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "features/home/home_view.py",
-      "source_location": "L159",
+      "source_location": "L161",
       "weight": 1.0,
       "_src": "home_home_view_guimain",
       "_tgt": "home_home_view_guimain_on_configurar_certificado",
@@ -4463,7 +4514,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "features/home/home_view.py",
-      "source_location": "L171",
+      "source_location": "L173",
       "weight": 1.0,
       "_src": "home_home_view_guimain",
       "_tgt": "home_home_view_guimain_on_limpar_certificado",
@@ -4475,7 +4526,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "features/home/home_view.py",
-      "source_location": "L186",
+      "source_location": "L188",
       "weight": 1.0,
       "_src": "home_home_view_guimain",
       "_tgt": "home_home_view_guimain_on_ler_planilha",
