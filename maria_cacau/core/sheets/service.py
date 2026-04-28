@@ -83,11 +83,11 @@ class GoogleSheetsService:
         )
         return worksheet.get_all_values()
 
-    def get_cadastro_filtered(self, n_dates: int = 20) -> list:
-        """Lê apenas as linhas das N datas mais recentes da aba Cadastro.
+    def get_cadastro_filtered(self) -> list:
+        """Lê todas as linhas da aba Cadastro usando dois passes para economizar API.
 
         Faz dois passes: lê a coluna DATA para descobrir as datas,
-        depois busca só as linhas relevantes via batch_get.
+        depois busca as linhas via batch_get.
         Fallback para get_all_values se a coluna DATA não for encontrada.
         """
         spreadsheet = self._client.open_by_key(self._sheet_id)
@@ -105,10 +105,10 @@ class GoogleSheetsService:
         # Pass 2: lê só a coluna de data (muito mais leve que ler tudo)
         date_col = ws.col_values(data_col_1based)  # índice 0 = célula do header
 
-        # Identifica as N datas mais recentes (por data real, não ordem lexicográfica)
+        # Identifica todas as datas com dados
         unique_dates = list({v[:10] for v in date_col[1:] if v and v.strip()})
         unique_dates.sort(key=_parse_date)
-        recent = set(unique_dates[-n_dates:])
+        recent = set(unique_dates)
 
         # Acha os números de linha (1-based) que correspondem a essas datas
         target_rows = [1]  # sempre inclui o header
@@ -137,7 +137,7 @@ class GoogleSheetsService:
         for i in range(0, len(ranges), 100):
             for value_range in ws.batch_get(ranges[i:i + 100]):
                 for row in value_range:
-                    rows.append(row + [''] * (header_len - len(row)))
+                    rows.append((row + [''] * max(0, header_len - len(row)))[:header_len])
 
         return rows
 
@@ -185,7 +185,7 @@ class GoogleSheetsService:
         for i in range(0, len(ranges), 100):
             for value_range in ws.batch_get(ranges[i:i + 100]):
                 for row in value_range:
-                    rows.append(row + [''] * (header_len - len(row)))
+                    rows.append((row + [''] * max(0, header_len - len(row)))[:header_len])
 
         return rows
 
