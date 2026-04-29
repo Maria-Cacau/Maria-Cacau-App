@@ -470,6 +470,7 @@ class GuiMain(QMainWindow):
         try:
             service.load_credentials_from_file(path)
             observability.log(AppEvent.CERT_SET)
+            self._auto_connect()
             GuiPopup().show_popup(errors.certificado_ok(), "I")
         except Exception as exc:
             observability.log(AppEvent.ERROR, msg=str(exc), where='on_configurar_certificado')
