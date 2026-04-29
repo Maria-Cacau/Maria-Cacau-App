@@ -60,7 +60,7 @@ class AuxWidgets:
         gb.setStyleSheet("""
             QGroupBox {
                 border: 1px solid brown;
-                margin-top: 1ex;
+                margin-top: 20px;
             }
             QGroupBox::title {
                 subcontrol-origin: margin;
