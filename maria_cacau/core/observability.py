@@ -18,6 +18,7 @@ class AppEvent(Enum):
     CERT_SET       = 'CERT_SET'
     SHEET_ADD      = 'SHEET_ADD'  # extra: name=, sheet_id=
     BTN_COPY       = 'BTN_COPY'   # extra: feature=
+    CPF_CHECK      = 'CPF_CHECK'  # extra: valid=
     ERROR          = 'ERROR'      # extra: msg=, where= (optional)
 
 
