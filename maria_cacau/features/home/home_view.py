@@ -5,8 +5,8 @@ import time
 from datetime import datetime
 from pathlib import Path
 
-from PyQt6.QtCore import QDesktopServices, QObject, QThread, QUrl, pyqtSignal
-from PyQt6.QtGui import QAction, QIcon, QPainter, QPixmap
+from PyQt6.QtCore import QObject, QThread, QUrl, pyqtSignal
+from PyQt6.QtGui import QAction, QDesktopServices, QIcon, QPainter, QPixmap
 from PyQt6.QtWidgets import (QApplication, QDialog, QDialogButtonBox,
                              QFileDialog, QFormLayout, QHBoxLayout, QInputDialog,
                              QLineEdit, QMainWindow, QMenu, QMenuBar, QMessageBox,
