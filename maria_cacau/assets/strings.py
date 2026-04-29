@@ -30,7 +30,8 @@ ACT_CONECTAR_PLANILHA     = "Conectar nova planilha"
 ACT_PLANILHAS_CONECTADAS  = "Planilhas conectadas"
 ACT_CONFIGURAR_CERT       = "Configurar certificado"
 ACT_LIMPAR_CERT           = "Limpar certificado"
-ACT_SOBRE                 = "Sobre"
+ACT_DOCUMENTACAO          = "Documentação"
+URL_DOCUMENTACAO          = "https://github.com/Gui25Reis/Maria-Cacau-Contagem/wiki"
 
 # ── Diálogos ──────────────────────────────────────────────────────────────────
 
