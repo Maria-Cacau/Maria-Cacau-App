@@ -1,7 +1,7 @@
 # Graph Report - Maria-Cacau-Contagem  (2026-04-29)
 
 ## Corpus Check
-- 36 files · ~10,818 words
+- 36 files · ~10,825 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
