@@ -23,6 +23,7 @@ for /f "delims=" %%i in ('python -c "import maria_cacau; print(maria_cacau.__ver
 for /f "delims=" %%i in ('python -c "import maria_cacau; print(maria_cacau.__copyright__)"') do set COPYRIGHT=%%i
 for /f "delims=" %%i in ('python -c "import maria_cacau; print(maria_cacau.__icon_win__)"') do set ICON_WIN=%%i
 for /f "delims=" %%i in ('python -c "import maria_cacau; print(maria_cacau.__company__)"') do set COMPANY_NAME=%%i
+for /f "delims=" %%i in ('python -c "import maria_cacau; print(maria_cacau.__description__)"') do set DESCRIPTION=%%i
 
 REM Windows exige versão com 4 partes (X.Y.Z.W)
 set WIN_VERSION=%VERSION%.0
@@ -38,7 +39,7 @@ python -m nuitka ^
     --windows-product-version="%WIN_VERSION%" ^
     --windows-file-version="%WIN_VERSION%" ^
     --windows-company-name="%COMPANY_NAME%" ^
-    --windows-file-description="%APP_NAME%" ^
+    --windows-file-description="%DESCRIPTION%" ^
     --copyright="%COPYRIGHT%" ^
     --include-data-dir=maria_cacau/assets=maria_cacau/assets ^
     --include-data-files=pyproject.toml=pyproject.toml ^

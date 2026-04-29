@@ -26,5 +26,5 @@ where = ["."]
 include = ["maria_cacau*"]
 
 [tool.maria-cacau]
-year    = "2020"
+year    = "2026"
 company = "KINGS"

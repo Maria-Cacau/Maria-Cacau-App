@@ -6,7 +6,7 @@ from datetime import datetime
 from pathlib import Path
 
 from PyQt6.QtCore import QObject, QThread, QUrl, pyqtSignal
-from PyQt6.QtGui import QAction, QDesktopServices, QIcon, QPainter, QPixmap
+from PyQt6.QtGui import QAction, QDesktopServices, QPainter, QPixmap
 from PyQt6.QtWidgets import (QApplication, QDialog, QDialogButtonBox,
                              QFileDialog, QFormLayout, QHBoxLayout, QInputDialog,
                              QLineEdit, QMainWindow, QMenu, QMenuBar, QMessageBox,
@@ -103,8 +103,7 @@ class GuiMain(QMainWindow):
     def __init__(self) -> None:
         super().__init__()
 
-        self.setWindowIcon(QIcon('maria_cacau/assets/images/logo-icone.png'))
-        self.setWindowTitle("Maria Cacau - Consulta")
+        self.setWindowTitle(strings.APP_TITLE)
 
         tamTela = QApplication.primaryScreen().availableGeometry()
         self.setMinimumSize(tamTela.width()-300, tamTela.height()-200)
