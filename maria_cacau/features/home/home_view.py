@@ -132,7 +132,6 @@ class GuiMain(QMainWindow):
 
         self.datas: dict = {}
         self.dtEnt: str = ''
-        self.dtDados: str = ''
 
         del tamTela, self.gVeriCpf, self.gConsCep
 
@@ -182,7 +181,7 @@ class GuiMain(QMainWindow):
         mainLayout.addWidget(self.gProdutos.root, stretch=3)
 
         rightLayout = QVBoxLayout()
-        rightLayout.addWidget(self.gEntregas.root, stretch=3)
+        rightLayout.addWidget(self.gEntregas.root, stretch=8)
 
         bottomLayout = QHBoxLayout()
         bottomLayout.addWidget(self.gDados.root, stretch=4)
@@ -203,9 +202,6 @@ class GuiMain(QMainWindow):
         self.gProdutos.btOk.clicked.connect(self.on_ok_produtos)
         self.gProdutos.btCopiarTxt.clicked.connect(lambda: observability.log(AppEvent.BTN_COPY, feature='produtos'))
 
-        self.gDados.btAttAtiv.clicked.connect(self._on_ativar_dados)
-        self.gDados.btAttAtiv.setEnabled(False)
-        self.gDados.btOk.clicked.connect(self.on_ok_dados)
 
     ## Método: Tenta conectar automaticamente à planilha mais recente ao iniciar
     def _auto_connect(self) -> None:
@@ -220,17 +216,8 @@ class GuiMain(QMainWindow):
             self._update_planilha_check(latest['sheet_id'])
             self.statusBar.set_credentials(True)
             self.statusBar.set_sheet(latest['nome'], latest['sheet_id'])
-            self.gDados.btAttAtiv.setEnabled(True)
         except PermissionError:
             pass
-
-    ## Método: Ativar dados — lê Cadastro (lazy) e popula datas
-    def _on_ativar_dados(self) -> None:
-        manager.load_cadastro()
-        self._ensure_datas()
-        self.gDados.set_dates(self.datas)
-        self.gDados.set_trad(manager.cadastro.get_col("gsage"), manager.cadastro.get_col("glbl"))
-        self.gDados.on_ativar()
 
     ## Método: Garante que self.datas está populado (chamado após load_cadastro)
     def _ensure_datas(self) -> None:
@@ -365,17 +352,6 @@ class GuiMain(QMainWindow):
 
         self._run_async(lambda: manager.get_entregas_for_date(dt), _on_done, _on_error)
 
-    ## Método: ação do botão OK da área de Dados
-    def on_ok_dados(self) -> None:
-        dt: str = self.gDados.get_date()
-        if self.dtDados != dt:
-            arq = manager.cadastro.get_dados(manager.cadastro.get_col("sage"), dt)
-            arq['belga'] = self.gDados.set_belga(manager.cadastro.get_dados(manager.cadastro.get_col("belga"), dt))
-            self.gDados.set_resumo(arq)
-            self.dtDados = dt
-            del arq
-        del dt
-
     ## Método: Ação do menu "Conectar com planilha"
     def on_conectar_planilha(self) -> None:
         dlg = _DialogConectarPlanilha(self)
@@ -411,8 +387,6 @@ class GuiMain(QMainWindow):
         self.statusBar.set_sheet(nome, sheet_id)
         self.statusBar.set_credentials(True)
 
-        self.gDados.btAttAtiv.setEnabled(True)
-
     ## Método: Adiciona uma planilha ao submenu como item checkable
     def _add_planilha_menu(self, nome: str, sheet_id: str) -> None:
         act = QAction(nome, self)
@@ -438,8 +412,6 @@ class GuiMain(QMainWindow):
         GuiPopup().show_popup(errors.planilha_conectada(nome), "I")
 
         self.statusBar.set_sheet(nome, sheet_id)
-
-        self.gDados.btAttAtiv.setEnabled(True)
 
     ## Método: Resolve o nome da planilha — detecta duplicata e oferece renomear.
     ## Retorna None se o usuário cancelar no fluxo de duplicata.

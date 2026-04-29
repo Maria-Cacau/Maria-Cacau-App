@@ -52,7 +52,8 @@ DLG_CONECTAR_PLACEHOLDER_NOME  = "Ex: Maria Cacau"
 
 # ── Labels ────────────────────────────────────────────────────────────────────
 
-LBL_CPF_INSTRUCAO = "INSIRA O CPF NO CAMPO ACIMA"
+LBL_CPF_INSTRUCAO  = "INSIRA O CPF NO CAMPO ACIMA"
+LBL_EM_BREVE       = "Em breve..."
 LBL_PERIODO       = "Período:"
 
 # ── Status bar ────────────────────────────────────────────────────────────────
