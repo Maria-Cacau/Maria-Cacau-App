@@ -6,10 +6,12 @@
 Maria-Cacau-Contagem/
 ├── .ai/                          # instruções para IAs
 ├── scripts/
-│   ├── build.sh                  # setup do ambiente
-│   └── package.sh                # gera executável
+│   ├── build.sh                  # setup do ambiente (macOS)
+│   ├── build.bat                 # setup do ambiente (Windows)
+│   ├── package.sh                # gera .app (macOS)
+│   └── package.bat               # gera .exe (Windows)
 ├── maria_cacau/                  # pacote principal
-│   ├── __init__.py               # metadados centralizados (versão, copyright, ícones)
+│   ├── __init__.py               # metadados centralizados (versão, copyright, ícones) + helper `asset()`
 │   ├── __main__.py               # entry point
 │   ├── core/
 │   │   ├── sheets/
@@ -76,7 +78,7 @@ Barra fixa na base da janela com três estados de cor:
 
 Reverte automaticamente para verde 3s após o sucesso.
 
-Durante o estado laranja, um `QTimer` de 1s atualiza o texto com o tempo decorrido na frente da mensagem (ex: `3s  Realizando consulta...`).
+Durante o estado laranja, um contador de 1s atualiza o texto com o tempo decorrido (ex: `3s  Realizando consulta...`). Implementado com `QTimer.singleShot` recursivo (mais compatível com Nuitka do que `QTimer` persistente).
 
 ## Observabilidade (`observability`)
 
@@ -97,8 +99,13 @@ Saída: `~/.mariacacau/logs.log` (append-only, formato `YYYY-MM-DD HH:MM:SS  LEV
 
 Para adicionar um novo evento: acrescentar valor ao `AppEvent` e chamar `observability.log(AppEvent.NOVO, ...)`.
 
+## Assets (`asset()`)
+Qualquer path de asset deve ser resolvido via `asset('images/foo.png')` de `maria_cacau/__init__.py`.
+Internamente usa `Path(__file__).parent / 'assets' / relative_path`, garantindo resolução correta tanto em dev quanto no `.exe` compilado pelo Nuitka.
+
 ## Fonte única de verdade
 - **Versão, ano e empresa** → `pyproject.toml` (`[project]` e `[tool.maria-cacau]`)
 - **Metadados do app** (nome exibido, copyright, ícones) → `maria_cacau/__init__.py` (lê do pyproject.toml)
 - **Textos de UI** → `maria_cacau/assets/strings.py`
 - **Erros** → `maria_cacau/core/errors.py`
+- **Paths de assets** → `asset()` em `maria_cacau/__init__.py`
