@@ -1,27 +1,42 @@
-"""Backend de armazenamento seguro via keychain do SO."""
+"""Backend de armazenamento seguro via arquivo protegido no diretório do usuário."""
 
-import keyring
-import keyring.errors
+from pathlib import Path
 
 from maria_cacau.core.storage.handler import StorageHandler
 
+_BASE_DIR = Path.home() / '.mariacacau'
+
 
 class SecurityStorage(StorageHandler[str]):
-    def __init__(self, service: str) -> None:
-        self._service = service
+    def __init__(self) -> None:
+        self._dir = _BASE_DIR
+        self._dir.mkdir(parents=True, exist_ok=True)
 
     def save(self, data: str, key: str) -> None:
-        keyring.set_password(self._service, key, data)
+        path = self._path(key)
+        path.write_text(data, encoding='utf-8')
+        try:
+            path.chmod(0o600)
+        except NotImplementedError:
+            pass
 
     def retrieve(self, key: str) -> str | None:
-        return keyring.get_password(self._service, key)
+        p = self._path(key)
+        if not p.exists():
+            return None
+        return p.read_text(encoding='utf-8')
 
     def delete(self, key: str) -> bool:
-        try:
-            keyring.delete_password(self._service, key)
+        p = self._path(key)
+        if p.exists():
+            p.unlink()
             return True
-        except keyring.errors.PasswordDeleteError:
-            return False
+        return False
 
     def clean_all(self) -> None:
-        pass
+        for f in self._dir.glob('*.credential'):
+            f.unlink()
+
+    def _path(self, key: str) -> Path:
+        safe = key.replace('/', '_').replace('\\', '_')
+        return self._dir / f'{safe}.credential'

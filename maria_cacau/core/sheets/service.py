@@ -18,11 +18,10 @@ def _parse_date(s: str) -> datetime:
     return datetime.min
 
 
-_KEYRING_SERVICE = "maria-cacau"
-_KEYRING_KEY     = "google-credentials"
-_SCOPES          = ["https://www.googleapis.com/auth/spreadsheets.readonly"]
+_KEYRING_KEY = "google-credentials"
+_SCOPES      = ["https://www.googleapis.com/auth/spreadsheets.readonly"]
 
-_security = SecurityStorage(_KEYRING_SERVICE)
+_security = SecurityStorage()
 
 
 class GoogleSheetsService:
@@ -33,14 +32,14 @@ class GoogleSheetsService:
     # ── Credenciais ───────────────────────────────────────────────────────────
 
     def load_credentials_from_file(self, path: str) -> None:
-        """Lê o .json da Service Account, autentica e salva no keychain."""
+        """Lê o .json da Service Account, autentica e salva em ~/.mariacacau/."""
         with open(path) as f:
             raw = f.read()
         _security.save(raw, _KEYRING_KEY)
         self._authenticate(raw)
 
     def load_credentials_from_keychain(self) -> bool:
-        """Tenta autenticar usando credenciais salvas no keychain. Retorna False se não houver."""
+        """Tenta autenticar usando credenciais salvas. Retorna False se não houver."""
         raw = _security.retrieve(_KEYRING_KEY)
         if not raw:
             return False
@@ -57,7 +56,7 @@ class GoogleSheetsService:
         return self._client is not None
 
     def clear_credentials(self) -> bool:
-        """Remove as credenciais do keychain. Retorna False se não havia nada salvo."""
+        """Remove as credenciais salvas. Retorna False se não havia nada salvo."""
         result = _security.delete(_KEYRING_KEY)
         if result:
             self._client = None

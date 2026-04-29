@@ -53,11 +53,13 @@ Futuramente cada feature pode ter `view.py` + `view_model.py` (Clean Architectur
 | Classe | Backend | Uso |
 |---|---|---|
 | `StorageHandler[T]` | — | ABC com `save / retrieve / delete / clean_all` |
-| `SecurityStorage` | keyring (keychain do SO) | Credenciais da Service Account |
+| `SecurityStorage` | Arquivo `~/.mariacacau/<key>.credential` (chmod 600) | Credenciais da Service Account |
 | `CacheStorage` | JSON em `~/.mariacacau/` | Planilhas salvas (`sheets.json`) |
 
-`service.py` define as chaves (`_KEYRING_SERVICE`, `_KEYRING_KEY`) mas delega as operações ao `SecurityStorage`.
+`service.py` define `_KEYRING_KEY = "google-credentials"` e usa `SecurityStorage()` para salvar/ler o JSON completo da Service Account em `~/.mariacacau/google-credentials.credential`.
 `home_view.py` usa `CacheStorage` para persistir e ler a lista de planilhas conectadas.
+
+> **Motivação da mudança**: o Windows Credential Manager tem limite de ~1280 chars (UTF-16LE). O JSON de Service Account do Google tem ~2400–2800 chars, estourando esse limite com erro 1783. A solução é arquivo protegido por permissões do filesystem, cross-platform e sem limite de tamanho.
 
 ## Threading
 Consultas ao Google Sheets rodam em `QThread` via `_Worker` + `_run_async` em `home_view.py`.
