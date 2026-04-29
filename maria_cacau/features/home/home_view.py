@@ -133,7 +133,7 @@ class GuiMain(QMainWindow):
         self.datas: dict = {}
         self.dtEnt: str = ''
 
-        del tamTela, self.gVeriCpf, self.gConsCep
+        del tamTela, self.gConsCep
 
     def closeEvent(self, event) -> None:
         observability.log(AppEvent.APP_CLOSE)
