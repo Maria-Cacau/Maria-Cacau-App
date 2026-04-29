@@ -2,12 +2,14 @@
 
 import json
 from datetime import datetime
+from pathlib import Path
 from typing import Final
 
 import gspread
 from google.oauth2.service_account import Credentials
 
 from maria_cacau.core.storage.security import SecurityStorage
+from maria_cacau.core.storage.cache import CacheStorage
 
 def _parse_date(s: str) -> datetime:
     for fmt in ('%d/%m/%y', '%d/%m/%Y'):
@@ -18,11 +20,13 @@ def _parse_date(s: str) -> datetime:
     return datetime.min
 
 
-_KEYRING_SERVICE = "maria-cacau"
-_KEYRING_KEY     = "google-credentials"
-_SCOPES          = ["https://www.googleapis.com/auth/spreadsheets.readonly"]
+_KEYRING_SERVICE  = "maria-cacau"
+_KEYRING_KEY      = "google-credentials-pk"   # armazena só a private_key
+_CREDS_META_KEY   = "google-credentials-meta" # armazena o JSON sem a private_key
+_SCOPES           = ["https://www.googleapis.com/auth/spreadsheets.readonly"]
 
-_security = SecurityStorage(_KEYRING_SERVICE)
+_security     = SecurityStorage(_KEYRING_SERVICE)
+_creds_cache  = CacheStorage(Path.home() / '.mariacacau')
 
 
 class GoogleSheetsService:
@@ -33,18 +37,28 @@ class GoogleSheetsService:
     # ── Credenciais ───────────────────────────────────────────────────────────
 
     def load_credentials_from_file(self, path: str) -> None:
-        """Lê o .json da Service Account, autentica e salva no keychain."""
+        """Lê o .json da Service Account, autentica e salva:
+        - private_key  → keyring
+        - restante     → cache JSON em ~/.mariacacau/
+        """
         with open(path) as f:
-            raw = f.read()
-        _security.save(raw, _KEYRING_KEY)
-        self._authenticate(raw)
+            data = json.load(f)
+
+        private_key = data.pop('private_key')
+        _security.save(private_key, _KEYRING_KEY)
+        _creds_cache.save(data, _CREDS_META_KEY)
+
+        data['private_key'] = private_key
+        self._authenticate(json.dumps(data))
 
     def load_credentials_from_keychain(self) -> bool:
-        """Tenta autenticar usando credenciais salvas no keychain. Retorna False se não houver."""
-        raw = _security.retrieve(_KEYRING_KEY)
-        if not raw:
+        """Reconstrói as credenciais a partir do keyring + cache. Retorna False se não houver."""
+        private_key = _security.retrieve(_KEYRING_KEY)
+        meta = _creds_cache.retrieve(_CREDS_META_KEY)
+        if not private_key or not meta:
             return False
-        self._authenticate(raw)
+        meta['private_key'] = private_key
+        self._authenticate(json.dumps(meta))
         return True
 
     def _authenticate(self, raw_json: str) -> None:
@@ -57,8 +71,9 @@ class GoogleSheetsService:
         return self._client is not None
 
     def clear_credentials(self) -> bool:
-        """Remove as credenciais do keychain. Retorna False se não havia nada salvo."""
+        """Remove private_key do keyring e metadados do cache. Retorna False se não havia nada salvo."""
         result = _security.delete(_KEYRING_KEY)
+        _creds_cache.delete(_CREDS_META_KEY)
         if result:
             self._client = None
         return result
