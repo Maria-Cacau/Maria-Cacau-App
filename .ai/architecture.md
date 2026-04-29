@@ -19,7 +19,7 @@ Maria-Cacau-Contagem/
 │   │   │       └── cadastro.py           # processa a aba Cadastro (filtragem, datas, colunas)
 │   │   ├── storage/
 │   │   │   ├── handler.py                # ABC StorageHandler[T] — contrato único de persistência
-│   │   │   ├── security.py               # SecurityStorage — keychain via keyring
+│   │   │   ├── security.py               # SecurityStorage — arquivo protegido em ~/.mariacacau/
 │   │   │   └── cache.py                  # CacheStorage — JSON em ~/.mariacacau/
 │   │   ├── observability.py              # AppEvent enum + singleton `observability` → logs.log
 │   │   └── errors.py                     # códigos de erro com docstrings
@@ -35,7 +35,7 @@ Maria-Cacau-Contagem/
 │           ├── home_view.py      # janela principal + orquestração
 │           └── sub_features/
 │               ├── cpf_validation/
-│               ├── nota_fiscal/
+│               ├── nota_fiscal/           # placeholder "Em breve" (v5.0)
 │               ├── products_resume/
 │               ├── orders_pendent/
 │               ├── freight_query/
