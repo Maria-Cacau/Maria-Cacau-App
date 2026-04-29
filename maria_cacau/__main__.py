@@ -6,7 +6,7 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QApplication
 
-from maria_cacau import __icon_mac__, __icon_win__
+from maria_cacau import __app_name__, __icon_mac__, __icon_win__
 from maria_cacau.features.home.home_view import GuiMain
 
 

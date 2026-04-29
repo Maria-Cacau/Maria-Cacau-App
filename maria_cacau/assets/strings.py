@@ -1,4 +1,6 @@
-from maria_cacau import __version__, __year__, __company__
+from maria_cacau import __app_name__, __version__, __year__, __company__
+
+APP_TITLE = __app_name__
 
 _ver_short = '.'.join(__version__.split('.')[:2])   # '5.0.0' → '5.0'
 

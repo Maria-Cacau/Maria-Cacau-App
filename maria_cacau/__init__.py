@@ -11,8 +11,15 @@ __description__ = _m["Summary"]
 __author__      = _m["Author-email"]
 
 __app_name__  = "MC Consultas"
-__icon_win__  = "maria_cacau/assets/images/logo-icone.ico"
-__icon_mac__  = "maria_cacau/assets/images/logo-icone.icns"
+
+_assets = Path(__file__).parent / 'assets'
+
+def asset(relative_path: str) -> str:
+    """Resolve um path relativo à pasta assets, funciona em dev e no .exe compilado."""
+    return str(_assets / relative_path)
+
+__icon_win__ = asset('images/logo-icone.ico')
+__icon_mac__ = asset('images/logo-icone.icns')
 
 _custom: dict = {}
 try:
