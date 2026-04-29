@@ -1,6 +1,6 @@
 # Maria Cacau - Contagem
 
-[![Version](https://img.shields.io/badge/version-5.0-orange)](#)
+[![Version](https://img.shields.io/badge/version-4.0-orange)](#)
 ![Language](https://img.shields.io/badge/language-Python-blue?logo=python)
 [![Python Version](https://img.shields.io/badge/python-v3.13+-blue?logo=python)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-MIT-brightgreen)](https://github.com/Gui25Reis/Maria-Cacau-Contagem/blob/main/LICENSE)
@@ -63,6 +63,23 @@ venv\Scripts\activate.bat
 # Rodar o app
 python -m maria_cacau
 ```
+
+## Gerar executável
+
+> [!NOTE]
+> É necessário ter rodado o `build` antes para ter o venv configurado.
+
+**macOS:**
+
+```bash
+## Mac
+./scripts/package.sh
+
+## Windows
+scripts\package.bat
+
+```
+O executável fica em `dist/MC - Análise.app`.
 
 ## Demo
 
