@@ -458,6 +458,7 @@ class GuiMain(QMainWindow):
         if confirm != QMessageBox.StandardButton.Yes:
             return
         if service.clear_credentials():
+            self.statusBar.set_credentials(False)
             GuiPopup().show_popup(errors.certificado_limpo(), "I")
         else:
             GuiPopup().show_popup(errors.C003)
