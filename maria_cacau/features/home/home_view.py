@@ -5,8 +5,8 @@ import time
 from datetime import datetime
 from pathlib import Path
 
-from PyQt6.QtCore import QObject, QThread, pyqtSignal
-from PyQt6.QtGui import QAction, QIcon, QPainter, QPixmap
+from PyQt6.QtCore import QObject, QThread, QUrl, pyqtSignal
+from PyQt6.QtGui import QAction, QDesktopServices, QIcon, QPainter, QPixmap
 from PyQt6.QtWidgets import (QApplication, QDialog, QDialogButtonBox,
                              QFileDialog, QFormLayout, QHBoxLayout, QInputDialog,
                              QLineEdit, QMainWindow, QMenu, QMenuBar, QMessageBox,
@@ -172,7 +172,8 @@ class GuiMain(QMainWindow):
         self.mnAjuda = QMenu(strings.MNU_AJUDA, self.menubar)
         self.menubar.addAction(self.mnAjuda.menuAction())
 
-        self.actSobre = QAction(strings.ACT_SOBRE, self)
+        self.actSobre = QAction(strings.ACT_DOCUMENTACAO, self)
+        self.actSobre.triggered.connect(lambda: QDesktopServices.openUrl(QUrl(strings.URL_DOCUMENTACAO)))
         self.mnAjuda.addAction(self.actSobre)
 
     ## ------------------------------------------------------------------------------------------------
