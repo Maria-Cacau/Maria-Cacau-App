@@ -182,7 +182,7 @@ class GuiMain(QMainWindow):
         mainLayout.addWidget(self.gProdutos.root, stretch=3)
 
         rightLayout = QVBoxLayout()
-        rightLayout.addWidget(self.gEntregas.root, stretch=3)
+        rightLayout.addWidget(self.gEntregas.root, stretch=5)
 
         bottomLayout = QHBoxLayout()
         bottomLayout.addWidget(self.gDados.root, stretch=4)
