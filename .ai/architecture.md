@@ -34,7 +34,7 @@ Maria-Cacau-Contagem/
 │       └── home/
 │           ├── home_view.py      # janela principal + orquestração
 │           └── sub_features/
-│               ├── cpf_validation/
+│               ├── cpf_validation/        # validação matemática de CPF com feedback visual
 │               ├── nota_fiscal/           # placeholder "Em breve" (v5.0)
 │               ├── products_resume/
 │               ├── orders_pendent/
