@@ -4,7 +4,7 @@
 
 cd "$(dirname "$0")/.." || exit 1
 
-ENTRY="maria_cacau/__main__.py"
+ENTRY="maria_cacau"
 OUTPUT="dist"
 
 APP_NAME=$(python3 -c "import maria_cacau; print(maria_cacau.__app_name__)")

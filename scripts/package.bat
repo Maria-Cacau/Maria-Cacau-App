@@ -1,4 +1,5 @@
 @echo off
+chcp 65001 > nul
 REM Gera o .exe para Windows usando Nuitka.
 REM Use: scripts\package.bat  (sempre da raiz do projeto)
 
@@ -14,7 +15,7 @@ if exist "venv\Scripts\activate.bat" (
 REM Garante que as dependências de build (nuitka) estão instaladas
 python -m pip install -e ".[build]" --quiet
 
-set ENTRY=maria_cacau/__main__.py
+set ENTRY=maria_cacau
 set OUTPUT=dist
 
 for /f "delims=" %%i in ('python -c "import maria_cacau; print(maria_cacau.__app_name__)"') do set APP_NAME=%%i
@@ -31,7 +32,7 @@ echo Gerando .exe para Windows...
 python -m nuitka ^
     --onefile ^
     --enable-plugin=pyqt6 ^
-    --windows-disable-console ^
+    --windows-console-mode=disable ^
     --windows-icon-from-ico="%ICON_WIN%" ^
     --windows-product-name="%APP_NAME%" ^
     --windows-product-version="%WIN_VERSION%" ^

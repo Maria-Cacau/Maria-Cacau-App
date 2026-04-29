@@ -19,6 +19,7 @@ maria-cacau = "maria_cacau.__main__:main"
 
 [project.optional-dependencies]
 build = ["nuitka"]
+build = ["nuitka", "zstandard"]
 dev   = ["isort"]
 
 [tool.setuptools.packages.find]
