@@ -192,7 +192,10 @@ class GuiMain(QMainWindow):
         farRightLayout.addWidget(self.gConsCep.root)
         bottomLayout.addLayout(farRightLayout, stretch=3)
 
-        rightLayout.addLayout(bottomLayout, stretch=4)
+        bottomContainer = QWidget()
+        bottomContainer.setLayout(bottomLayout)
+        rightLayout.addWidget(bottomContainer, stretch=4)
+
         mainLayout.addLayout(rightLayout, stretch=7)
 
     ## ------------------------------------------------------------------------------------------------
