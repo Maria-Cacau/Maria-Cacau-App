@@ -8,7 +8,7 @@
 ![Windows](https://img.shields.io/badge/Windows-0078D6?logo=windows&logoColor=white)
 
 <p align="center">
-    <img width=97% src="arquivos/imagens/Git-Capa.png"/>
+    <img width=97% src="files/images/cover.png"/>
 </p>
 
 App desktop para gestão de pedidos e entregas da Maria Cacau. Lê diretamente a planilha Google Sheets e gera resumos de:
@@ -27,7 +27,7 @@ App desktop para gestão de pedidos e entregas da Maria Cacau. Lê diretamente a
 ### Demo
 
 <p align="center">
-    <img width=97% src="arquivos/imagens/telas/Tela-04.png"/>
+    <img width=97% src="files/images/demo-v4.gif"/>
 </p>
 
 ### Documentação
@@ -111,7 +111,7 @@ python -m maria_cacau
     <tr>
         <td colspan="3" align="center">
             <a href="https://www.mariacacau.com.br/">
-                <img src="arquivos/imagens/logo-oficial.png" width="150px;" alt="Logo Maria Cacau"/><br>
+                <img src="files/images/logo.png" width="150px;" alt="Logo Maria Cacau"/><br>
             </a>
         </td>
     </tr>
