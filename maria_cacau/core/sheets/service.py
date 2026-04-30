@@ -1,12 +1,15 @@
 """Autenticação e acesso ao Google Sheets."""
 
 import json
+import threading
+import time
 from datetime import datetime
 from typing import Final
 
 import gspread
 from google.oauth2.service_account import Credentials
 
+from maria_cacau.core.observability import AppEvent, observability
 from maria_cacau.core.storage.security import SecurityStorage
 
 def _parse_date(s: str) -> datetime:
@@ -28,6 +31,8 @@ class GoogleSheetsService:
     def __init__(self) -> None:
         self._client: gspread.Client = None
         self._sheet_id: str = None
+        self._auth_ready = threading.Event()
+        self._auth_ready.set()  # começa "pronto" — sem prewarm pendente
 
     # ── Credenciais ───────────────────────────────────────────────────────────
 
@@ -54,6 +59,29 @@ class GoogleSheetsService:
 
     def is_authenticated(self) -> bool:
         return self._client is not None
+
+    def prewarm_async(self) -> None:
+        """Inicia o pré-aquecimento do token OAuth em background.
+        Qualquer requisição que chame wait_ready() aguardará até ele terminar."""
+        if self._client is None:
+            return
+        self._auth_ready.clear()
+        threading.Thread(target=self._do_prewarm, daemon=True).start()
+
+    def _do_prewarm(self) -> None:
+        _start = time.time()
+        try:
+            import google.auth.transport.requests
+            self._client.auth.refresh(google.auth.transport.requests.Request())
+            observability.log(AppEvent.PREWARM_DONE, duration_s=round(time.time() - _start, 1))
+        except Exception as exc:
+            observability.log(AppEvent.ERROR, msg=str(exc), where='prewarm')
+        finally:
+            self._auth_ready.set()
+
+    def wait_ready(self, timeout: float = 15.0) -> None:
+        """Bloqueia até o prewarm terminar (ou timeout). Sem custo se já estiver pronto."""
+        self._auth_ready.wait(timeout=timeout)
 
     def clear_credentials(self) -> bool:
         """Remove as credenciais salvas. Retorna False se não havia nada salvo."""

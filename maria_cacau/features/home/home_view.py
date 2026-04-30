@@ -216,6 +216,7 @@ class GuiMain(QMainWindow):
             self._update_planilha_check(latest['sheet_id'])
             self.statusBar.set_credentials(True)
             self.statusBar.set_sheet(latest['nome'], latest['sheet_id'])
+            service.prewarm_async()
         except PermissionError:
             pass
 
@@ -232,8 +233,12 @@ class GuiMain(QMainWindow):
 
     ## Método: executa fn em background; chama on_done(result) ou on_error(exc) na main thread
     def _run_async(self, fn, on_done, on_error=None) -> None:
+        def _fn_ready():
+            service.wait_ready()
+            return fn()
+
         self._thread = QThread()
-        self._worker = _Worker(fn)
+        self._worker = _Worker(_fn_ready)
         self._worker.moveToThread(self._thread)
         self._thread.started.connect(self._worker.run)
         self._worker.finished.connect(on_done)
@@ -317,6 +322,7 @@ class GuiMain(QMainWindow):
     ## Método: ação do botão "OK" da área de Entregas
     def on_ok_entregas(self) -> None:
         if not service.is_connected():
+            observability.log(AppEvent.ERROR, msg='consulta sem conexão', where='on_ok_entregas')
             GuiPopup().show_popup(errors.C004)
             return
         dt: str = self.gEntregas.get_date()
@@ -360,6 +366,7 @@ class GuiMain(QMainWindow):
 
         sheet_id = _extract_sheet_id(dlg.link)
         if not sheet_id:
+            observability.log(AppEvent.ERROR, msg='URL de planilha inválida', where='on_conectar_planilha')
             GuiPopup().show_popup(errors.C005)
             return
 
@@ -404,11 +411,13 @@ class GuiMain(QMainWindow):
     def _on_selecionar_planilha(self, sheet_id: str) -> None:
         try:
             manager.connect(sheet_id)
-        except PermissionError:
+        except PermissionError as exc:
+            observability.log(AppEvent.ERROR, msg=str(exc), where='on_selecionar_planilha')
             GuiPopup().show_popup(errors.C004)
             return
         self._update_planilha_check(sheet_id)
         nome = self._sheet_actions[sheet_id].text()
+        observability.log(AppEvent.SHEET_SELECT, name=nome, sheet_id=sheet_id)
         GuiPopup().show_popup(errors.planilha_conectada(nome), "I")
 
         self.statusBar.set_sheet(nome, sheet_id)
