@@ -14,7 +14,7 @@
 App desktop para gestão de pedidos e entregas da Maria Cacau. Lê diretamente a planilha Google Sheets e gera resumos de:
 - **Produtos**: contagem de itens por período
 - **Entregas**: resumo diário com inadimplências
-- **Nota Fiscal**: dados para emissão SAGE e Melhor Envio
+- **Validação do CPF**: validação matemática do cpf.
 
 > [!IMPORTANT]
 > A documentação de usabilidade da aplicação está documentada na [wiki](https://github.com/Gui25Reis/Maria-Cacau-Contagem/wiki) do projeto. 
