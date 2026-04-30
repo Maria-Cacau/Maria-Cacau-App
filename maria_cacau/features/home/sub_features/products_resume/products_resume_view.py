@@ -79,12 +79,17 @@ class GuiProdutos(AuxWidgets):
 
         mainLayout.addLayout(btnLayout)
 
+        ## Gráfico
         mainLayout.addWidget(self.graph_view(), stretch=2)
 
         btnLayout2 = QHBoxLayout()
         btnLayout2.addStretch()
-        btnLayout2.addWidget(self.bts(strings.BTN_COPIAR))   # v5.0: inativo
-        btnLayout2.addWidget(self.bts(strings.BTN_SALVAR))   # v5.0: inativo
+        self.btCopiarGrafico = self.bts(strings.BTN_COPIAR)
+        self.btCopiarGrafico.setEnabled(False)
+        btnLayout2.addWidget(self.btCopiarGrafico)
+        self.btSalvarGrafico = self.bts(strings.BTN_SALVAR)
+        self.btSalvarGrafico.setEnabled(False)
+        btnLayout2.addWidget(self.btSalvarGrafico)
         mainLayout.addLayout(btnLayout2)
 
 
