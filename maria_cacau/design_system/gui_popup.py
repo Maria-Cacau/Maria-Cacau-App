@@ -3,6 +3,7 @@
 from PyQt6.QtGui import QFont, QIcon
 from PyQt6.QtWidgets import QMessageBox
 
+from maria_cacau import asset
 from maria_cacau.core.errors import AppError
 
 
@@ -14,7 +15,7 @@ class GuiPopup(QMessageBox):
 
     ## Método: Configura a interface (GUI)
     def setup_ui(self) -> None:
-        self.setWindowIcon(QIcon('maria_cacau/assets/images/logo-icone.png'))           # Define o icone da janela (geral)
+        self.setWindowIcon(QIcon(asset('images/logo-icone.png')))
         self.setStyleSheet("QLabel{max-width: 400px;};")                                # Define o tamanho máximo do espaço interno
         self.setIcon(QMessageBox.Icon.Critical)                                         # Define o ícone que mostra ao lado da mensagem
         self.setStandardButtons(QMessageBox.StandardButton.Save)                        # Add os botões
