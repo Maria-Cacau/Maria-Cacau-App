@@ -67,6 +67,7 @@ class GuiStatusBar(QStatusBar):
             return
         self._elapsed += 1
         self._lbl_info.setText(f'{self._elapsed}s  {self._loading_msg}')
+        self._lbl_info.repaint()
         QTimer.singleShot(1000, self._tick)
 
     def _restore(self) -> None:
