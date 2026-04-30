@@ -7,6 +7,7 @@ from PyQt6.QtWidgets import QDateEdit, QHBoxLayout, QSizePolicy, QVBoxLayout
 
 from maria_cacau.assets import strings
 from maria_cacau.core import errors
+from maria_cacau.core.charts import ChartType, ChartWidget
 from maria_cacau.design_system.aux_widgets import AuxWidgets
 from maria_cacau.design_system.gui_popup import GuiPopup
 
@@ -33,7 +34,8 @@ class GuiEntregas(AuxWidgets):
         self.txt = self.text_view()
         self.set_text(strings.TXT_OK_INSTRUCAO_ENTREGAS)
         contentLayout.addWidget(self.txt, stretch=3)
-        contentLayout.addWidget(self.graph_view(), stretch=2)
+        self.chart = ChartWidget(ChartType.PIE)
+        contentLayout.addWidget(self.chart, stretch=2)
         mainLayout.addLayout(contentLayout)
 
         btnLayout = QHBoxLayout()
@@ -58,6 +60,18 @@ class GuiEntregas(AuxWidgets):
         self.btDownload = self.bts(strings.BTN_DOWNLOAD)
         self.btDownload.setEnabled(False)
         btnLayout.addWidget(self.btDownload)
+
+        btnLayout.addStretch()
+
+        self.btCopiarGrafico = self.bts(strings.BTN_COPIAR)
+        self.btCopiarGrafico.setEnabled(False)
+        self.btCopiarGrafico.clicked.connect(self.chart.copy_to_clipboard)
+        btnLayout.addWidget(self.btCopiarGrafico)
+
+        self.btSalvarGrafico = self.bts(strings.BTN_SALVAR)
+        self.btSalvarGrafico.setEnabled(False)
+        self.btSalvarGrafico.clicked.connect(self.chart.save_to_file)
+        btnLayout.addWidget(self.btSalvarGrafico)
 
         mainLayout.addLayout(btnLayout)
 
@@ -99,6 +113,9 @@ class GuiEntregas(AuxWidgets):
                 self.res += f'Falta(m) pagar:\n{dev}'
 
             self.resumos[d_] = self.res
+            self.chart.update_data(dict(quant), title='Entregas')
+            self.btCopiarGrafico.setEnabled(True)
+            self.btSalvarGrafico.setEnabled(True)
 
         except Exception:
             self.popup.show_popup(errors.E001)

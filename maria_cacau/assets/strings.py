@@ -15,6 +15,9 @@ BTN_VERIFICAR    = "Verificar"
 BTN_DOWNLOAD     = "Download"
 BTN_SALVAR       = "Salvar"
 
+CHART_TYPE_BAR = "Barras"
+CHART_TYPE_PIE = "Pizza"
+
 # ── Estados das áreas de texto ────────────────────────────────────────────────
 
 TXT_SEM_PLANILHA         = "Nenhuma planilha foi selecionada."
