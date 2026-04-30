@@ -5,6 +5,7 @@ from PyQt6.QtCore import QDate
 from PyQt6.QtWidgets import QDateEdit, QHBoxLayout, QSizePolicy, QVBoxLayout
 
 from maria_cacau.assets import strings
+from maria_cacau.core.charts import ChartType, ChartWidget
 from maria_cacau.design_system.aux_widgets import AuxWidgets
 
 
@@ -80,18 +81,31 @@ class GuiProdutos(AuxWidgets):
         mainLayout.addLayout(btnLayout)
 
         ## Gráfico
-        mainLayout.addWidget(self.graph_view(), stretch=2)
+        self.chart = ChartWidget(ChartType.BAR)
+        mainLayout.addWidget(self.chart, stretch=2)
 
         btnLayout2 = QHBoxLayout()
+
+        self.cbTipoGrafico = self.combo_box()
+        self.cbTipoGrafico.addItems([strings.CHART_TYPE_BAR, strings.CHART_TYPE_PIE])
+        self.cbTipoGrafico.setEnabled(False)
+        self.cbTipoGrafico.currentIndexChanged.connect(self._on_chart_type_changed)
+        btnLayout2.addWidget(self.cbTipoGrafico)
+
         btnLayout2.addStretch()
         self.btCopiarGrafico = self.bts(strings.BTN_COPIAR)
         self.btCopiarGrafico.setEnabled(False)
+        self.btCopiarGrafico.clicked.connect(self.chart.copy_to_clipboard)
         btnLayout2.addWidget(self.btCopiarGrafico)
         self.btSalvarGrafico = self.bts(strings.BTN_SALVAR)
         self.btSalvarGrafico.setEnabled(False)
+        self.btSalvarGrafico.clicked.connect(self.chart.save_to_file)
         btnLayout2.addWidget(self.btSalvarGrafico)
         mainLayout.addLayout(btnLayout2)
 
+
+    def _on_chart_type_changed(self, index: int) -> None:
+        self.chart.set_type(ChartType.BAR if index == 0 else ChartType.PIE)
 
     ## Método especial: retorna o intervalo de datas selecionado no formato DD/MM/YY
     def get_date_range(self) -> tuple[str, str]:
@@ -163,4 +177,8 @@ class GuiProdutos(AuxWidgets):
             + pulaLin + dia_ + pulaLin + self.res
         )
         self.set_text(self.res)
+        self.chart.update_data(self.pedGeral.copy(), title='Produtos')
+        self.cbTipoGrafico.setEnabled(True)
+        self.btCopiarGrafico.setEnabled(True)
+        self.btSalvarGrafico.setEnabled(True)
         del pulaLin
