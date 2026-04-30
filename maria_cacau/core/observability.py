@@ -16,10 +16,14 @@ class AppEvent(Enum):
     QUERY_ENTREGAS = 'QUERY  feature=entregas'
     QUERY_PRODUTOS = 'QUERY  feature=produtos'
     CERT_SET       = 'CERT_SET'
-    SHEET_ADD      = 'SHEET_ADD'  # extra: name=, sheet_id=
-    BTN_COPY       = 'BTN_COPY'   # extra: feature=
-    CPF_CHECK      = 'CPF_CHECK'  # extra: valid=
-    ERROR          = 'ERROR'      # extra: msg=, where= (optional)
+    CERT_CLEAR     = 'CERT_CLEAR'
+    SHEET_ADD      = 'SHEET_ADD'    # extra: name=, sheet_id=
+    SHEET_SELECT   = 'SHEET_SELECT' # extra: name=, sheet_id=
+    BTN_COPY       = 'BTN_COPY'     # extra: feature=
+    CPF_CHECK      = 'CPF_CHECK'    # extra: valid=
+    PREWARM_DONE   = 'PREWARM_DONE' # extra: duration_s=
+    CACHE_CLEAR    = 'CACHE_CLEAR'
+    ERROR          = 'ERROR'        # extra: msg=, where= (optional)
 
 
 class _Observability:

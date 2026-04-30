@@ -24,10 +24,7 @@ class GuiStatusBar(QStatusBar):
         self._sheet_fmt: str  = ''
         self._loading_msg: str = ''
         self._elapsed: int = 0
-
-        self._timer = QTimer(self)
-        self._timer.setInterval(1000)
-        self._timer.timeout.connect(self._tick)
+        self._ticking: bool = False
 
         self._set_color(self._WARN)
 
@@ -48,25 +45,30 @@ class GuiStatusBar(QStatusBar):
     def set_loading(self, msg: str = '') -> None:
         self._loading_msg = msg or strings.SB_CARREGANDO
         self._elapsed = 0
+        self._ticking = True
         self._lbl_info.setText(f'0s  {self._loading_msg}')
         self._set_color(self._LOADING)
-        self._timer.start()
+        QTimer.singleShot(1000, self._tick)
 
     ## Mostra mensagem de sucesso e reverte para o estado normal após 3s
     def set_success(self, msg: str = '') -> None:
-        self._timer.stop()
+        self._ticking = False
         self._lbl_info.setText(msg or strings.SB_SUCESSO)
         self._set_color(self._READY)
         QTimer.singleShot(3000, self._restore)
 
     ## Volta para o estado normal
     def set_ready(self) -> None:
-        self._timer.stop()
+        self._ticking = False
         self._restore()
 
     def _tick(self) -> None:
+        if not self._ticking:
+            return
         self._elapsed += 1
         self._lbl_info.setText(f'{self._elapsed}s  {self._loading_msg}')
+        self._lbl_info.repaint()
+        QTimer.singleShot(1000, self._tick)
 
     def _restore(self) -> None:
         self._update_info()

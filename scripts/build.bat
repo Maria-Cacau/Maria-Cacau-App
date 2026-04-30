@@ -20,7 +20,7 @@ if not exist "%VENV_NAME%\" (
 REM Instala o pacote e suas dependencias
 call %VENV_NAME%\Scripts\activate.bat
 python -m pip install --upgrade pip
-pip install -e .
+python -m pip install -e .
 
 REM direnv e opcional no Windows — o VS Code detecta o venv automaticamente
 where direnv >nul 2>&1

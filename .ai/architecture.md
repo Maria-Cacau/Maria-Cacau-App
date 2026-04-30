@@ -6,10 +6,12 @@
 Maria-Cacau-Contagem/
 ├── .ai/                          # instruções para IAs
 ├── scripts/
-│   ├── build.sh                  # setup do ambiente
-│   └── package.sh                # gera executável
+│   ├── build.sh                  # setup do ambiente (macOS)
+│   ├── build.bat                 # setup do ambiente (Windows)
+│   ├── package.sh                # gera .app (macOS)
+│   └── package.bat               # gera .exe (Windows)
 ├── maria_cacau/                  # pacote principal
-│   ├── __init__.py               # metadados centralizados (versão, copyright, ícones)
+│   ├── __init__.py               # metadados centralizados (versão, copyright, ícones) + helper `asset()`
 │   ├── __main__.py               # entry point
 │   ├── core/
 │   │   ├── sheets/
@@ -65,6 +67,17 @@ Futuramente cada feature pode ter `view.py` + `view_model.py` (Clean Architectur
 Consultas ao Google Sheets rodam em `QThread` via `_Worker` + `_run_async` em `home_view.py`.
 O `gspread.Client` é um singleton não thread-safe — `_set_busy` bloqueia todos os botões OK enquanto uma consulta estiver em andamento, prevenindo requisições concorrentes.
 
+### Prewarm OAuth
+Ao ativar uma planilha, `service.prewarm_async()` dispara uma thread em background que:
+1. Renova o token OAuth via `credentials.refresh(Request())`
+2. Abre a planilha no gspread (aquece a conexão TLS)
+
+Um `threading.Event` (`_auth_ready`) garante que a primeira consulta real aguarda o prewarm sem bloquear a UI. Reduz o tempo da primeira query de ~11s para ~5s.
+
+### Cache
+`SheetsManager` mantém `_cadastro: CadastroAnalyseHandler` em memória após o primeiro `load_cadastro()`.
+O usuário pode limpar via **Arquivo → Limpar cache**, que chama `manager.clear_cache()` + reset das views.
+
 ## Status bar (`GuiStatusBar`)
 Barra fixa na base da janela com três estados de cor:
 
@@ -76,7 +89,7 @@ Barra fixa na base da janela com três estados de cor:
 
 Reverte automaticamente para verde 3s após o sucesso.
 
-Durante o estado laranja, um `QTimer` de 1s atualiza o texto com o tempo decorrido na frente da mensagem (ex: `3s  Realizando consulta...`).
+Durante o estado laranja, um contador de 1s atualiza o texto com o tempo decorrido (ex: `3s  Realizando consulta...`). Implementado com `QTimer.singleShot` recursivo (mais compatível com Nuitka do que `QTimer` persistente).
 
 ## Observabilidade (`observability`)
 
@@ -89,16 +102,25 @@ Módulo `maria_cacau/core/observability.py` — singleton `observability` com en
 | `QUERY_ENTREGAS` | `date=`, `duration_s=` | Consulta de entregas com sucesso |
 | `QUERY_PRODUTOS` | `start=`, `end=`, `duration_s=` | Consulta de produtos com sucesso |
 | `CERT_SET` | — | Certificado configurado com sucesso |
+| `CERT_CLEAR` | — | Certificado removido |
 | `SHEET_ADD` | `name=`, `sheet_id=` | Planilha conectada e salva |
+| `SHEET_SELECT` | `name=`, `sheet_id=` | Planilha existente selecionada |
 | `BTN_COPY` | `feature=` | Botão Copiar clicado (entregas ou produtos) |
+| `PREWARM_DONE` | `duration_s=` | Pré-aquecimento OAuth + TLS concluído |
+| `CACHE_CLEAR` | — | Cache da planilha limpo pelo usuário |
 | `ERROR` | `msg=`, `where=` (opcional), `duration_s=` (opcional) | Qualquer exceção capturada |
 
 Saída: `~/.mariacacau/logs.log` (append-only, formato `YYYY-MM-DD HH:MM:SS  LEVEL  mensagem`).
 
 Para adicionar um novo evento: acrescentar valor ao `AppEvent` e chamar `observability.log(AppEvent.NOVO, ...)`.
 
+## Assets (`asset()`)
+Qualquer path de asset deve ser resolvido via `asset('images/foo.png')` de `maria_cacau/__init__.py`.
+Internamente usa `Path(__file__).parent / 'assets' / relative_path`, garantindo resolução correta tanto em dev quanto no `.exe` compilado pelo Nuitka.
+
 ## Fonte única de verdade
 - **Versão, ano e empresa** → `pyproject.toml` (`[project]` e `[tool.maria-cacau]`)
 - **Metadados do app** (nome exibido, copyright, ícones) → `maria_cacau/__init__.py` (lê do pyproject.toml)
 - **Textos de UI** → `maria_cacau/assets/strings.py`
 - **Erros** → `maria_cacau/core/errors.py`
+- **Paths de assets** → `asset()` em `maria_cacau/__init__.py`
