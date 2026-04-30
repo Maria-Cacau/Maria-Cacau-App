@@ -34,8 +34,8 @@ pip install -e ".[build]"
 ```bash
 ./scripts/package.sh
 ```
-- macOS → `dist/MC - Análise.app`
-- Windows → `dist/MC - Análise.exe`
+- macOS → `dist/MC Consultas.app`
+- Windows → `dist/MC Consultas.exe`
 
 ## Adicionar dependência
 1. Adicionar em `pyproject.toml` no grupo correto

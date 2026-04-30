@@ -3,6 +3,15 @@
 Todas as strings de UI ficam em `maria_cacau/assets/strings.py`. Nunca hardcodar texto de interface nas views.
 Ao adicionar qualquer string visível ao usuário (labels, botões, menus, diálogos), adicionar primeiro em `strings.py` e referenciar a constante na view.
 
+## Finalizar demanda
+
+Quando o usuário pedir "finalizar a demanda" (ou variações), executar sempre:
+1. Atualizar os arquivos em `.ai/` que forem afetados pelas mudanças da sessão
+2. Rodar `graphify update .` para manter o grafo atual
+3. Entregar a descrição do PR em bloco ```md para copy/paste — comparar com `develop` (ou `main`)
+
+Nunca trazer código de outras branches, nunca abrir PR automaticamente.
+
 ## graphify
 
 This project has a graphify knowledge graph at graphify-out/.
