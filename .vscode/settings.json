@@ -1,0 +1,10 @@
+{
+    "files.exclude": {
+        "maria_cacau/{assets,core,design_system,features}/**/__init__.py": true,
+        "**/__pycache__": true,
+        "**/.DS_Store": true,
+        "**/venv": true,
+        "**.egg-info": true
+    },
+    "markdown.extension.toc.updateOnSave": false
+}

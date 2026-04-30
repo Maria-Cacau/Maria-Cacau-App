@@ -1,3 +1,6 @@
+# AI
+*.claude
+
 # Arquivos MAC
 *.DS_Store
 
@@ -5,7 +8,7 @@
 arquivos/zTestes/
 
 # Configuração do VSCode
-*.vscode/
+# *.vscode/
 
 # Arquivos da Interface Gráfica
 arquivos/gui
@@ -68,10 +71,6 @@ target/
 # Jupyter Notebook
 .ipynb_checkpoints
 
-# pyenv
-.python-version
-
-
 # Environments
 .env
 .venv
@@ -81,3 +80,17 @@ ENV/
 env.bak/
 venv.bak/
 
+
+# Graphify
+# optional: commit for shared extraction speed, skip to keep repo small
+graphify-out/cache/
+
+# mtime-based, invalid after git clone - always gitignore this
+graphify-out/manifest.json
+
+# local token tracking, not useful to share
+graphify-out/cost.json
+
+
+# Obsidian
+*/obsidian

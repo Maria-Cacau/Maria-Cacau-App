@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "maria-cacau"
+version = "4.0.0"
+description = "Ferramenta de consultas operacionais Maria Cacau"
+authors = [{name = "Gui Reis", email = "guisreis25@gmail.com"}]
+dependencies = [
+    "PyQt6",
+    "pandas",
+    "openpyxl",
+    "gspread",
+    "matplotlib",
+    "seaborn",
+]
+
+[project.scripts]
+maria-cacau = "maria_cacau.__main__:main"
+
+[project.optional-dependencies]
+build = ["nuitka", "zstandard"]
+dev   = ["isort"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["maria_cacau*"]
+
+[tool.maria-cacau]
+year    = "2026"
+company = "KINGS"
