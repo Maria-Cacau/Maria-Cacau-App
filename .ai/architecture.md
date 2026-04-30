@@ -67,6 +67,17 @@ Futuramente cada feature pode ter `view.py` + `view_model.py` (Clean Architectur
 Consultas ao Google Sheets rodam em `QThread` via `_Worker` + `_run_async` em `home_view.py`.
 O `gspread.Client` é um singleton não thread-safe — `_set_busy` bloqueia todos os botões OK enquanto uma consulta estiver em andamento, prevenindo requisições concorrentes.
 
+### Prewarm OAuth
+Ao ativar uma planilha, `service.prewarm_async()` dispara uma thread em background que:
+1. Renova o token OAuth via `credentials.refresh(Request())`
+2. Abre a planilha no gspread (aquece a conexão TLS)
+
+Um `threading.Event` (`_auth_ready`) garante que a primeira consulta real aguarda o prewarm sem bloquear a UI. Reduz o tempo da primeira query de ~11s para ~5s.
+
+### Cache
+`SheetsManager` mantém `_cadastro: CadastroAnalyseHandler` em memória após o primeiro `load_cadastro()`.
+O usuário pode limpar via **Arquivo → Limpar cache**, que chama `manager.clear_cache()` + reset das views.
+
 ## Status bar (`GuiStatusBar`)
 Barra fixa na base da janela com três estados de cor:
 
@@ -91,8 +102,12 @@ Módulo `maria_cacau/core/observability.py` — singleton `observability` com en
 | `QUERY_ENTREGAS` | `date=`, `duration_s=` | Consulta de entregas com sucesso |
 | `QUERY_PRODUTOS` | `start=`, `end=`, `duration_s=` | Consulta de produtos com sucesso |
 | `CERT_SET` | — | Certificado configurado com sucesso |
+| `CERT_CLEAR` | — | Certificado removido |
 | `SHEET_ADD` | `name=`, `sheet_id=` | Planilha conectada e salva |
+| `SHEET_SELECT` | `name=`, `sheet_id=` | Planilha existente selecionada |
 | `BTN_COPY` | `feature=` | Botão Copiar clicado (entregas ou produtos) |
+| `PREWARM_DONE` | `duration_s=` | Pré-aquecimento OAuth + TLS concluído |
+| `CACHE_CLEAR` | — | Cache da planilha limpo pelo usuário |
 | `ERROR` | `msg=`, `where=` (opcional), `duration_s=` (opcional) | Qualquer exceção capturada |
 
 Saída: `~/.mariacacau/logs.log` (append-only, formato `YYYY-MM-DD HH:MM:SS  LEVEL  mensagem`).

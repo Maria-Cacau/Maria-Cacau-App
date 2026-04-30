@@ -52,8 +52,8 @@ O `package.bat` instala automaticamente as dependências de build (`nuitka`) via
 
 | Plataforma | Arquivo gerado |
 |---|---|
-| Windows | `dist/MC - Análise.exe` |
-| macOS | `dist/MC - Análise.app` |
+| Windows | `dist/MC Consultas.exe` |
+| macOS | `dist/MC Consultas.app` |
 
 ## Metadados do executável
 
