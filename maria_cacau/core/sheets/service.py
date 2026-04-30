@@ -30,6 +30,7 @@ _security = SecurityStorage()
 class GoogleSheetsService:
     def __init__(self) -> None:
         self._client: gspread.Client = None
+        self._creds: Credentials = None
         self._sheet_id: str = None
         self._auth_ready = threading.Event()
         self._auth_ready.set()  # começa "pronto" — sem prewarm pendente
@@ -52,10 +53,10 @@ class GoogleSheetsService:
         return True
 
     def _authenticate(self, raw_json: str) -> None:
-        creds = Credentials.from_service_account_info(
+        self._creds = Credentials.from_service_account_info(
             json.loads(raw_json), scopes=_SCOPES
         )
-        self._client = gspread.authorize(creds)
+        self._client = gspread.authorize(self._creds)
 
     def is_authenticated(self) -> bool:
         return self._client is not None
@@ -63,7 +64,7 @@ class GoogleSheetsService:
     def prewarm_async(self) -> None:
         """Inicia o pré-aquecimento do token OAuth em background.
         Qualquer requisição que chame wait_ready() aguardará até ele terminar."""
-        if self._client is None:
+        if self._creds is None:
             return
         self._auth_ready.clear()
         threading.Thread(target=self._do_prewarm, daemon=True).start()
@@ -72,7 +73,9 @@ class GoogleSheetsService:
         _start = time.time()
         try:
             import google.auth.transport.requests
-            self._client.auth.refresh(google.auth.transport.requests.Request())
+            self._creds.refresh(google.auth.transport.requests.Request())
+            if self._client and self._sheet_id:
+                self._client.open_by_key(self._sheet_id)  # pré-aquece TLS + conexão HTTP
             observability.log(AppEvent.PREWARM_DONE, duration_s=round(time.time() - _start, 1))
         except Exception as exc:
             observability.log(AppEvent.ERROR, msg=str(exc), where='prewarm')
