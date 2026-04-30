@@ -16,13 +16,10 @@ App desktop para gestão de pedidos e entregas da Maria Cacau. Lê diretamente a
 - **Entregas**: resumo diário com inadimplências
 - **Nota Fiscal**: dados para emissão SAGE e Melhor Envio
 
-</br>
+> [!IMPORTANT]
+> A documentação de usabilidade da aplicação está documentada na [wiki](https://github.com/Gui25Reis/Maria-Cacau-Contagem/wiki) do projeto. 
 
-- [Plataforma e Requisitos](#plataforma-e-requisitos)
-- [Como rodar](#como-rodar)
-- [Demo](#demo)
-- [Autor](#autor)
-- [Empresa](#empresa)
+</br>
 
 ### Demo
 
@@ -30,11 +27,17 @@ App desktop para gestão de pedidos e entregas da Maria Cacau. Lê diretamente a
     <img width=97% src="files/images/demo-v4.gif"/>
 </p>
 
-### Documentação
-A documentação de usabilidade da aplicação está documentada na [wiki](https://github.com/Gui25Reis/Maria-Cacau-Contagem/wiki) do projeto. 
-
+</br>
 
 ---
+
+</br>
+
+- [Plataforma e Requisitos](#plataforma-e-requisitos)
+- [Como rodar](#como-rodar)
+- [Gerar executável](#gerar-executável)
+- [Autor](#autor)
+- [Empresa](#empresa)
 
 ## Plataforma e Requisitos
 > [!NOTE]
@@ -87,6 +90,8 @@ python -m maria_cacau
 |---|---
 | ![macOS](https://img.shields.io/badge/macOS-000000?logo=apple&logoColor=white) | `./scripts/build.sh && ./scripts/package.sh` |
 | ![Windows](https://img.shields.io/badge/Windows-0078D6?logo=windows&logoColor=white) | `scripts\build.bat && scripts\package.bat` |
+
+</br>
 
 ---
 
