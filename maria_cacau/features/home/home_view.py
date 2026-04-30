@@ -467,6 +467,7 @@ class GuiMain(QMainWindow):
         if confirm != QMessageBox.StandardButton.Yes:
             return
         if service.clear_credentials():
+            observability.log(AppEvent.CERT_CLEAR)
             self.statusBar.set_credentials(False)
             GuiPopup().show_popup(errors.certificado_limpo(), "I")
         else:
