@@ -1,4 +1,6 @@
-from maria_cacau import __version__, __year__, __company__
+from maria_cacau import __app_name__, __version__, __year__, __company__
+
+APP_TITLE = __app_name__
 
 _ver_short = '.'.join(__version__.split('.')[:2])   # '5.0.0' → '5.0'
 
@@ -31,6 +33,7 @@ ACT_PLANILHAS_CONECTADAS  = "Planilhas conectadas"
 ACT_CONFIGURAR_CERT       = "Configurar certificado"
 ACT_LIMPAR_CERT           = "Limpar certificado"
 ACT_DOCUMENTACAO          = "Documentação"
+ACT_LIMPAR_CACHE          = "Limpar cache"
 URL_DOCUMENTACAO          = "https://github.com/Gui25Reis/Maria-Cacau-Contagem/wiki"
 
 # ── Diálogos ──────────────────────────────────────────────────────────────────

@@ -6,7 +6,7 @@ from datetime import datetime
 from pathlib import Path
 
 from PyQt6.QtCore import QObject, QThread, QUrl, pyqtSignal
-from PyQt6.QtGui import QAction, QDesktopServices, QIcon, QPainter, QPixmap
+from PyQt6.QtGui import QAction, QDesktopServices, QPainter, QPixmap
 from PyQt6.QtWidgets import (QApplication, QDialog, QDialogButtonBox,
                              QFileDialog, QFormLayout, QHBoxLayout, QInputDialog,
                              QLineEdit, QMainWindow, QMenu, QMenuBar, QMessageBox,
@@ -103,8 +103,7 @@ class GuiMain(QMainWindow):
     def __init__(self) -> None:
         super().__init__()
 
-        self.setWindowIcon(QIcon('maria_cacau/assets/images/logo-icone.png'))
-        self.setWindowTitle("Maria Cacau - Consulta")
+        self.setWindowTitle(strings.APP_TITLE)
 
         tamTela = QApplication.primaryScreen().availableGeometry()
         self.setMinimumSize(tamTela.width()-300, tamTela.height()-200)
@@ -155,6 +154,11 @@ class GuiMain(QMainWindow):
         self._sheet_actions: dict = {}
         for entry in self._load_sheets():
             self._add_planilha_menu(entry['nome'], entry['sheet_id'])
+
+        self.mnConfig.addSeparator()
+        self.actLimparCache = QAction(strings.ACT_LIMPAR_CACHE, self)
+        self.mnConfig.addAction(self.actLimparCache)
+        self.actLimparCache.triggered.connect(self.on_limpar_cache)
 
         self.mnSeguranca = QMenu(strings.MNU_SEGURANCA, self.menubar)
         self.menubar.addAction(self.mnSeguranca.menuAction())
@@ -217,6 +221,7 @@ class GuiMain(QMainWindow):
             self._update_planilha_check(latest['sheet_id'])
             self.statusBar.set_credentials(True)
             self.statusBar.set_sheet(latest['nome'], latest['sheet_id'])
+            service.prewarm_async()
         except PermissionError:
             pass
 
@@ -233,8 +238,12 @@ class GuiMain(QMainWindow):
 
     ## Método: executa fn em background; chama on_done(result) ou on_error(exc) na main thread
     def _run_async(self, fn, on_done, on_error=None) -> None:
+        def _fn_ready():
+            service.wait_ready()
+            return fn()
+
         self._thread = QThread()
-        self._worker = _Worker(fn)
+        self._worker = _Worker(_fn_ready)
         self._worker.moveToThread(self._thread)
         self._thread.started.connect(self._worker.run)
         self._worker.finished.connect(on_done)
@@ -318,6 +327,7 @@ class GuiMain(QMainWindow):
     ## Método: ação do botão "OK" da área de Entregas
     def on_ok_entregas(self) -> None:
         if not service.is_connected():
+            observability.log(AppEvent.ERROR, msg='consulta sem conexão', where='on_ok_entregas')
             GuiPopup().show_popup(errors.C004)
             return
         dt: str = self.gEntregas.get_date()
@@ -361,6 +371,7 @@ class GuiMain(QMainWindow):
 
         sheet_id = _extract_sheet_id(dlg.link)
         if not sheet_id:
+            observability.log(AppEvent.ERROR, msg='URL de planilha inválida', where='on_conectar_planilha')
             GuiPopup().show_popup(errors.C005)
             return
 
@@ -405,11 +416,13 @@ class GuiMain(QMainWindow):
     def _on_selecionar_planilha(self, sheet_id: str) -> None:
         try:
             manager.connect(sheet_id)
-        except PermissionError:
+        except PermissionError as exc:
+            observability.log(AppEvent.ERROR, msg=str(exc), where='on_selecionar_planilha')
             GuiPopup().show_popup(errors.C004)
             return
         self._update_planilha_check(sheet_id)
         nome = self._sheet_actions[sheet_id].text()
+        observability.log(AppEvent.SHEET_SELECT, name=nome, sheet_id=sheet_id)
         GuiPopup().show_popup(errors.planilha_conectada(nome), "I")
 
         self.statusBar.set_sheet(nome, sheet_id)
@@ -459,9 +472,19 @@ class GuiMain(QMainWindow):
         if confirm != QMessageBox.StandardButton.Yes:
             return
         if service.clear_credentials():
+            observability.log(AppEvent.CERT_CLEAR)
+            self.statusBar.set_credentials(False)
             GuiPopup().show_popup(errors.certificado_limpo(), "I")
         else:
             GuiPopup().show_popup(errors.C003)
+
+    ## Método: Ação do menu "Limpar cache"
+    def on_limpar_cache(self) -> None:
+        manager.clear_cache()
+        self.datas = {}
+        self.dtEnt = ''
+        self.gEntregas.resumos.clear()
+        observability.log(AppEvent.CACHE_CLEAR)
 
     ## Método: Carrega planilhas salvas do cache local
     @staticmethod

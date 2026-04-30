@@ -1,9 +1,9 @@
 # Maria Cacau - Contagem
 
-[![Version](https://img.shields.io/badge/version-5.0-orange)](#)
+[![Version](https://img.shields.io/badge/version-4.0-orange)](https://github.com/Gui25Reis/Maria-Cacau-Contagem/releases/tag/4.0.0)
 ![Language](https://img.shields.io/badge/language-Python-blue?logo=python)
 [![Python Version](https://img.shields.io/badge/python-v3.13+-blue?logo=python)](https://www.python.org/downloads/)
-[![License](https://img.shields.io/badge/license-MIT-brightgreen)](https://github.com/Gui25Reis/Maria-Cacau-Contagem/blob/main/LICENSE)
+[![License](https://img.shields.io/badge/license-MIT-brightgreen)](./LICENSE)
 ![macOS](https://img.shields.io/badge/macOS-000000?logo=apple&logoColor=white)
 ![Windows](https://img.shields.io/badge/Windows-0078D6?logo=windows&logoColor=white)
 
@@ -24,9 +24,22 @@ App desktop para gestão de pedidos e entregas da Maria Cacau. Lê diretamente a
 - [Autor](#autor)
 - [Empresa](#empresa)
 
-## Plataforma e Requisitos
+### Demo
 
-O projeto roda em macOS e Windows.
+<p align="center">
+    <img width=97% src="arquivos/imagens/telas/Tela-04.png"/>
+</p>
+
+### Documentação
+A documentação de usabilidade da aplicação está documentada na [wiki](https://github.com/Gui25Reis/Maria-Cacau-Contagem/wiki) do projeto. 
+
+
+---
+
+## Plataforma e Requisitos
+> [!NOTE]
+> O app é **Windows first**, precisa sempre ter como referência a tela gerada no Windows (os layouts não ficam iguais). 
+> É possível rodar no mac e gerar o .dmg se necessário.
 
 | **Arquivo** | **Descrição** |
 |---|---|
@@ -53,7 +66,7 @@ python -m maria_cacau
 
 **Windows:**
 
-```bat
+```bash
 # Rodar o setup (cria o venv e instala as dependências)
 scripts\build.bat
 
@@ -64,15 +77,18 @@ venv\Scripts\activate.bat
 python -m maria_cacau
 ```
 
-## Demo
+## Gerar executável
 
-<p align="center">
-    <img width=97% src="arquivos/imagens/telas/Tela-01.png"/>
-</p>
-<br>
-<p align="center">
-    <img width=97% src="arquivos/imagens/telas/Tela-04.png"/>
-</p>
+> [!NOTE]
+> É necessário rodar o `build` antes para instalar as dependências e ter o venv configurado.
+> O executável gerado acaba ficando na pasta dist/.
+
+| OS | Comando 
+|---|---
+| ![macOS](https://img.shields.io/badge/macOS-000000?logo=apple&logoColor=white) | `./scripts/build.sh && ./scripts/package.sh` |
+| ![Windows](https://img.shields.io/badge/Windows-0078D6?logo=windows&logoColor=white) | `scripts\build.bat && scripts\package.bat` |
+
+---
 
 ## Autor
 
@@ -95,7 +111,7 @@ python -m maria_cacau
     <tr>
         <td colspan="3" align="center">
             <a href="https://www.mariacacau.com.br/">
-                <img src="https://static.wixstatic.com/media/808b8f_f53e7ddb5676413d8582cac5a7a4558f.png/v1/fill/w_210,h_140,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/808b8f_f53e7ddb5676413d8582cac5a7a4558f.png" width="150px;" alt="Logo Maria Cacau"/><br>
+                <img src="arquivos/imagens/logo-oficial.png" width="150px;" alt="Logo Maria Cacau"/><br>
             </a>
         </td>
     </tr>
