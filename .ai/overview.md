@@ -14,6 +14,7 @@ Planilhas são gerenciadas pelo menu **Arquivo**: conectar por URL/ID, salvar lo
 | Linguagem | Python 3.13 |
 | Interface | PyQt6 |
 | Dados | pandas |
+| Gráficos | matplotlib + seaborn |
 | Planilha Google | gspread + google-auth |
 | Credenciais | keyring (keychain do SO) |
 | Build/Empacotamento | Nuitka |

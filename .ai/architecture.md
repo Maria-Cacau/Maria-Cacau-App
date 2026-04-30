@@ -14,6 +14,7 @@ Maria-Cacau-Contagem/
 │   ├── __init__.py               # metadados centralizados (versão, copyright, ícones) + helper `asset()`
 │   ├── __main__.py               # entry point
 │   ├── core/
+│   │   ├── charts.py                     # ChartWidget (QWidget) + ChartType enum (BAR/PIE)
 │   │   ├── sheets/
 │   │   │   ├── service.py                # autenticação e leitura bruta do Google Sheets
 │   │   │   ├── manager.py                # orquestra service + handler; singleton `manager`
@@ -113,6 +114,27 @@ Módulo `maria_cacau/core/observability.py` — singleton `observability` com en
 Saída: `~/.mariacacau/logs.log` (append-only, formato `YYYY-MM-DD HH:MM:SS  LEVEL  mensagem`).
 
 Para adicionar um novo evento: acrescentar valor ao `AppEvent` e chamar `observability.log(AppEvent.NOVO, ...)`.
+
+## Gráficos (`ChartWidget`)
+
+Módulo `maria_cacau/core/charts.py` — widget reutilizável baseado em `matplotlib` + `seaborn`, embutido diretamente nas views via Qt.
+
+| Símbolo | Descrição |
+|---|---|
+| `ChartType` | Enum `BAR` / `PIE` — tipo de visualização |
+| `ChartWidget` | `QWidget` com `FigureCanvasQTAgg` dentro de `QScrollArea` |
+| `update_data(data, title)` | Alimenta o gráfico com dados novos e re-renderiza |
+| `set_type(ChartType)` | Troca o tipo sem precisar repassar os dados |
+| `copy_to_clipboard()` | Exporta o gráfico como PNG para a área de transferência (150 dpi) |
+| `save_to_file()` | Salva como PNG ou SVG via diálogo de arquivo |
+
+**Scroll horizontal**: para gráficos de barras com muitos itens, o canvas é redimensionado via `canvas.resize(n * 22px, viewport_h)` — se o canvas ultrapassar o viewport, a barra de scroll cinza aparece automaticamente.
+
+**Paleta**: barras usam `YlOrBr` invertido (marrom escuro nas maiores quantidades); pizza usa `Set2`. Labels de pizza com >10 fatias são movidos para legenda lateral.
+
+**Uso nas views**:
+- `products_resume_view.py`: `ChartWidget(ChartType.BAR)` com `QComboBox` para alternar para pizza
+- `orders_pendent_view.py`: `ChartWidget(ChartType.PIE)` fixo (modalidades de entrega)
 
 ## Assets (`asset()`)
 Qualquer path de asset deve ser resolvido via `asset('images/foo.png')` de `maria_cacau/__init__.py`.
