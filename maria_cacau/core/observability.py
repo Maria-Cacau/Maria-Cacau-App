@@ -22,6 +22,7 @@ class AppEvent(Enum):
     BTN_COPY       = 'BTN_COPY'     # extra: feature=
     CPF_CHECK      = 'CPF_CHECK'    # extra: valid=
     PREWARM_DONE   = 'PREWARM_DONE' # extra: duration_s=
+    CACHE_CLEAR    = 'CACHE_CLEAR'
     ERROR          = 'ERROR'        # extra: msg=, where= (optional)
 
 

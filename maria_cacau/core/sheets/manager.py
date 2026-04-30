@@ -51,6 +51,10 @@ class SheetsManager:
         key = next((k for k in handler.dtsPed if k in date_variants), date_str)
         return handler.get_data(handler.get_col("entrega"), key)
 
+    def clear_cache(self) -> None:
+        """Descarta os dados em memória, forçando nova leitura na próxima consulta."""
+        self._cadastro = None
+
     @property
     def cadastro(self) -> CadastroAnalyseHandler:
         return self._cadastro

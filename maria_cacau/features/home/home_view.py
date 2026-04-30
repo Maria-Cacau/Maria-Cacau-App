@@ -155,6 +155,11 @@ class GuiMain(QMainWindow):
         for entry in self._load_sheets():
             self._add_planilha_menu(entry['nome'], entry['sheet_id'])
 
+        self.mnConfig.addSeparator()
+        self.actLimparCache = QAction(strings.ACT_LIMPAR_CACHE, self)
+        self.mnConfig.addAction(self.actLimparCache)
+        self.actLimparCache.triggered.connect(self.on_limpar_cache)
+
         self.mnSeguranca = QMenu(strings.MNU_SEGURANCA, self.menubar)
         self.menubar.addAction(self.mnSeguranca.menuAction())
 
@@ -472,6 +477,14 @@ class GuiMain(QMainWindow):
             GuiPopup().show_popup(errors.certificado_limpo(), "I")
         else:
             GuiPopup().show_popup(errors.C003)
+
+    ## Método: Ação do menu "Limpar cache"
+    def on_limpar_cache(self) -> None:
+        manager.clear_cache()
+        self.datas = {}
+        self.dtEnt = ''
+        self.gEntregas.resumos.clear()
+        observability.log(AppEvent.CACHE_CLEAR)
 
     ## Método: Carrega planilhas salvas do cache local
     @staticmethod

@@ -33,6 +33,7 @@ ACT_PLANILHAS_CONECTADAS  = "Planilhas conectadas"
 ACT_CONFIGURAR_CERT       = "Configurar certificado"
 ACT_LIMPAR_CERT           = "Limpar certificado"
 ACT_DOCUMENTACAO          = "Documentação"
+ACT_LIMPAR_CACHE          = "Limpar cache"
 URL_DOCUMENTACAO          = "https://github.com/Gui25Reis/Maria-Cacau-Contagem/wiki"
 
 # ── Diálogos ──────────────────────────────────────────────────────────────────
