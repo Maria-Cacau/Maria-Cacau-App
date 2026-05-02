@@ -3,7 +3,7 @@
 [![Version](https://img.shields.io/badge/version-4.0-orange)](https://github.com/Gui25Reis/Maria-Cacau-Contagem/releases/tag/4.0.0)
 ![Language](https://img.shields.io/badge/language-Python-blue?logo=python)
 [![Python Version](https://img.shields.io/badge/python-v3.13+-blue?logo=python)](https://www.python.org/downloads/)
-[![License](https://img.shields.io/badge/license-MIT-brightgreen)](./LICENSE)
+[![License](https://img.shields.io/badge/license-CC%20BY--NC%204.0-brightgreen?logo=creativecommons)](./LICENSE)
 ![macOS](https://img.shields.io/badge/macOS-000000?logo=apple&logoColor=white)
 ![Windows](https://img.shields.io/badge/Windows-0078D6?logo=windows&logoColor=white)
 
