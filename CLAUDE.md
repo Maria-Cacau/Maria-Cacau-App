@@ -1,3 +1,12 @@
+## CBL — Curiosity-Based Log
+
+O arquivo `.ai/benchmark/CBL.md` deve ser populado com as perguntas do usuário e resumo das respostas ao longo das sessões.
+
+- Registrar todas as perguntas do usuário, sem filtro de tema
+- Formato: `**P: pergunta**` seguido de parágrafo com resumo da resposta
+- Agrupar por sessão com cabeçalho de data (`## Sessão — Mês/Ano`)
+- Popular ao longo da sessão ou ao finalizar a demanda
+
 ## Strings de UI
 
 Todas as strings de UI ficam em `maria_cacau/assets/strings.py`. Nunca hardcodar texto de interface nas views.
