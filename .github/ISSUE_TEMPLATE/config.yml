@@ -1,6 +1,1 @@
 blank_issues_enabled: false
-
-contact_links:
-  - name: Reportar um problema
-    url: https://github.com/Gui25Reis/Maria-Cacau-Contagem/issues/new?template=bug_report.yml
-    about: Encontrou algo errado no app? Clique aqui para reportar.
