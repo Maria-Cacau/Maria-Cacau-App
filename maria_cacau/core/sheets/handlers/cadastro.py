@@ -55,7 +55,10 @@ class CadastroAnalyseHandler:
         _NUMERIC_COLS = ['quanto\nfalta\npagar?', 'q1', 'q2', 'q3', 'q4', 'q5', 'q6', 'q7']
         for col in _NUMERIC_COLS:
             if col in self.arq.columns:
-                self.arq[col] = pd.to_numeric(self.arq[col], errors='coerce').fillna(0)
+                self.arq[col] = pd.to_numeric(
+                    self.arq[col].astype(str).str.replace(',', '.', regex=False),
+                    errors='coerce',
+                ).fillna(0)
 
         qDts = self.arq['data'].value_counts()
         self.dtsPed = {str(d)[:10]: int(c) for d, c in qDts.items()}
