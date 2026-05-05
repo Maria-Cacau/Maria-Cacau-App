@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "maria-cacau"
-version = "4.0.0"
+version = "4.0.1"
 description = "Ferramenta de consultas operacionais Maria Cacau"
 authors = [{name = "Gui Reis", email = "guisreis25@gmail.com"}]
 dependencies = [
