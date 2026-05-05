@@ -1,35 +1,74 @@
-# POC — Análise da Planilha Google Sheets
+# POC — Análise da Planilha + Feature: Cadastro de Pedido
 
-> **Objetivo:** mapear completamente o *as is* da aba `Cadastro` e das abas de suporte da planilha
-> operacional da Maria Cacau, para servir de base para o design da tela de cadastro de pedidos.
+> **Objetivo geral:** mapear o *as is* da planilha Google Sheets e usar esse conhecimento
+> para projetar e implementar a tela de **Cadastro de Pedido** no app PyQt6.
 >
-> **Data:** Mai/2026  
-> **Autor:** Claude Sonnet 4.6 (análise automatizada via API do Google Sheets)
+> **Data de início:** Mai/2026  
+> **Status:** design em andamento (aguardando frames de estados da IA de design)
 
 ---
 
 ## Índice
 
-1. [Contexto](#contexto)
-2. [Setup — como rodar os scripts](#setup)
-3. [Dependência extra](#dependência-extra)
-4. [Scripts — o que cada um faz](#scripts)
-5. [Resultados em JSON](#resultados-em-json)
-6. [Análise completa (documento final)](#análise-completa)
-7. [Achados principais](#achados-principais)
+1. [Contexto e objetivo](#contexto-e-objetivo)
+2. [Arquivos desta POC](#arquivos-desta-poc)
+3. [Setup — como rodar os scripts](#setup)
+4. [Dependência extra instalada](#dependência-extra-instalada)
+5. [Scripts — o que cada um faz](#scripts)
+6. [Resultados em JSON](#resultados-em-json)
+7. [Achados principais da análise](#achados-principais-da-análise)
+8. [Decisões de produto aprovadas](#decisões-de-produto-aprovadas)
+9. [Design — estado atual](#design--estado-atual)
 
 ---
 
-## Contexto
+## Contexto e Objetivo
 
 A operação da Maria Cacau usa uma planilha Google Sheets como sistema de gestão de pedidos.
-O objetivo desta POC foi entender **como a planilha está estruturada** antes de criar uma tela
-de cadastro de pedido no app PyQt6 — para que o app possa gravar os dados no mesmo formato
-que a planilha espera.
+O cadastro hoje é 100% manual: o operador copia uma linha-template da aba `MACRO CADASTRO`
+e cola na aba `Cadastro`, preenchendo campo por campo sem validação, sem máscara, sem cálculo
+visível.
+
+Esta POC teve duas fases:
+
+**Fase 1 — Análise (concluída)**
+Mapear completamente a estrutura da planilha: colunas, fórmulas, validações, abas de suporte
+e fluxo atual. Isso virou a base para o design e a implementação.
+
+**Fase 2 — Design + Implementação (em andamento)**
+Criar uma tela de formulário no app que substitua o processo manual. Ao clicar em
+"Cadastrar Pedido", os dados são gravados diretamente na planilha no formato correto.
 
 **Planilha analisada:**
 - Sheet ID: `1sWiWmckq0lAkV2zD_jofPx56WgE7sroSgqO7fAnPUnc`
-- Localização: `~/.mariacacau/sheets.json` (já configurado na máquina de desenvolvimento)
+- Localização do config: `~/.mariacacau/sheets.json`
+
+---
+
+## Arquivos desta POC
+
+```
+pocs/sheets-analysis/
+├── README.md                          ← este arquivo
+├── TASKS.md                           ← tracking de tarefas (feito / pendente)
+│
+├── cadastro_asis.md                   ← análise completa da planilha (referência principal)
+├── prompt_design_cadastro.md          ← prompt passado para a IA de design (v1 — estrutura)
+├── prompt_design_estados.md           ← prompt passado para a IA de design (v2 — estados/casos)
+│
+├── scripts/
+│   ├── analisar_cadastro.py           ← análise inicial da aba Cadastro
+│   ├── analisar_planilha_completa.py  ← todas as 40 abas
+│   ├── analisar_formulas.py           ← 1ª tentativa de buscar fórmulas (API v4)
+│   ├── analisar_formulas2.py          ← versão corrigida com linhas de dados
+│   ├── analisar_produtos_aba.py       ← aba Produtos + validações restantes
+│   └── buscar_exemplos_casos.py       ← exemplos reais para os casos de uso do design
+│
+└── results/
+    ├── cadastro_analysis.json          ← dados brutos da aba Cadastro (50 últimos pedidos)
+    ├── planilha_completa_analysis.json ← dados de todas as 40 abas
+    └── exemplos_casos_uso.json         ← 9 exemplos reais para os frames do design
+```
 
 ---
 
@@ -37,10 +76,10 @@ que a planilha espera.
 
 ### Pré-requisitos
 
-1. **Credenciais** já precisam estar salvas em `~/.mariacacau/google-credentials.credential`
-   (arquivo gerado pelo app na primeira execução — ver `docs/credentials-setup.md`).
+1. **Credenciais** já salvas em `~/.mariacacau/google-credentials.credential`
+   (gerado pelo app na primeira execução — ver `docs/credentials-setup.md`).
 
-2. **Sheet ID** precisa estar em `~/.mariacacau/sheets.json` no formato:
+2. **Sheet ID** em `~/.mariacacau/sheets.json`:
    ```json
    [{"nome": "Planilha2026", "sheet_id": "1sWiWmckq0lAkV2zD_jofPx56WgE7sroSgqO7fAnPUnc"}]
    ```
@@ -58,213 +97,243 @@ que a planilha espera.
 ### Rodando os scripts
 
 ```bash
-# A partir da raiz do repositório, usando o venv do projeto:
+# A partir da raiz do repositório:
 ./venv/bin/python3 pocs/sheets-analysis/scripts/<nome_do_script>.py
 ```
 
 ---
 
-## Dependência Extra
+## Dependência Extra Instalada
 
-> **Atenção:** `google-api-python-client` **não está** no `pyproject.toml` do projeto.
-> Foi instalada manualmente durante esta POC via `pip install google-api-python-client`.
+> `google-api-python-client` **não está** no `pyproject.toml` — foi instalada manualmente
+> durante esta POC via `pip install google-api-python-client`.
 
-| Lib | Versão usada | Por que | Já no projeto? |
-|---|---|---|---|
-| `google-api-python-client` | última disponível | Acesso à Sheets API v4 para buscar fórmulas e data validations (gspread sozinho não expõe isso) | ❌ não está no `pyproject.toml` |
+| Lib | Por que foi necessária | Já no projeto? |
+|---|---|---|
+| `google-api-python-client` | Acesso à Sheets API v4 para buscar fórmulas e data validations. O `gspread` sozinho não expõe isso. | ❌ só no venv |
 
-Se quiser adicionar ao projeto formalmente:
+Para adicionar formalmente ao projeto:
 ```toml
 # pyproject.toml → [project] → dependencies
 "google-api-python-client",
 ```
 
-As libs `gspread`, `google-auth` e `google-oauth2-service-account` **já estão** no projeto.
+As libs `gspread` e `google-auth` **já estão** no projeto via `pyproject.toml`.
 
 ---
 
 ## Scripts
 
-Todos os scripts estão em `pocs/sheets-analysis/scripts/`. Foram rodados em sequência —
-cada um refinou ou expandiu a análise anterior.
+Rodados em sequência — cada um refinando ou expandindo a análise anterior.
 
 ---
 
 ### `analisar_cadastro.py`
 
-**O que faz:** primeira análise da aba `Cadastro`. Lê as últimas 50 linhas com pedido
-preenchido (`col A != ""`) e para cada coluna calcula:
-- tipo inferido (data, numérico, enum, texto, vazia)
-- taxa de preenchimento (fill rate)
-- top 5 valores mais frequentes
+Primeira análise da aba `Cadastro`. Lê as últimas 50 linhas com pedido preenchido
+(`col A != ""`) e por coluna calcula tipo inferido, fill rate e top 5 valores.
 
-**Saída:** print no terminal + `results/cadastro_analysis.json`
+**Fix aplicado:** filtragem inicial usava `any(c.strip() for c in r)` — trazia linhas
+de fórmula vazias que têm `FALSE` nos checkboxes. Corrigido para `r[0].strip() != ""`
+(coluna PEDIDO preenchida), igual ao critério do `CadastroAnalyseHandler` existente.
 
-**Aprendizado desta execução:** a filtragem inicial usava `any(c.strip() for c in r)` —
-isso trazia linhas de fórmula vazias (que têm `FALSE` em checkboxes). A correção foi
-filtrar por `r[0].strip() != ""` (coluna PEDIDO preenchida), igual ao critério do
-`CadastroAnalyseHandler` existente.
+Saída: `results/cadastro_analysis.json`
 
 ---
 
 ### `analisar_planilha_completa.py`
 
-**O que faz:** análise de **todas as 40 abas** da planilha. Para cada aba reporta:
-- número de linhas e colunas
-- colunas com dados vs. colunas vazias
-- tipo inferido e top valores por coluna
+Análise de **todas as 40 abas**. Revelou que a aba `Produtos` é o hub de todos os
+dropdowns e que existem ~34 abas históricas (2018/2019) sem uso ativo.
 
-Também tenta buscar fórmulas e validações via Sheets API v4 — nesta versão a query
-falhou por campo inválido (`formula` não existe, o correto é `userEnteredValue.formulaValue`).
+Tentou buscar fórmulas via Sheets API v4, mas o campo `formula` não existe — o correto
+é `userEnteredValue.formulaValue`. Corrigido nos scripts seguintes.
 
-**Saída:** print no terminal + `results/planilha_completa_analysis.json`
-
-**Por que é útil:** revelou que a aba `Produtos` é o hub de todos os dropdowns, e que existem
-abas históricas (2018/2019) que não fazem parte do fluxo atual.
+Saída: `results/planilha_completa_analysis.json`
 
 ---
 
 ### `analisar_formulas.py`
 
-**O que faz:** usa a Sheets API v4 corretamente (campo `userEnteredValue.formulaValue`)
-para buscar fórmulas e data validations das colunas-chave do Cadastro (produtos, valores
-calculados, booleanos).
-
-**Resultado relevante:**
-- Única data validation encontrada no header/primeiras linhas: `PLP/NF IMPRESSA` → `BOOLEAN`
-- Confirmou que a aba `Produtos!A` tem 1.281 itens (1 header + 1.280 produtos)
-
-**Limitação:** buscou apenas rows 1–5. Fórmulas estão nas linhas de dados (row 2+),
-não no header — por isso não apareceram aqui.
+Primeira tentativa correta de buscar fórmulas (campo `userEnteredValue.formulaValue`).
+Buscou rows 1–5, onde fórmulas não existem (estão nas linhas de dados). Resultado:
+confirmou que `PLP/NF IMPRESSA` tem validação `BOOLEAN` e que `Produtos!A` tem 1.280 itens.
 
 ---
 
 ### `analisar_formulas2.py`
 
-**O que faz:** versão corrigida — busca fórmulas nas linhas de dados (rows 2–4) e
-data validations nas colunas de produto (Prod1–7) e nas colunas de enum (rows 2–10).
+Versão corrigida — busca fórmulas nas rows 2–4 (linhas reais de pedido) e validações
+nas colunas de produto e enum.
 
-**Resultados relevantes:**
+**Resultados-chave:**
 ```
-Valor1 (col 18): fórmula =Q2*O2  → $Unit1 × Q1
-Valor2 (col 22): fórmula =U2*S2  → $Unit2 × Q2
-Prod1-7: ONE_OF_RANGE: =Produtos!$A$2:$A$1285
-COMO CONHECEU: ONE_OF_RANGE: =Produtos!$H$2:$H$34
-PARENTESCO: ONE_OF_RANGE: =Produtos!$K$2:$K$26
+Valor1:       fórmula =Q2*O2  → $Unit1 × Q1
+Valor2:       fórmula =U2*S2  → $Unit2 × Q2
+Prod1–7:      ONE_OF_RANGE: =Produtos!$A$2:$A$1285
+Como Conheceu: ONE_OF_RANGE: =Produtos!$H$2:$H$34
+Parentesco:   ONE_OF_RANGE: =Produtos!$K$2:$K$26
 ```
 
 ---
 
 ### `analisar_produtos_aba.py`
 
-**O que faz:** lê todas as 17 colunas da aba `Produtos` com amostras dos valores,
-e verifica validações nas colunas restantes do Cadastro (Prod2–7, SEXO, MODALIDADE,
-EVENTO, formas de pagamento).
+Lê todas as 17 colunas da aba `Produtos` e verifica validações nas colunas restantes
+do Cadastro (Prod2–7, SEXO, MODALIDADE, EVENTO, formas de pagamento).
 
-**Resultado relevante:** mapeamento completo de qual coluna do `Produtos` alimenta
-qual campo do Cadastro (ver seção "Achados principais" abaixo).
+Resultado: mapeamento completo — cada coluna de `Produtos` alimenta um dropdown
+diferente no `Cadastro` (ver Achados Principais).
+
+---
+
+### `buscar_exemplos_casos.py`
+
+Busca nos últimos 500 pedidos exemplos reais para os casos de uso do design:
+1 produto, 7 produtos, campo Outros preenchido, 2 e 3 parcelas, modalidade FABRICA,
+desconto, destinatário diferente, obs fábrica.
+
+Saída: `results/exemplos_casos_uso.json` (9 casos reais encontrados)
 
 ---
 
 ## Resultados em JSON
 
-### `results/cadastro_analysis.json`
-
-Estrutura:
+### `cadastro_analysis.json`
 ```json
 {
   "total_rows_historico": 12058,
   "n_cols": 166,
   "n_amostras": 50,
-  "colunas": [
-    {
-      "idx": 1,
-      "header_raw": "PEDIDO",
-      "header_norm": "pedido",
-      "tipo": "numérico",
-      "fill": "100%",
-      "top_values": ["26266,0", "26262,0", ...]
-    },
-    ...
-  ]
+  "colunas": [{ "idx": 1, "header_raw": "PEDIDO", "tipo": "numérico", "fill": "100%", ... }]
 }
 ```
 
-### `results/planilha_completa_analysis.json`
-
-Mesma estrutura, mas indexada por nome de aba:
+### `planilha_completa_analysis.json`
 ```json
 {
-  "Cadastro": { "title": "Cadastro", "rows": 12532, "cols": 166, "columns": [...] },
-  "Produtos":  { "title": "Produtos",  "rows": 1284,  "cols": 17,  "columns": [...] },
+  "Cadastro": { "rows": 12532, "cols": 166, "columns": [...] },
+  "Produtos":  { "rows": 1284,  "cols": 17,  "columns": [...] },
   ...
 }
 ```
 
+### `exemplos_casos_uso.json`
+```json
+{
+  "caso_1prod":          { "label": "Pedido mínimo — 1 produto", "pedido": "25859", ... },
+  "caso_7prod":          { "label": "Pedido máximo — 7 produtos", "pedido": "25622", ... },
+  "caso_7prod_outro":    { "label": "7 produtos + campo Outro",   "pedido": "25727", ... },
+  "caso_2parcelas":      { "label": "2 parcelas de pagamento",    "pedido": "25863", ... },
+  "caso_3parcelas":      { "label": "3 parcelas de pagamento",    "pedido": "25418", ... },
+  "caso_retirada":       { "label": "Modalidade FABRICA",         "pedido": "25868", ... },
+  "caso_desconto":       { "label": "Com desconto",               "pedido": "25622", ... },
+  "caso_dest_diferente": { "label": "Destinatário ≠ comprador",  "pedido": "25856", ... },
+  "caso_obs_fabrica":    { "label": "Obs. fábrica preenchida",    "pedido": "25853", ... }
+}
+```
+
 ---
 
-## Análise Completa
+## Achados Principais da Análise
 
-O documento de análise final — humano-legível, com toda a estrutura, fórmulas,
-validações e recomendações de design — está em:
+### A aba `Produtos` é o hub de todos os dropdowns
 
-**[`docs/cadastro_asis.md`](../../docs/cadastro_asis.md)**
+| Coluna | Header | Qtd | Alimenta no Cadastro |
+|---|---|---|---|
+| A | PRODUTOS | 1.280 | Prod1–7 (autocomplete) |
+| F | PAGAMENTO | 26 | Forma de pagamento 1–6 |
+| G | MODAL | 28 | Modalidade de entrega |
+| H | COMO NOS CONHECEU | 27 | Como Conheceu |
+| J | EVENTO | 42 | Tipo de Evento |
+| K | GRAU DE PARENTESCO | 18 | Parentesco |
+| O | GÊNERO | 6 | Sexo do presenteado |
 
-Esse é o documento que deve ser usado como referência para o design e desenvolvimento
-da tela de cadastro.
-
----
-
-## Achados Principais
-
-### 1. A aba `Produtos` é o hub central de dropdowns
-
-Toda seleção do Cadastro vem de lá:
-
-| Coluna Produtos | Campo no Cadastro | Qtd opções |
-|---|---|---|
-| `A` — PRODUTOS | Prod1, Prod2, Prod3, Prod4, Prod5, Prod6, Prod7 | 1.280 |
-| `F` — PAGAMENTO | Forma 1º–6º Pgto | 26 |
-| `G` — MODAL | Modalidade | 28 |
-| `H` — COMO NOS CONHECEU | Como Conheceu | 27 |
-| `J` — EVENTO | Evento | 42 |
-| `K` — GRAU DE PARENTESCO | Parentesco | 18 |
-| `O` — GÊNERO | Sexo | 6 |
-
-### 2. Campos calculados por fórmula (não precisam de input)
+### Campos calculados por fórmula
 
 | Campo | Fórmula |
 |---|---|
-| Valor1 | `= Q1 × $Unit1` |
-| Valor2 | `= Q2 × $Unit2` |
-| Valor3–7 | idem (padrão) |
-| TOTAL | soma de Valor1–7 + Valor Outro − Desconto + Frete |
-| Confere soma | deve ser 0 (verificação) |
-| Quanto falta pagar? | TOTAL − pagamentos confirmados |
-| D+1 | calculado a partir da data de entrega |
-| PLP/NF IMPRESSA | checkbox BOOLEAN |
-| DESPACHADO | checkbox BOOLEAN |
+| Valor[n] | `Qtd[n] × $Unit[n]` |
+| TOTAL | soma Valor1–7 + Valor Outro − Desconto + Frete |
+| Falta pagar | TOTAL − soma dos pagamentos confirmados |
+| D+1, PLP/NF IMPRESSA, DESPACHADO | fórmulas / checkboxes automáticos |
 
-### 3. Fluxo atual é manual e baseado em copy/paste
+### Fluxo atual (que a tela vai substituir)
 
-A aba `MACRO CADASTRO` contém uma linha-template com valores padrão
-(`FALSE`, `<nome>`, `0`, `-`). O operador copia essa linha e cola no `Cadastro`
-para iniciar um novo pedido.
+```
+1. Operador vai à aba MACRO CADASTRO
+2. Copia a linha-template (valores padrão: FALSE, <nome>, 0, -)
+3. Cola na aba Cadastro
+4. Preenche campo por campo manualmente
+5. Sem validação, sem máscara, sem cálculo visível durante o preenchimento
+```
 
-### 4. Inconsistências que a nova tela deve resolver
+### Inconsistências resolvidas pela nova tela
 
-| Problema | Campo |
+| Problema atual | Solução na tela |
 |---|---|
-| Sem máscara | TEL, CPF, CEP |
-| Rua + número juntos | col `Rua` |
-| Cidade em formato livre | col `Cidade` (ex: `São Paulo - SP`, `Sao Paulo - SP`) |
-| Dropdown de 1.280 itens sem busca | Prod1–7 |
-| Label errado na 3ª parcela | col 57 diz "Data 6ªPgto" mas é a 3ª |
-| Header de Prod4 é `"-"` | bug histórico na planilha |
+| TEL, CPF, CEP sem máscara | Inputs com máscara automática |
+| Rua + número na mesma célula | Campos separados (Logradouro + Número) |
+| Cidade em formato livre | Auto-preenchida pelo CEP (ViaCEP) |
+| 1.280 produtos num dropdown | Autocomplete com busca por nome ou código |
+| Copy/paste de template | Formulário com botão "Cadastrar" |
+| Nº pedido manual | Pré-preenchido com último + 1 |
 
-### 5. Escala da planilha
+---
 
-- ~12.058 pedidos históricos (6 anos de operação)
-- ~1.280 produtos ativos no catálogo
-- 166 colunas totais (60 sem header — buffer vazio)
-- 40 abas no total (maioria histórica, ~6 ativas)
+## Decisões de Produto Aprovadas
+
+Decisões tomadas em sessão (Mai/2026) e aprovadas para implementação:
+
+| Decisão | Detalhe |
+|---|---|
+| Número do pedido pré-preenchido | Último pedido + 1, editável |
+| CEP auto-completa endereço | Via API ViaCEP; campos permanecem editáveis |
+| Campos calculados visíveis | Total por produto, subtotal, total, falta pagar — em tempo real |
+| Autocomplete de produto | Campo de busca filtrando os 1.280 itens por nome ou código |
+| Slots dinâmicos de produto | Começa com 1; botão "+ Adicionar produto" até 7 |
+| Slots dinâmicos de parcela | Começa com 1; botão "+ Adicionar parcela" sem limite fixo |
+| Endereço oculto por modalidade | Se RETIRADA/GUARITA/FABRICA/FEIRA → bloco de endereço oculto |
+| Destinatário = Comprador | Checkbox copia nome, tel, CPF do comprador automaticamente |
+| Máscaras nos campos livres | TEL → `(00) 00000-0000`, CPF → `000.000.000-00`, CEP → `00000-000` |
+| Validação antes de enviar | Campos obrigatórios destacados em vermelho |
+| Controle Interno colapsável | Seção 9 fechada por padrão; expandível para campos internos |
+| Campos 4–6 de parcela omitidos | Nunca usados — não expor no formulário |
+
+---
+
+## Design — Estado Atual
+
+### Protótipo v1 (concluído)
+
+A IA de design criou o protótipo completo da tela "Novo Pedido" com:
+- 9 seções numeradas em página única com scroll
+- Sticky footer com PEDIDO / TOTAL / FALTA PAGAR + botões Limpar e Cadastrar
+- Segmented control para Sexo
+- Campo de busca de produto (autocomplete) com colunas QTD / R$ UNIT. / TOTAL
+- Botões dinâmicos "+ Adicionar produto" e "+ Adicionar parcela"
+- Checkbox "Mesmo que o comprador" na seção de destinatário
+- CEP com campos de endereço separados (Logradouro, Número, Bairro, Cidade, UF)
+- Seção 9 "Controle Interno" colapsada com label "Uso interno da operação ▶"
+
+### Próximo passo de design (aguardando)
+
+Prompt enviado (`prompt_design_estados.md`) pedindo **15 frames** de estados:
+
+**Grupo A — Caminhos felizes (7 frames)**
+- A1: Pedido mínimo, 1 produto, destinatário = comprador (pedido real #25859)
+- A2: 7 produtos com desconto (pedido real #25622)
+- A3: 7 produtos + campo Outros + 3 parcelas (pedido real #25727)
+- A4: Modalidade FABRICA — bloco endereço oculto (pedido real #25868)
+- A5: Destinatário diferente do comprador (pedido real #25856)
+- A6: Obs. Fábrica com instrução detalhada (pedido real #25853)
+- A7: Controle Interno expandido (seção 9 aberta)
+
+**Grupo B — Erros e feedback (8 frames)**
+- B1: Campos obrigatórios faltando (múltiplos em vermelho)
+- B2: CPF inválido
+- B3: CEP não encontrado
+- B4: CEP sendo consultado (loading parcial)
+- B5: Enviando para planilha (loading geral, formulário bloqueado)
+- B6: Sucesso (pedido gravado)
+- B7: Autocomplete de produto aberto com sugestões filtradas
