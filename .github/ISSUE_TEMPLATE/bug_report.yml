@@ -1,0 +1,59 @@
+name: Bug Report
+description: Reporte um comportamento inesperado no app MC Consultas
+labels: ["bug"]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use este formulário para reportar problemas encontrados no app **MC Consultas**.
+        Antes de abrir, verifique o checklist abaixo.
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: Estou usando a [versão mais recente disponível](https://github.com/Gui25Reis/Maria-Cacau-Contagem/releases)
+          required: true
+        - label: Consultei a [documentação](https://github.com/Gui25Reis/Maria-Cacau-Contagem/wiki) e o problema não está coberto
+          required: true
+        - label: Verifiquei se já existe uma issue aberta com o mesmo problema
+          required: true
+
+  - type: textarea
+    id: descricao
+    attributes:
+      label: Descrição
+      placeholder: Resumo rápido do problema
+    validations:
+      required: true
+
+  - type: textarea
+    id: cenario_atual
+    attributes:
+      label: Cenário atual
+      placeholder: O que acontece hoje
+    validations:
+      required: true
+
+  - type: textarea
+    id: cenario_esperado
+    attributes:
+      label: Cenário esperado
+      placeholder: O que deveria acontecer
+    validations:
+      required: true
+
+  - type: textarea
+    id: passos
+    attributes:
+      label: Passos para reproduzir
+      placeholder: Como chegar no problema (opcional)
+
+  - type: textarea
+    id: evidencia
+    attributes:
+      label: Evidência
+      description: Arraste prints ou vídeos diretamente aqui
+      placeholder: Cole ou arraste imagens e vídeos
