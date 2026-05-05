@@ -1,7 +1,7 @@
-# Graph Report - Maria-Cacau-Contagem  (2026-04-30)
+# Graph Report - Maria-Cacau-Contagem  (2026-05-05)
 
 ## Corpus Check
-- 37 files · ~11,832 words
+- 37 files · ~312,199 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -43,8 +43,8 @@
   __main__.py → features/home/home_view.py
 - `Entry point da aplicação. Execute com: python -m maria_cacau` --uses--> `GuiMain`  [INFERRED]
   __main__.py → features/home/home_view.py
-- `GuiEntregas` --uses--> `ChartType`  [INFERRED]
-  features/home/sub_features/orders_pendent/orders_pendent_view.py → core/charts.py
+- `ChartType` --uses--> `GuiEntregas`  [INFERRED]
+  core/charts.py → features/home/sub_features/orders_pendent/orders_pendent_view.py
 
 ## Communities
 
