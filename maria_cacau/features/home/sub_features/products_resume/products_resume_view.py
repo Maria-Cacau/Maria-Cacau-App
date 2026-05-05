@@ -127,13 +127,14 @@ class GuiProdutos(AuxWidgets):
 
     ## Método: Junta as colunas de produtos (e as quantidade deles) em um dicionário
     def merge_cols(self, l_: list) -> None:
-        if str(l_[-1]) not in self.naValues:
+        if str(l_[-1]).strip() and str(l_[-1]) not in self.naValues:
             self.add_to_dict(l_[-1], 1, self.pedInd)
             self.add_to_dict(l_[-1], 1, self.pedDia)
             self.add_to_dict(l_[-1], 1, self.pedGeral)
 
         for p in range(0, 14, 2):
             if str(l_[p]) in self.naValues: break
+            if not str(l_[p+1]).strip() or str(l_[p+1]) in self.naValues: continue
             self.add_to_dict(l_[p+1], int(l_[p]), self.pedInd)
             self.add_to_dict(l_[p+1], int(l_[p]), self.pedDia)
             self.add_to_dict(l_[p+1], int(l_[p]), self.pedGeral)
