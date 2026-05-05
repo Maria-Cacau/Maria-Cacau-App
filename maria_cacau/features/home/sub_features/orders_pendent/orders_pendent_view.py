@@ -101,7 +101,7 @@ class GuiEntregas(AuxWidgets):
 
             dev = ''
             for x in range(len(pag)):
-                if pag[x] < 0 and arq_['modalidade'][x] != 'FABRICA':
+                if pag[x] > 0 and arq_['modalidade'][x] != 'FABRICA':
                     dev += '\n{} -> {} | {} | {} | $: {}\n'.format(
                         arq_['pedido'][x], arq_['destinatário'][x],
                         arq_['modalidade'][x], arq_['tel'][x], pag[x])
