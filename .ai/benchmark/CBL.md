@@ -135,3 +135,137 @@ Script `buscar_exemplos_casos.py` buscou nos últimos 500 pedidos 9 casos reais:
 **P: Cria o segundo prompt para a IA de design pedindo os frames de estados preenchidos e de erro.**
 
 Prompt criado em `pocs/sheets-analysis/prompt_design_estados.md`. 15 frames divididos em Grupo A (7 caminhos felizes com dados reais da planilha) e Grupo B (8 estados de erro/feedback: campos obrigatórios faltando, CPF inválido, CEP não encontrado, CEP loading, cadastrando, sucesso, autocomplete aberto). Cada frame A usa dados reais dos pedidos encontrados.
+
+---
+
+## Sessão — Mai/2026 (Fix: dados vazios e pendências)
+
+---
+
+**P: Por que aparecem entradas vazias (ex: "22 ->") no resumo de produtos?**
+
+A coluna `outro\nespec.` retorna `''` (string vazia) da planilha. A checagem existente não capturava `''` porque `naValues = ['0.0', 'nan', '0', '-']` não inclui string vazia. O vazio entrava no dicionário como chave e acumulava — gerando `22 ->` na UI. Fix: adicionado `.strip()` na checagem do `outro\nespec.` e `continue` no loop `q1–q7` para ignorar produtos com nome vazio.
+
+---
+
+**P: Por que as pendências de pagamento não aparecem na área de entregas?**
+
+Dois bugs combinados: (1) a coluna usa vírgula como decimal (`0,00`, `-136,40`) e `pd.to_numeric` não lê vírgula — tudo virava NaN → 0; (2) a condição estava com sinal trocado (`< 0` em vez de `> 0`). "Falta pagar" = TOTAL − pagamentos, logo positivo = ainda deve. Fix: `.str.replace(',', '.')` antes de `to_numeric` + condição corrigida para `> 0`.
+
+---
+
+**P: Por que a planilha está devolvendo valores vazios na coluna "quanto falta pagar?"?**
+
+A planilha usa vírgula como separador decimal (formato BR). `pd.to_numeric` espera ponto — converte tudo para NaN, depois `fillna(0)` zera. Verificado via script diagnóstico direto na planilha real: antes do fix todos os 12.060 pedidos tinham valor 0; depois do fix, 340 com valor > 0.
+
+---
+
+**P: Dos 340 pedidos com pendência, quais são as datas?**
+
+Lista completa extraída da planilha real ordenada por data — de 01/04/22 até 07/05/26. Datas de 2026 com pendências relevantes: 28/01/26 (R$71,00), 06/04/26 (R$5,00), entre outros. A maioria são centavos de arredondamento. O de 07/05/26 (R$0,33) é dessa semana e foi identificado pelo próprio usuário como provável erro de digitação.
+
+---
+
+## Sessão — Mai/2026 (GitHub: issues, templates, proteção de branch)
+
+---
+
+**P: Como vinculo uma issue em uma PR? É só mencionar com #?**
+
+Sim. `#123` só menciona (aparece como link). Para fechar automaticamente no merge, usar palavras-chave: `Fix #123`, `Closes #123` ou `Resolve #123` em qualquer parte da descrição do PR.
+
+---
+
+**P: Usando "Fix #", ao fazer o merge ele fecha a issue automaticamente?**
+
+Sim, mas só quando o PR é mergeado no branch padrão do repositório (`main`). Se mergear em outro branch (ex: `develop`), a issue não fecha.
+
+---
+
+**P: As issues não foram fechadas automaticamente — como seria o processo correto?**
+
+O branch padrão do repo é `main`, mas o PR foi mergeado em `develop`. O `Fix #` só dispara no merge para o branch padrão. Solução: colocar o `Fix #` na descrição do PR de `develop → main`, ou mudar o branch padrão para `develop` nas configurações do GitHub.
+
+---
+
+**P: A barra de status não mostra a versão patch — por quê?**
+
+Em `strings.py`, `_ver_short` era definido como `'.'.join(__version__.split('.')[:2])`, cortando o terceiro segmento intencionalmente. Fix: substituído por `_ver_short = __version__` para exibir a versão completa.
+
+---
+
+**P: Bug fix é um patch certo? (4.0.0 → 4.0.1)**
+
+Sim. Semver: `MAJOR.MINOR.PATCH` — bug fix vai no terceiro número.
+
+---
+
+**P: Para gerar uma nova versão, é só mudar a versão no .toml?**
+
+Sim. O `__init__.py` lê a versão via `importlib.metadata`, que é populado do `pyproject.toml` no momento do `pip install -e .`. Não há `__version__` hardcoded em nenhum outro arquivo.
+
+---
+
+**P: Mostrou 4.0.0 — por quê?**
+
+O `pyproject.toml` foi atualizado para `4.0.1`, mas o pacote instalado ainda era `4.0.0`. `importlib.metadata` lê do pacote instalado, não do arquivo. Precisa rodar `pip install -e .` (ou o build) para atualizar.
+
+---
+
+**P: Só rodar o build então?**
+
+Sim. Se o build já executa `pip install -e .` internamente, basta buildar que a versão atualiza junto.
+
+---
+
+**P: Tem como criar um template para issue?**
+
+Sim. Criar um arquivo em `.github/ISSUE_TEMPLATE/` — pode ser `.md` (simples) ou `.yml` (mais controle: campos obrigatórios, dropdowns, checkboxes nativos). O GitHub usa automaticamente ao abrir uma issue.
+
+---
+
+**P: Como fazer o template aparecer como formulário/página (como no Simple Icons)?**
+
+É exatamente o resultado do `.yml`. O formato `.md` renderiza markdown puro; o `.yml` renderiza como formulário visual com campos separados. Simple Icons usa `.yml`.
+
+---
+
+**P: Existe alguma extensão no GitHub para pré-visualizar o template?**
+
+Não. O GitHub não tem preview nativo de templates `.yml` antes do push. O caminho mais rápido é fazer push na `main` e acessar `/issues/new?template=bug_report.yml`.
+
+---
+
+**P: Existe o link direto para o template de bug report?**
+
+Sim: `github.com/<user>/<repo>/issues/new?template=bug_report.yml`
+
+---
+
+**P: Me ajuda a criar uma página da wiki simples para "Reporte de Problemas"?**
+
+Conteúdo criado com três seções: (1) link para abrir issue via template; (2) orientação para notificar com o card da issue já aberta, não descrever no chat; (3) SLA analisado caso a caso. Wiki não é editável via Git direto — precisa colar manualmente em `/wiki` no GitHub.
+
+---
+
+**P: Consegue criar o config.yml para manter apenas uma opção no chooser de issues?**
+
+Sim. `blank_issues_enabled: false` no `config.yml` restringe issues em branco a maintainers. O `contact_links` foi removido pois duplicava a opção do template `.yml`.
+
+---
+
+**P: Não tem como deixar apenas "Reportar um problema" como opção (sem o Blank issue)?**
+
+Não completamente — `blank_issues_enabled: false` não esconde o Blank issue para maintainers, só restringe. Limitação do GitHub. O template foi renomeado para "Reportar um problema" para que seja a única opção visível para usuários comuns.
+
+---
+
+**P: Como travar a main para que ninguém possa commitar nela além de mim?**
+
+Via Branch Protection Rules + arquivo `CODEOWNERS`. O `CODEOWNERS` com `* @Gui25Reis` exige aprovação do owner em qualquer PR. Nas configurações do branch, "Require review from Code Owners" deve estar marcado e o "Enforcement status" em Active.
+
+---
+
+**P: O que é "Enforcement status" (Active/Disabled) no branch protection?**
+
+Controla se a regra está valendo ou não. Active = regra aplicada, ninguém passa sem cumprir. Disabled = regra existe mas é ignorada, não bloqueia nada.
