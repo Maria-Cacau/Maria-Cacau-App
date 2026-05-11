@@ -1,7 +1,8 @@
 ## CBL — Curiosity-Based Log
 
-O arquivo `.ai/benchmark/CBL.md` deve ser populado com as perguntas do usuário e resumo das respostas ao longo das sessões.
-
+O arquivo `.ai/benchmark/CBL.md` deve ser populado com as perguntas do usuário e resumo das respostas ao longo das sessões. Porém apenas as perguntas de descoberta, estudos e afins. Se for instruções num geral não precisa ser documentado.
+O usuário pede isso para que documente no Notion dele em cima da metodologia CBL.
+Quando for popular, caso queira, mande as perguntas que vc pretende colocar la pra ele, assim ele aprova certinho.
 - Registrar todas as perguntas do usuário, sem filtro de tema
 - Formato: `**P: pergunta**` seguido de parágrafo com resumo da resposta
 - Agrupar por sessão com cabeçalho de data (`## Sessão — Mês/Ano`)
@@ -17,7 +18,7 @@ Ao adicionar qualquer string visível ao usuário (labels, botões, menus, diál
 Quando o usuário pedir "finalizar a demanda" (ou variações), executar sempre:
 1. Atualizar os arquivos em `.ai/` que forem afetados pelas mudanças da sessão
 2. Rodar `graphify update .` para manter o grafo atual
-3. Entregar a descrição do PR em bloco ```md para copy/paste — comparar com `develop` (ou `main`)
+3. Entregar a descrição do PR em bloco ```md para copy/paste — comparar com `develop` (ou `main`)```
 
 Nunca trazer código de outras branches, nunca abrir PR automaticamente.
 

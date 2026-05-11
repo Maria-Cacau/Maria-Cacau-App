@@ -269,3 +269,41 @@ Via Branch Protection Rules + arquivo `CODEOWNERS`. O `CODEOWNERS` com `* @Gui25
 **P: O que é "Enforcement status" (Active/Disabled) no branch protection?**
 
 Controla se a regra está valendo ou não. Active = regra aplicada, ninguém passa sem cumprir. Disabled = regra existe mas é ignorada, não bloqueia nada.
+
+---
+
+## Sessão — Mai/2026 (Design: Exportar frames HTML → Figma)
+
+---
+
+**P: Como exportar os 14 frames do HTML (mc-frames.html) para o Figma sem quebrar a fonte?**
+
+O problema com plugins "HTML to Figma" é que tentam converter CSS para propriedades Figma — fontes como Segoe UI Variable não existem no Figma e ficam desfiguradas. A abordagem correta é capturar screenshots dos frames via browser headless (Playwright) e criar frames no Figma com as imagens. Criado `screenshot-frames.py` que: (1) abre `mc-frames.html` via Playwright/Chromium headless, (2) para cada frame remove o scroll e expande o conteúdo inteiro (sem corte), (3) captura JPEG 1280px × altura real (~2300–2860px) de cada estado, (4) salva 14 JPEGs em `frames-exportados/`, (5) gera `figma-14estados-generated.js` — script Scripter com as imagens embutidas em base64. Para usar no Figma: Plugins → Scripter → Open File → seleciona o `.js` gerado → Run. Uma página `📋 14 Estados — Novo Pedido` é criada com os 14 frames dispostos em 2 grupos de 7.
+
+---
+
+**P: Ao tirar o print, não vai vir o conteúdo inteiro por causa do scroll?**
+
+Sim — foi detectado antes de concluir. O formulário tem scroll no `.fr-main` que cortaria o conteúdo. A solução foi usar JavaScript injetado pelo Playwright para remover o overflow/scroll de todos os elementos da hierarquia (`#vswin`, `.win`, `.ab`, `.fr-main`) antes do screenshot. Dessa forma o Chromium renderiza o conteúdo completo e o `element.screenshot()` captura a altura real inteira (sem corte).
+
+---
+
+## Sessão — Mai/2026 (Design: HTML → Figma vetorial)
+
+---
+
+**P: Em vez de imagens, como exportar os frames HTML como componentes vetoriais editáveis no Figma (labels, textos, cores, frames)?**
+
+A abordagem é substituir o screenshot por extração de elementos DOM com estilos computados. Usando Playwright, para cada frame: (1) chamar `window.getComputedStyle(el)` em cada elemento visível para resolver CSS computado — inclusive `oklch()` e `var()` que o browser resolve automaticamente; (2) capturar `getBoundingClientRect()` para posição e tamanho absolutos relativos ao `#vswin`; (3) extrair `backgroundColor`, `borderColor`, `borderRadius`, `fontSize`, `fontWeight`, `color`; (4) para `<input>` e `<select>`, extrair `value`/`placeholder`/`option` selecionada; (5) gerar um JS Figma Scripter que cria `figma.createRectangle()` + `figma.createText()` em vez de imagens. Resultado: elementos editáveis no Figma com cores, bordas, raios e textos corretos. Criado `html-to-figma.py`.
+
+---
+
+**P: Faz sentido criar um script novo em vez de modificar o `screenshot-frames.py`?**
+
+Sim — histórico limpo, responsabilidades separadas. O `screenshot-frames.py` continua válido para quando se quer visualização pixel-perfect (ex: fontes do sistema). O `html-to-figma.py` é a alternativa para quem quer elementos editáveis. Cada script tem seu caso de uso.
+
+---
+
+**P: O HTML tem scroll — como garantir que o conteúdo completo seja capturado para extração vetorial também?**
+
+O mesmo JS de expansão do `screenshot-frames.py` foi reaproveitado: antes de extrair os elementos, injeta JS que define `height: auto` e `overflow: visible` em `#vswin`, `.win`, `.ab`, `.main` e `#vport`. Correção feita: o script original usava `.fr-main` (inexistente no HTML) — no `html-to-figma.py` foi corrigido para `.main`, que é o container scrollável real do formulário.
