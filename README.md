@@ -3,38 +3,41 @@
 [![Version](https://img.shields.io/badge/version-4.0-orange)](https://github.com/Gui25Reis/Maria-Cacau-Contagem/releases/tag/4.0.0)
 ![Language](https://img.shields.io/badge/language-Python-blue?logo=python)
 [![Python Version](https://img.shields.io/badge/python-v3.13+-blue?logo=python)](https://www.python.org/downloads/)
-[![License](https://img.shields.io/badge/license-MIT-brightgreen)](./LICENSE)
+[![License](https://img.shields.io/badge/license-CC%20BY--NC%204.0-brightgreen?logo=creativecommons)](./LICENSE)
 ![macOS](https://img.shields.io/badge/macOS-000000?logo=apple&logoColor=white)
 ![Windows](https://img.shields.io/badge/Windows-0078D6?logo=windows&logoColor=white)
 
 <p align="center">
-    <img width=97% src="arquivos/imagens/Git-Capa.png"/>
+    <img width=97% src="files/images/cover.png"/>
 </p>
 
 App desktop para gestão de pedidos e entregas da Maria Cacau. Lê diretamente a planilha Google Sheets e gera resumos de:
 - **Produtos**: contagem de itens por período
 - **Entregas**: resumo diário com inadimplências
-- **Nota Fiscal**: dados para emissão SAGE e Melhor Envio
+- **Validação do CPF**: validação matemática do cpf.
+
+> [!IMPORTANT]
+> A documentação de usabilidade da aplicação está documentada na [wiki](https://github.com/Gui25Reis/Maria-Cacau-Contagem/wiki) do projeto. 
+
+</br>
+
+### Demo
+
+<p align="center">
+    <img width=97% src="files/images/demo-v4.gif"/>
+</p>
+
+</br>
+
+---
 
 </br>
 
 - [Plataforma e Requisitos](#plataforma-e-requisitos)
 - [Como rodar](#como-rodar)
-- [Demo](#demo)
+- [Gerar executável](#gerar-executável)
 - [Autor](#autor)
 - [Empresa](#empresa)
-
-### Demo
-
-<p align="center">
-    <img width=97% src="arquivos/imagens/telas/Tela-04.png"/>
-</p>
-
-### Documentação
-A documentação de usabilidade da aplicação está documentada na [wiki](https://github.com/Gui25Reis/Maria-Cacau-Contagem/wiki) do projeto. 
-
-
----
 
 ## Plataforma e Requisitos
 > [!NOTE]
@@ -88,6 +91,9 @@ python -m maria_cacau
 | ![macOS](https://img.shields.io/badge/macOS-000000?logo=apple&logoColor=white) | `./scripts/build.sh && ./scripts/package.sh` |
 | ![Windows](https://img.shields.io/badge/Windows-0078D6?logo=windows&logoColor=white) | `scripts\build.bat && scripts\package.bat` |
 
+
+</br>
+
 ---
 
 ## Autor
@@ -111,7 +117,7 @@ python -m maria_cacau
     <tr>
         <td colspan="3" align="center">
             <a href="https://www.mariacacau.com.br/">
-                <img src="arquivos/imagens/logo-oficial.png" width="150px;" alt="Logo Maria Cacau"/><br>
+                <img src="files/images/logo.png" width="150px;" alt="Logo Maria Cacau"/><br>
             </a>
         </td>
     </tr>
