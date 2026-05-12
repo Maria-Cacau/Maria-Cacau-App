@@ -1,0 +1,840 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Maria Cacau — Frame Reference · 14 estados</title>
+<style>
+/* ── Viewer chrome ─────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#181818;font-family:-apple-system,'Segoe UI',system-ui,sans-serif;overflow:hidden;color:#fff}
+.vhd{height:44px;background:#111;border-bottom:1px solid #252525;display:flex;align-items:center;padding:0 16px;gap:10px;flex-shrink:0}
+.vhd-t{font-size:13px;font-weight:700;color:#fff}
+.vhd-sep{color:#444}
+.vhd-c{font-size:11px;color:#666}
+.vhd-k{margin-left:auto;font-size:10px;color:#555}
+kbd{background:#222;border:1px solid #333;border-radius:3px;padding:1px 5px;font-size:9px;color:#888}
+.vbody{display:flex;flex:1;overflow:hidden;height:calc(100vh - 44px)}
+.vnav{width:236px;background:#141414;border-right:1px solid #222;overflow-y:auto;flex-shrink:0;padding:6px 0}
+.vnav::-webkit-scrollbar{width:3px}
+.vnav::-webkit-scrollbar-thumb{background:#333;border-radius:4px}
+.vgrp{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#555;padding:10px 12px 4px}
+.vfb{display:flex;align-items:flex-start;gap:8px;width:100%;padding:6px 12px;background:none;border:none;cursor:pointer;text-align:left;transition:background .1s}
+.vfb:hover{background:rgba(255,255,255,.04)}
+.vfb.on{background:rgba(255,255,255,.08)}
+.vfid{font-size:10px;font-weight:700;color:#F9A879;flex-shrink:0;width:24px;padding-top:1px}
+.vfn{font-size:11px;color:#888;line-height:1.35}
+.vfb.on .vfn{color:#e0e0e0}
+.vstage{flex:1;overflow:hidden;display:flex;flex-direction:column;align-items:center;padding:14px 16px;gap:10px;background:#181818}
+.vmeta{width:100%;display:flex;align-items:center;gap:10px;flex-shrink:0;max-width:1280px}
+.vmid{font-size:14px;font-weight:700;color:#F9A879}
+.vmtit{font-size:13px;font-weight:600;color:#ddd}
+.vmdesc{margin-left:auto;font-size:11px;color:#555}
+.vport{overflow:hidden;border-radius:8px;box-shadow:0 8px 32px rgba(0,0,0,.65),0 0 0 1px rgba(0,0,0,.5);flex-shrink:0;cursor:default}
+.vswin{width:1280px;height:800px;transform-origin:top left;background:#fff;overflow:hidden}
+
+/* ── App tokens ──────────────────────────────────────────── */
+:root{
+  --choc:#391B10;--choc-m:oklch(28% .08 45);
+  --peach:#F9A879;--pk:oklch(65% .13 45);
+  --bg:oklch(97.5% .006 65);--sf:oklch(100% .003 65);
+  --s2:oklch(96% .009 65);--bd:oklch(87% .009 65);--bdl:oklch(93% .005 65);
+  --fg:oklch(18% .04 45);--f2:oklch(46% .02 55);--f3:oklch(60% .012 60);
+  --gr:oklch(52% .16 145);--grbg:oklch(94% .06 145);
+  --am:oklch(60% .15 78);--ambg:oklch(95% .06 78);
+  --rd:oklch(54% .17 25);--rdbg:oklch(95% .05 25);
+  --sbt:oklch(91% .008 65);--sbm:oklch(58% .012 45);
+  --ff:'Segoe UI Variable','Segoe UI',system-ui,sans-serif;
+  --fm:'Cascadia Code','Consolas',monospace;
+}
+/* ── App window ── */
+.win{width:1280px;height:800px;display:flex;flex-direction:column;background:var(--bg);overflow:hidden;font-family:var(--ff);font-size:13px;color:var(--fg)}
+.tb{height:38px;background:var(--choc);display:flex;align-items:center;flex-shrink:0}
+.tb-b{flex:1;display:flex;align-items:center;gap:8px;padding:0 14px}
+.tb-logo{width:22px;height:22px;background:var(--peach);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:var(--choc)}
+.tb-t{font-size:13px;font-weight:500;color:var(--sbt);opacity:.9}
+.tb-cs{display:flex;height:100%}
+.tb-c{width:46px;height:100%;background:none;border:none;cursor:pointer;color:var(--sbt);opacity:.65;display:flex;align-items:center;justify-content:center}
+.ab{display:flex;flex:1;overflow:hidden}
+.sb{width:220px;background:var(--choc);display:flex;flex-direction:column;flex-shrink:0}
+.sb-hd{padding:14px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:10px}
+.sb-mk{width:38px;height:38px;background:var(--peach);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:var(--choc);flex-shrink:0}
+.sb-nm{display:block;font-size:13px;font-weight:700;color:var(--sbt)}
+.sb-ns{display:block;font-size:10px;color:var(--sbm);text-transform:uppercase;letter-spacing:.05em;margin-top:1px}
+.sb-nav{flex:1;padding:10px 8px}
+.sb-s{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--sbm);padding:8px 8px 4px}
+.ni{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;color:var(--sbt);font-size:13px;margin-bottom:2px}
+.ni.on{background:rgba(255,255,255,.14);font-weight:600;position:relative}
+.ni.on::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:18px;background:var(--peach);border-radius:0 2px 2px 0}
+.ni.dm{opacity:.36}
+.nico{width:18px;height:18px;flex-shrink:0}
+.npil{margin-left:auto;font-size:9px;font-weight:700;padding:1px 5px;border-radius:8px}
+.npil.nw{background:var(--peach);color:var(--choc)}
+.npil.so{background:rgba(255,255,255,.12);color:var(--sbm)}
+.main{flex:1;overflow-y:auto;overflow-x:hidden;background:var(--bg)}
+.main::-webkit-scrollbar{width:6px}
+.main::-webkit-scrollbar-thumb{background:var(--bd);border-radius:4px}
+.stb{height:28px;background:var(--sf);border-top:1px solid var(--bdl);display:flex;align-items:center;padding:0 14px;gap:10px;flex-shrink:0}
+.sdot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.sdot.ok{background:var(--gr)}.sdot.er{background:var(--rd)}.sdot.ld{background:var(--am)}
+.smsg{font-size:11px;color:var(--f3);flex:1}
+.sver{font-size:11px;color:var(--f3);font-family:var(--fm)}
+
+/* ── NP panel ── */
+.pnp{padding:0;display:flex;flex-direction:column;min-height:100%;position:relative}
+.npb{flex:1;padding:24px 28px 8px}
+.ph h1{font-size:20px;font-weight:600;color:var(--fg);letter-spacing:-.01em}
+.ph p{font-size:13px;color:var(--f2);margin-top:3px;margin-bottom:18px}
+.nsec{background:var(--sf);border:1px solid var(--bdl);border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.06);margin-bottom:10px}
+.nshd{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--s2);border-bottom:1px solid var(--bdl);border-radius:8px 8px 0 0}
+.nsec.cl .nsb{display:none}
+.nsec.cl .nshd{border-radius:8px;border-bottom:none}
+.nsn{width:20px;height:20px;background:var(--choc);color:#fff;border-radius:50%;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.nst{font-size:13px;font-weight:600;color:var(--fg);flex:1}
+.nss{font-size:11px;color:var(--f3)}
+.nschev{color:var(--f3);font-size:10px;line-height:1}
+.nsec.cl .nschev{transform:rotate(-90deg)}
+.nsb{padding:14px 16px}
+.ng{display:grid;gap:10px 14px}
+.ng2{grid-template-columns:1fr 1fr}
+.ng3{grid-template-columns:1fr 1fr 1fr}
+.ng4{grid-template-columns:1fr 1fr 1fr 1fr}
+.s2{grid-column:span 2}.s3{grid-column:span 3}.s4{grid-column:span 4}
+.nff{display:flex;flex-direction:column;gap:3px;position:relative}
+.nfl{font-size:11px;font-weight:500;color:var(--f2);letter-spacing:.01em}
+.nrq{color:var(--rd)}
+.ner{font-size:10px;color:var(--rd);display:none}
+.ner.on{display:block}
+.nfi{height:30px;padding:0 9px;border:1px solid var(--bd);border-radius:4px;background:var(--sf);font-family:var(--ff);font-size:13px;color:var(--fg);width:100%}
+.nfi.er{border-color:var(--rd)}
+.nfi.af{background:oklch(97.5% .014 70);color:var(--f2)}
+.nfi.ds{background:var(--s2);color:var(--f3);opacity:.65}
+select.nfi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23999'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:26px}
+textarea.nfi{height:auto;padding:7px 9px;min-height:58px;line-height:1.5}
+.nfi.mn{font-family:var(--fm);letter-spacing:.04em}
+.ncalc{height:30px;padding:0 9px;background:oklch(96.5% .01 65);border:1px solid var(--bdl);border-radius:4px;font-family:var(--fm);font-size:12px;font-variant-numeric:tabular-nums;color:var(--f2);display:flex;align-items:center}
+.ntot{height:44px;padding:0 14px;background:oklch(96% .022 50);border:2px solid oklch(83% .035 50);border-radius:4px;font-family:var(--fm);font-size:20px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--fg);display:flex;align-items:center;grid-column:span 2}
+.seg{display:flex}
+.segb{flex:1;height:30px;padding:0 4px;background:var(--sf);border:1px solid var(--bd);font-family:var(--ff);font-size:11px;color:var(--f2);margin-left:-1px;white-space:nowrap}
+.segb:first-child{border-radius:4px 0 0 4px;margin-left:0}
+.segb:last-child{border-radius:0 4px 4px 0}
+.segb.on{background:var(--choc);color:#fff;border-color:var(--choc);z-index:1;position:relative}
+.nsub{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--f3);padding-bottom:8px;margin-bottom:10px;border-bottom:1px solid var(--bdl);margin-top:14px;display:flex;align-items:center;justify-content:space-between}
+.nsub:first-child{margin-top:0}
+.nck{width:14px;height:14px;accent-color:var(--choc);flex-shrink:0;cursor:default}
+.nckl{font-size:12px;color:var(--f2)}
+.ncol{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--f3)}
+.nps{display:grid;grid-template-columns:1fr 64px 100px 90px 26px;gap:6px;align-items:start;margin-bottom:7px}
+.npay{display:grid;grid-template-columns:140px 124px 110px 80px 26px;gap:6px;align-items:start;margin-bottom:7px}
+.nrm{width:26px;height:30px;border:1px solid var(--bd);border-radius:4px;background:var(--sf);color:var(--f3);font-size:15px;display:flex;align-items:center;justify-content:center;align-self:end}
+.nrm.hd{visibility:hidden}
+.nsubt{display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-top:8px;padding-top:8px;border-top:1px solid var(--bdl)}
+.nsubtl{font-size:11px;color:var(--f3);font-weight:500;text-transform:uppercase;letter-spacing:.05em}
+.nsubtv{font-family:var(--fm);font-size:13px;font-weight:600;color:var(--fg);font-variant-numeric:tabular-nums}
+.npasum{background:var(--s2);border:1px solid var(--bdl);border-radius:8px;padding:12px 14px;margin-top:12px}
+.npar{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+.npar:last-child{margin-bottom:0}
+.npal{font-size:12px;color:var(--f2)}
+.npav{font-family:var(--fm);font-size:12px;color:var(--fg);font-weight:500;font-variant-numeric:tabular-nums}
+.npar.tt .npal{font-weight:600;color:var(--fg)}
+.nflt{font-family:var(--fm);font-size:12px;font-weight:600;padding:1px 8px;border-radius:8px;font-variant-numeric:tabular-nums}
+.nflt.z{background:var(--grbg);color:var(--gr)}
+.nflt.p{background:var(--ambg);color:var(--am)}
+.nret{display:flex;align-items:center;gap:6px;margin-top:8px;padding-top:8px;border-top:1px solid var(--bdl)}
+.nadr{display:block}.nadr.hd{display:none}
+.nac{position:relative}
+.nacl{position:absolute;top:100%;left:0;right:0;z-index:200;background:var(--sf);border:1px solid var(--bd);border-radius:4px;box-shadow:0 4px 16px rgba(0,0,0,.1);max-height:140px;overflow-y:auto;margin-top:2px;display:none}
+.nacl.op{display:block}
+.naci{padding:6px 10px;display:flex;align-items:baseline;gap:8px;border-bottom:1px solid var(--bdl)}
+.naci:last-child{border-bottom:none}
+.naci.hl{background:oklch(96.5% .015 50)}
+.nacc{font-family:var(--fm);font-size:11px;color:var(--f3);flex-shrink:0}
+.nacn{font-size:12px;color:var(--fg)}
+.nsec.int .nshd{background:oklch(97.8% .004 65)}
+.nsec.int .nst{color:var(--f2);font-size:12px;font-weight:500}
+.nsec.int .nsn{background:var(--f3)}
+.nstk{position:sticky;bottom:0;z-index:100;background:var(--sf);border-top:1px solid var(--bd);box-shadow:0 -4px 16px rgba(0,0,0,.07);padding:10px 28px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.nsi{display:flex;align-items:center;gap:18px}
+.nsit{display:flex;flex-direction:column;gap:1px}
+.nsits{color:var(--f3);font-size:10px;text-transform:uppercase;letter-spacing:.05em}
+.nsitv{font-family:var(--fm);font-size:13px;font-weight:600;color:var(--fg);font-variant-numeric:tabular-nums}
+.nsitv.w{color:var(--am)}
+.nsdv{width:1px;height:24px;background:var(--bdl)}
+.nsbs{display:flex;gap:8px}
+.bsub{height:34px;padding:0 20px;font-size:13px;font-weight:600;background:var(--choc);color:#fff;border:none;border-radius:4px;font-family:var(--ff);display:inline-flex;align-items:center;gap:6px}
+.bsub.ds{opacity:.55}
+.bclr{height:34px;padding:0 14px;font-size:13px;background:var(--s2);color:var(--fg);border:1px solid var(--bd);border-radius:4px;font-family:var(--ff)}
+.bclr.ds{opacity:.55}
+.sp{width:12px;height:12px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+.nov{position:absolute;inset:0;background:rgba(255,255,255,.62);z-index:50;pointer-events:none}
+.sban{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--grbg);border:1px solid oklch(52% .16 145 / .2);border-radius:8px;font-size:13px;font-weight:500;color:var(--gr);margin-bottom:14px}
+.ceph{font-size:10px;margin-top:2px}
+.ceph.ld{color:var(--am)}
+.ceph.er{color:var(--rd)}
+.errbanner{display:flex;align-items:center;gap:8px;padding:9px 14px;background:var(--rdbg);border:1px solid oklch(54% .17 25 / .2);border-radius:8px;font-size:12px;font-weight:500;color:var(--rd);margin-bottom:14px}
+.btadd{height:26px;padding:0 10px;border-radius:4px;font-family:var(--ff);font-size:12px;font-weight:500;background:var(--s2);border:1px solid var(--bd);color:var(--fg);display:inline-flex;align-items:center;gap:5px}
+</style>
+</head>
+<body>
+<div class="vhd">
+  <span class="vhd-t">Maria Cacau — Frame Reference</span>
+  <span class="vhd-sep">·</span>
+  <span class="vhd-c">14 estados</span>
+  <span class="vhd-k"><kbd>←</kbd> <kbd>→</kbd> navegar</span>
+</div>
+<div class="vbody">
+  <nav class="vnav" id="vnav"></nav>
+  <div class="vstage">
+    <div class="vmeta" id="vmeta">
+      <span class="vmid" id="vmid"></span>
+      <span class="vmtit" id="vmtit"></span>
+      <span class="vmdesc" id="vmdesc"></span>
+    </div>
+    <div class="vport" id="vport">
+      <div class="vswin" id="vswin"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── Helpers ─────────────────────────────────────────────── */
+const R = v => 'R$\u00a0' + Number(v||0).toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+const D = s => s ? s.split('-').reverse().join('/') : '';
+const X = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+const isE = (c,f) => c.errors && c.errors.includes(f);
+const ec = (c,f,x='') => `nfi${isE(c,f)?' er':''}${x?' '+x:''}`;
+const em = (c,f,m) => `<span class="ner${isE(c,f)?' on':''}">${m}</span>`;
+const ff = (l,r,ctrl,err='') => `<div class="nff"><label class="nfl">${X(l)}${r?'<span class="nrq">*</span>':''}</label>${ctrl}${err}</div>`;
+const inp = (cls,val,ex='') => `<input class="${cls}" value="${X(val)}" ${ex}>`;
+const calcFin = c => {
+  const sub = (c.prods||[]).reduce((s,p) => s+(p.qty||0)*(p.unit||0),0);
+  const tot = Math.max(0, sub - (c.discount||0) + (c.frete||0));
+  const paid = (c.pays||[]).reduce((s,p) => s+(p.valor||0),0);
+  const falta = Math.max(0, tot - paid);
+  return {sub, tot, paid, falta};
+};
+const SRCS = ['Instagram','Google','Cliente','Fami','Loja','Email','Outro'];
+const RELS = ['Mãe','Pai','Avó','Avô','Filha','Filho','Tia','Tio','Amigo(a)','Esposa','Marido','Outro'];
+const EVTS = ['Aniversário','Maternidade','Batizado','Chá de Bebê','Chá Revelação','Corporativo','Ocasiões','Outro'];
+const SEXOS = ['Feminino','Masculino','Gêmeas','Gêmeos','Não sabe'];
+const FORMAS = ['Inter','Boleto','Créd 1x','Créd 2x','Créd 3x','Créd 6x','Créd 10x','Brasil','ELO7','Dinheiro','PIX','Vindi'];
+const MODS = ['MOTOBOY','LOGGI','LATAM CARGO','SEDEX PLP','AZUL EXPRESSO','JADLOG COM','SEDEX 10','SEDEX 12','PAC','ENTREGA','RETIRADA','GUARITA','FEIRA','FABRICA','CANCELADO'];
+const PICKUP = new Set(['RETIRADA','GUARITA','FEIRA','FABRICA','CANCELADO']);
+const NEGS = ['Email','Whats B','Whats E','Whats M','-'];
+const QUEM = ['Bianca','Bruno','Claudia','Edmar','Jaque','-'];
+const opts = (arr, val, empty='— Selecione —') =>
+  `<option value="">${empty}</option>` + arr.map(o => `<option${o===val?' selected':''}>${X(o)}</option>`).join('');
+
+/* ── Section builders ────────────────────────────────────── */
+function sec(n, title, sub, body, cls='', chev=false) {
+  return `<div class="nsec${cls?' '+cls:''}">
+    <div class="nshd">
+      <div class="nsn">${n}</div>
+      <span class="nst">${title}</span>
+      ${sub?`<span class="nss">${sub}</span>`:''}
+      ${chev?`<span class="nschev">▼</span>`:''}
+    </div>
+    <div class="nsb">${body}</div>
+  </div>`;
+}
+function sec1(c) {
+  const b = c.disabled;
+  return sec(1,'Identificação do Pedido','',
+    `<div class="ng ng2">
+      ${ff('Nº Pedido','*',inp(ec(c,'num','mn')+(b?' ds':''), c.num||''), em(c,'num','Campo obrigatório'))}
+      ${ff('Como Conheceu','',`<select class="nfi${b?' ds':''}">${opts(SRCS,c.source)}</select>`)}
+    </div>`
+  );
+}
+function sec2(c) {
+  const b = c.buyer||{}, d = c.disabled;
+  const cpfErr = c.errors && c.errors.includes('cpf');
+  return sec(2,'Comprador','',
+    `<div class="ng ng2">
+      ${ff('Nome do Comprador','*',inp(ec(c,'buyer-name')+(d?' ds':''), b.name||''), em(c,'buyer-name','Campo obrigatório'))}
+      <div></div>
+      ${ff('Parentesco','',`<select class="nfi${d?' ds':''}">${opts(RELS,b.rel)}</select>`)}
+      ${ff('Telefone','*',inp(ec(c,'buyer-tel','mn')+(d?' ds':''), b.tel||''), em(c,'buyer-tel','Campo obrigatório'))}
+      ${ff('CPF','',inp(`nfi mn${cpfErr?' er':''}${d?' ds':''}`, b.cpf||''),
+        cpfErr?`<span class="ner on">CPF inválido — dígito verificador incorreto</span>`:'')}
+      ${ff('Email','',inp(`nfi${d?' ds':''}`, b.email||''))}
+    </div>`
+  );
+}
+function sec3(c) {
+  const g = c.gift||{}, d = c.disabled;
+  const segs = SEXOS.map(s => `<button class="segb${s===g.sexo?' on':''}">${s}</button>`).join('');
+  return sec(3,'Presenteado & Evento','',
+    `<div class="ng ng2">
+      ${ff('Nome do Presenteado','',inp('nfi'+(d?' ds':''), g.name||''),'')}<div></div>
+      ${ff('Sexo','',`<div class="seg">${segs}</div>`)}
+      ${ff('Tipo de Evento','',`<select class="nfi${d?' ds':''}">${opts(EVTS,g.event)}</select>`)}
+      ${ff('Data do Evento','',inp('nfi'+(d?' ds':''), g.date||'','type="date"'))}
+    </div>`
+  );
+}
+function sec4(c) {
+  const p = c.pers||{}, d = c.disabled;
+  return sec(4,'Personalização','Arte & embalagem',
+    `<div class="ng ng2">
+      ${ff('Nome da Etiqueta','',inp('nfi'+(d?' ds':''), p.etqNome||''))}
+      ${ff('Tema da Etiqueta','',inp('nfi'+(d?' ds':''), p.etqTema||''))}
+      ${ff('Nome na Caixa','',inp('nfi'+(d?' ds':''), p.caixaNome||''))}
+      ${ff('Arte / Tecido da Caixa','',inp('nfi'+(d?' ds':''), p.caixaArte||''))}
+      ${ff('Valor Rótulo Clássico (R$)','',inp('nfi mn'+(d?' ds':''), p.rotulo||'0'))}
+    </div>`
+  );
+}
+function sec5(c, fin) {
+  const d = c.disabled;
+  const acD = c.acDemo;
+  let slotsHtml = '';
+  const prods = c.prods || [];
+  prods.forEach((p,i) => {
+    const isAC = acD && i === 0;
+    const acList = isAC ? `<div class="nacl op">
+      ${acD.results.map((r,ri) => `<div class="naci${ri===0?' hl':''}"><span class="nacc">${r.code}</span><span class="nacn">${r.name}</span></div>`).join('')}
+    </div>` : '';
+    const fieldVal = isAC ? acD.query : (p.name ? p.name : '');
+    slotsHtml += `<div class="nps">
+      <div class="nff nac">
+        <input class="nfi${d?' ds':''}" value="${X(fieldVal)}" placeholder="Buscar produto ou código…">
+        ${acList}
+      </div>
+      <div class="nff">${inp('nfi mn'+(d?' ds':''), p.qty||1)}</div>
+      <div class="nff">${inp('nfi mn'+(d?' ds':''), p.unit>0?p.unit.toFixed(2).replace('.',','):'', '')}</div>
+      <div class="nff"><div class="ncalc">${R(p.qty * p.unit)}</div></div>
+      <div class="nrm${i===0?' hd':''}">×</div>
+    </div>`;
+  });
+  if (!prods.length) {
+    slotsHtml = `<div class="nps">
+      <div class="nff nac">
+        <input class="${ec(c,'prod')+(d?' ds':' nfi')}" placeholder="Buscar produto ou código…">
+        ${em(c,'prod','Selecione ao menos 1 produto')}
+      </div>
+      <div class="nff">${inp('nfi mn'+(d?' ds':''), 1)}</div>
+      <div class="nff">${inp('nfi mn'+(d?' ds':''), '')}</div>
+      <div class="nff"><div class="ncalc">R$&nbsp;0,00</div></div>
+      <div class="nrm hd">×</div>
+    </div>`;
+  }
+  const errProd = c.errors && c.errors.includes('prod') ? `<div class="errbanner" style="margin-top:6px;margin-bottom:2px">
+    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6.5" cy="6.5" r="5.5"/><line x1="6.5" y1="3.5" x2="6.5" y2="6.5"/><circle cx="6.5" cy="9" r=".6" fill="currentColor"/></svg>
+    Selecione ao menos 1 produto com quantidade
+  </div>` : '';
+  return sec(5,'Produtos',`${prods.length||1} ${(prods.length||1)===1?'item':'itens'}`,
+    `<div style="display:grid;grid-template-columns:1fr 64px 100px 90px 26px;gap:0 6px;padding-bottom:5px;border-bottom:1px solid var(--bdl);margin-bottom:7px">
+      <span class="ncol">Produto</span><span class="ncol">Qtd</span><span class="ncol">R$ Unit.</span><span class="ncol">Total</span><span></span>
+    </div>
+    ${slotsHtml}${errProd}
+    <div style="margin-top:4px">
+      <button class="btadd${d?' ds':''}">
+        <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="5.5" y1="1" x2="5.5" y2="10"/><line x1="1" y1="5.5" x2="10" y2="5.5"/></svg>
+        Adicionar produto
+      </button>
+    </div>
+    ${ff('Outros (descrição livre)','',inp('nfi'+(d?' ds':''), c.outros||'','placeholder="Produtos fora da lista ou observações adicionais"'))}
+    <div class="nsubt"><span class="nsubtl">Subtotal dos produtos</span><span class="nsubtv">${R(fin.sub)}</span></div>`
+  );
+}
+function sec6(c, fin) {
+  const d = c.disabled;
+  return sec(6,'Financeiro','',
+    `<div class="ng ng2">
+      ${ff('Desconto (R$)','',inp('nfi mn'+(d?' ds':''), c.discount!=null?String(c.discount):'0'))}
+      ${ff('Frete (R$)','',inp('nfi mn'+(d?' ds':''), c.frete!=null?c.frete.toFixed(2).replace('.',','):'0,00'))}
+      ${ff('Total do Pedido','',`<div class="ntot">${R(fin.tot)}</div>`)}
+    </div>`
+  );
+}
+function sec7(c, fin) {
+  const d = c.disabled;
+  const pays = c.pays||[];
+  let payHtml = '';
+  pays.forEach((p,i) => {
+    payHtml += `<div class="npay">
+      <div class="nff"><select class="nfi${d?' ds':''}" style="font-size:12px">${opts(FORMAS,p.forma)}</select></div>
+      <div class="nff">${inp('nfi'+(d?' ds':''), p.date||'', 'type="date"')}</div>
+      <div class="nff">${inp('nfi mn'+(d?' ds':''), p.valor>0?p.valor.toFixed(2).replace('.',','):'')}</div>
+      <div class="nff" style="align-items:center;padding-top:7px"><input type="checkbox" class="nck" ${p.ok?'checked':''}></div>
+      <div class="nrm${i===0?' hd':''}">×</div>
+    </div>`;
+  });
+  if (!pays.length) {
+    payHtml = `<div class="npay">
+      <div class="nff"><select class="nfi"><option>— Forma —</option></select></div>
+      <div class="nff">${inp('nfi', '', 'type="date"')}</div>
+      <div class="nff">${inp('nfi mn', '')}</div>
+      <div class="nff" style="align-items:center;padding-top:7px"><input type="checkbox" class="nck"></div>
+      <div class="nrm hd">×</div>
+    </div>`;
+  }
+  return sec(7,'Pagamento','',
+    `<div style="display:grid;grid-template-columns:140px 124px 110px 80px 26px;gap:0 6px;padding-bottom:5px;border-bottom:1px solid var(--bdl);margin-bottom:7px">
+      <span class="ncol">Forma</span><span class="ncol">Data Pgto</span><span class="ncol">Valor (R$)</span><span class="ncol">Confirm.</span><span></span>
+    </div>
+    ${payHtml}
+    <div style="margin-top:4px"><button class="btadd${d?' ds':''}">
+      <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="5.5" y1="1" x2="5.5" y2="10"/><line x1="1" y1="5.5" x2="10" y2="5.5"/></svg>
+      Adicionar parcela
+    </button></div>
+    <div class="npasum">
+      <div class="npar"><span class="npal">Total do pedido</span><span class="npav">${R(fin.tot)}</span></div>
+      <div class="npar"><span class="npal">Total pago</span><span class="npav">${R(fin.paid)}</span></div>
+      <div class="npar tt"><span class="npal">Falta pagar</span><span class="nflt ${fin.falta>0.005?'p':'z'}">${R(fin.falta)}</span></div>
+      <div class="nret"><input type="checkbox" class="nck"> <span class="nckl">Vai pagar na retirada</span></div>
+    </div>`
+  );
+}
+function sec8(c, showAddr) {
+  const r = c.rcpt||{}, a = c.addr||{}, d = c.disabled;
+  const cs = c.cepStatus;
+  const cepHint = cs==='loading'
+    ? `<span class="ceph ld">Buscando endereço…</span>`
+    : cs==='error'
+    ? `<span class="ceph er">CEP não encontrado. Preencha o endereço manualmente.</span>`
+    : '';
+  const adDis = cs==='loading' ? ' ds' : '';
+  return sec(8,'Entrega','',
+    `<div class="ng ng2" style="margin-bottom:14px">
+      ${ff('Data de Entrega','*',inp(ec(c,'del-date')+(d?' ds':''), c.delDate||'','type="date"'), em(c,'del-date','Campo obrigatório'))}
+      ${ff('Modalidade','*',`<select class="${ec(c,'modal')+(d?' ds':' nfi')}">${opts(MODS,c.modal)}</select>`, em(c,'modal','Campo obrigatório'))}
+    </div>
+    <div class="nsub">Destinatário
+      <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-weight:400;text-transform:none;letter-spacing:0;font-size:11px">
+        <input type="checkbox" class="nck" ${c.sameBuyer?'checked':''}> <span class="nckl">Mesmo que o comprador</span>
+      </label>
+    </div>
+    <div class="ng ng2" style="margin-bottom:14px">
+      ${ff('Nome do Destinatário','*',inp(ec(c,'rcpt-name')+(r.name&&c.sameBuyer?' af':'')+(d?' ds':''), r.name||''), em(c,'rcpt-name','Campo obrigatório'))}
+      <div></div>
+      ${ff('Telefone','',inp('nfi mn'+(r.tel&&c.sameBuyer?' af':'')+(d?' ds':''), r.tel||''))}
+      ${ff('CPF','',inp('nfi mn'+(r.cpf&&c.sameBuyer?' af':'')+(d?' ds':''), r.cpf||''))}
+      ${ff('Email','',inp('nfi'+(r.email&&c.sameBuyer?' af':'')+(d?' ds':''), r.email||''))}
+    </div>
+    <div class="nadr${showAddr?'':' hd'}">
+      <div class="nsub">Endereço</div>
+      <div class="ng ng3" style="margin-bottom:10px">
+        <div class="nff">
+          <label class="nfl">CEP</label>
+          ${inp('nfi mn'+(cs==='error'?' er':'')+(d?' ds':''), a.cep||'', 'placeholder="00000-000"')}
+          ${cepHint}
+        </div>
+      </div>
+      <div class="ng ng3" style="margin-bottom:10px">
+        ${ff('Logradouro','',inp('nfi s2'+(adDis)+(d?' ds':''), a.street||''))}
+        ${ff('Número','',inp('nfi'+(adDis)+(d?' ds':''), a.num||''))}
+      </div>
+      <div class="ng ng4">
+        ${ff('Complemento','',inp('nfi s2'+(adDis)+(d?' ds':''), a.comp||'','placeholder="Apto, Bloco… (opcional)"'))}
+        ${ff('Bairro','',inp('nfi'+(adDis)+(d?' ds':''), a.bairro||''))}
+        ${ff('Cidade','',inp('nfi'+(adDis)+(d?' ds':''), a.city||''))}
+      </div>
+      <div class="ng ng4" style="margin-top:10px">
+        ${ff('UF','',inp('nfi mn'+(adDis)+(d?' ds':''), a.uf||'','placeholder="SP" maxlength="2" style="max-width:80px"'))}
+      </div>
+    </div>
+    <div class="nsub" style="margin-top:14px">Observações</div>
+    <div class="ng ng2">
+      ${ff('Obs. Fábrica','',`<textarea class="nfi${d?' ds':''}">${X(c.obsFactory||'')}</textarea>`)}
+      ${ff('Info Motoboy','',inp('nfi'+(d?' ds':''), c.obsMotoboy||''))}
+    </div>`
+  );
+}
+function sec9f(c) {
+  const s9 = c.sec9data||{}, cl = c.sec9open ? '' : ' cl', d = c.disabled;
+  return `<div class="nsec int${cl}">
+    <div class="nshd">
+      <div class="nsn">9</div>
+      <span class="nst">Controle Interno</span>
+      <span class="nss">Uso interno da operação</span>
+      <span class="nschev">▼</span>
+    </div>
+    <div class="nsb ng ng4">
+      ${ff('CDH','',inp('nfi mn'+(d?' ds':''), s9.cdh||'','placeholder="0"'))}
+      ${ff('Negociação','',`<select class="nfi${d?' ds':''}">${opts(NEGS,s9.neg,'-')}</select>`)}
+      ${ff('Data Designer Chamar','',inp('nfi'+(d?' ds':''), s9.ddataDesigner||'','type="date"'))}
+      ${ff('Quem Embalou','',`<select class="nfi${d?' ds':''}">${opts(QUEM,s9.quem,'-')}</select>`)}
+      ${ff('OBS Interna','',`<textarea class="nfi s4${d?' ds':''}" style="grid-column:span 4">${X(s9.obs||'')}</textarea>`)}
+      ${ff('Registro','',inp('nfi'+(d?' ds':''), s9.reg||''))}
+      ${ff('Tempo (min)','',inp('nfi mn'+(d?' ds':''), s9.tempo||'','placeholder="0"'))}
+      ${ff('Caixas Papelão','',inp('nfi mn'+(d?' ds':''), s9.caixas||'','placeholder="0"'))}
+    </div>
+  </div>`;
+}
+function buildSticky(c, fin) {
+  const d = c.disabled, loading = c.formLoading;
+  const submitHtml = loading
+    ? `<button class="bsub ds" disabled><div class="sp"></div> Cadastrando…</button>`
+    : `<button class="bsub">
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 6.5h10M7 2.5l4 4-4 4"/></svg>
+        Cadastrar Pedido
+      </button>`;
+  return `<div class="nstk">
+    <div class="nsi">
+      <div class="nsit"><span class="nsits">Pedido</span><span class="nsitv">#${X(c.num||'—')}</span></div>
+      <div class="nsdv"></div>
+      <div class="nsit"><span class="nsits">Total</span><span class="nsitv">${R(fin.tot)}</span></div>
+      <div class="nsdv"></div>
+      <div class="nsit"><span class="nsits">Falta pagar</span><span class="nsitv${fin.falta>0.005?' w':''}">${R(fin.falta)}</span></div>
+    </div>
+    <div class="nsbs">
+      <button class="bclr${d?' ds':''}">Limpar</button>
+      ${submitHtml}
+    </div>
+  </div>`;
+}
+
+/* ── Static chrome ───────────────────────────────────────── */
+const TB = () => `<div class="tb">
+  <div class="tb-b"><div class="tb-logo">MC</div><span class="tb-t">Maria Cacau — Gestão de Pedidos</span></div>
+  <div class="tb-cs">
+    <button class="tb-c"><svg width="10" height="10" viewBox="0 0 10 1"><rect width="10" height="1" fill="currentColor"/></svg></button>
+    <button class="tb-c"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1"><rect x=".5" y=".5" width="9" height="9"/></svg></button>
+    <button class="tb-c"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.3"><line x1="1" y1="1" x2="9" y2="9"/><line x1="9" y1="1" x2="1" y2="9"/></svg></button>
+  </div>
+</div>`;
+const SB = () => `<nav class="sb">
+  <div class="sb-hd"><div class="sb-mk">MC</div><div><span class="sb-nm">Maria Cacau</span><span class="sb-ns">Gestão de Pedidos</span></div></div>
+  <div class="sb-nav">
+    <div class="sb-s">Pedidos</div>
+    <div class="ni on">
+      <svg class="nico" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><rect x="2" y="2" width="14" height="14" rx="2"/><line x1="9" y1="5.5" x2="9" y2="12.5"/><line x1="5.5" y1="9" x2="12.5" y2="9"/></svg>
+      Novo Pedido<span class="npil nw">Novo</span>
+    </div>
+    <div class="sb-s">Consultas</div>
+    <div class="ni"><svg class="nico" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="1.5" width="6" height="6" rx="1"/><rect x="10.5" y="1.5" width="6" height="6" rx="1"/><rect x="1.5" y="10.5" width="6" height="6" rx="1"/><rect x="10.5" y="10.5" width="6" height="6" rx="1"/></svg>Produtos</div>
+    <div class="ni"><svg class="nico" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M1 5h10v8H1z"/><path d="M11 7.5l3 .5V13h-3V7.5z"/><circle cx="4" cy="13.5" r="1.5"/><circle cx="12.5" cy="13.5" r="1.5"/></svg>Entregas</div>
+    <div class="ni"><svg class="nico" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="3.5" width="16" height="11" rx="1.5"/><circle cx="6" cy="9" r="2"/><path d="M10 7h5M10 11h4"/></svg>Verificar CPF</div>
+    <div class="sb-s">Em breve</div>
+    <div class="ni dm"><svg class="nico" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><rect x="1" y="5" width="10" height="8" rx="1"/><path d="M11 7.5l3 .5V13h-3V7.5z"/><circle cx="4" cy="13.5" r="1.5"/><circle cx="12.5" cy="13.5" r="1.5"/></svg>Frete por CEP<span class="npil so">Logo</span></div>
+    <div class="ni dm"><svg class="nico" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M3 1h8l5 5v11a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1z"/><path d="M11 1v5h5"/></svg>Nota Fiscal<span class="npil so">Logo</span></div>
+  </div>
+</nav>`;
+const STB = (c) => {
+  const t = c.statusType||'ok';
+  return `<div class="stb"><span class="sdot ${t}"></span><span class="smsg">${X(c.statusMsg||'Pronto')}</span><span class="sver">v4.2</span></div>`;
+};
+
+function buildFrame(c) {
+  const fin = calcFin(c);
+  const showAddr = c.modal ? !PICKUP.has(c.modal) : true;
+  return `<div class="win">${TB()}<div class="ab">${SB()}<main class="main fr-main">
+    <div class="pnp">
+      ${c.formLoading?'<div class="nov"></div>':''}
+      <div class="npb">
+        ${c.successMsg?`<div class="sban"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="7" cy="7" r="6"/><polyline points="4,7 6,9 10,5"/></svg>${X(c.successMsg)}</div>`:''}
+        ${c.errors&&c.errors.length?`<div class="errbanner"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6.5" cy="6.5" r="5.5"/><line x1="6.5" y1="3.5" x2="6.5" y2="6.5"/><circle cx="6.5" cy="9" r=".6" fill="currentColor" stroke="none"/></svg>Preencha os campos obrigatórios antes de cadastrar</div>`:''}
+        <div class="ph"><h1>Novo Pedido</h1><p>Preencha os dados e clique em Cadastrar Pedido para salvar na planilha</p></div>
+        ${sec1(c)}${sec2(c)}${sec3(c)}${sec4(c)}${sec5(c,fin)}${sec6(c,fin)}${sec7(c,fin)}${sec8(c,showAddr)}${sec9f(c)}
+        <div style="height:8px"></div>
+      </div>
+      ${buildSticky(c,fin)}
+    </div>
+  </main></div>${STB(c)}</div>`;
+}
+
+/* ── Frame data ──────────────────────────────────────────── */
+const FRAMES = [
+  /* A1 */ {
+    id:'A1', group:'A', title:'Pedido mínimo — 1 produto, 1 parcela', desc:'Caminho mais simples possível', scrollTo:0,
+    num:'25859', source:'Cliente',
+    buyer:{name:'Bruna Otani Wada',rel:'Mãe',tel:'(11) 99988-7137',cpf:'228.085.478-38',email:'bruna.otaniwada@gmail.com'},
+    gift:{name:'Laura',sexo:'Feminino',event:'Maternidade',date:'2026-01-28'},
+    pers:{etqNome:'Laura',etqTema:'floral',caixaNome:'Laura',caixaArte:'floral rosa',rotulo:''},
+    prods:[{name:'Cartão 7x10 com Mini Tabletinho chocolate ao leite',qty:40,unit:6.90}],
+    outros:'', discount:0, frete:19.96,
+    pays:[{forma:'Créd 2x',date:'2025-12-13',valor:295.96,ok:true}],
+    sameBuyer:true, delDate:'2025-12-22', modal:'SEDEX PLP',
+    rcpt:{name:'Bruna Otani Wada',tel:'(11) 99988-7137',cpf:'228.085.478-38',email:'bruna.otaniwada@gmail.com'},
+    addr:{cep:'06351-380',street:'Alameda Safira',num:'74',comp:'condomínio Golf Village',bairro:'Golf Park',city:'Carapicuíba',uf:'SP'},
+    obsFactory:'MINI TABLETINHO NO CARD + SAQUINHO + FITILHO', obsMotoboy:'',
+    sec9open:false, errors:[],
+    statusMsg:'Pedido #25859 · R$ 295,96 · SEDEX PLP · Carapicuíba', statusType:'ok'
+  },
+  /* A2 */ {
+    id:'A2', group:'A', title:'7 produtos + desconto', desc:'Slots lotados com desconto aplicado', scrollTo:240,
+    num:'25622', source:'Instagram',
+    buyer:{name:'Claudete Luiza de Oliveira',rel:'Mãe',tel:'(19) 98838-3973',cpf:'225.426.898-81',email:'claudete17oliveira@gmail.com'},
+    gift:{name:'Isabela',sexo:'Feminino',event:'Aniversário',date:'2026-01-26'},
+    pers:{etqNome:'',etqTema:'',caixaNome:'',caixaArte:'',rotulo:''},
+    prods:[
+      {name:'LIVRO PARA COLORIR',qty:13,unit:28.88},
+      {name:'GIZ DE CERA CAIXINHA PERS.',qty:10,unit:0},
+      {name:'MASSINHA',qty:13,unit:0},
+      {name:'(2) MOLDE SORTIDO MASSINHA',qty:13,unit:0},
+      {name:'(2) Bolinha pula-pula',qty:13,unit:0},
+      {name:'JOGO MEMÓRIA 12 PARES + ORGANZA',qty:13,unit:0},
+      {name:'ORGANZA 15x23 (KIT)',qty:13,unit:0}
+    ],
+    outros:'', discount:27.96, frete:21.80,
+    pays:[
+      {forma:'Créd 6x',date:'2025-10-09',valor:338.56,ok:true},
+      {forma:'Vindi',date:'2026-01-12',valor:86.64,ok:true}
+    ],
+    sameBuyer:false, delDate:'', modal:'JADLOG COM',
+    rcpt:{name:'Claudete Luiza de Oliveira',tel:'(19) 98838-3973',cpf:'225.426.898-81',email:'claudete17oliveira@gmail.com'},
+    addr:{cep:'13058-208',street:'R. Prof. Romeu Ceravolo',num:'425',comp:'Casa',bairro:'Conj. Res. Parque São Bento',city:'Campinas',uf:'SP'},
+    obsFactory:'', obsMotoboy:'', sec9open:false, errors:[],
+    statusMsg:'Pedido #25622 · 7 produtos · R$ 425,20 · JADLOG COM', statusType:'ok'
+  },
+  /* A3 */ {
+    id:'A3', group:'A', title:'7 produtos + campo Outros preenchido', desc:'Observação manual no campo Outros', scrollTo:260,
+    num:'25727', source:'',
+    buyer:{name:'Clelia Aparecida de Paiva',rel:'Mãe',tel:'(12) 98128-0831',cpf:'',email:''},
+    gift:{name:'Mirela',sexo:'Feminino',event:'Aniversário',date:'2026-03-14'},
+    pers:{etqNome:'',etqTema:'',caixaNome:'',caixaArte:'',rotulo:''},
+    prods:[
+      {name:'LIVRO PARA COLORIR',qty:20,unit:20.89},
+      {name:'GIZ DE CERA CAIXINHA PERS.',qty:20,unit:0},
+      {name:'MASSINHA',qty:20,unit:0},
+      {name:'(2) Bolinha pula-pula',qty:20,unit:0},
+      {name:'(2) MOLDE SORTIDO MASSINHA',qty:20,unit:0},
+      {name:'Saquinho Organza',qty:20,unit:0},
+      {name:'SAQUINHO PERSONALIZADO 10X15 ZIP',qty:20,unit:3.90}
+    ],
+    outros:'mudou a arte depois de aprovado', discount:0, frete:23.47,
+    pays:[
+      {forma:'Inter',date:'2025-09-30',valor:100,ok:true},
+      {forma:'Inter',date:'2025-11-07',valor:331.27,ok:true},
+      {forma:'Inter',date:'2026-01-28',valor:78,ok:true}
+    ],
+    sameBuyer:false, delDate:'', modal:'JADLOG COM',
+    rcpt:{name:'Clelia Aparecida de Paiva',tel:'(12) 98128-0831',cpf:'',email:''},
+    addr:{cep:'12225-011',street:'Av. Presidente Tancredo Neves',num:'1331',comp:'Apto 71',bairro:'Jd Americano',city:'São José dos Campos',uf:'SP'},
+    obsFactory:'', obsMotoboy:'', sec9open:false, errors:[],
+    statusMsg:'Pedido #25727 · campo "Outros" preenchido · R$ 519,27', statusType:'ok'
+  },
+  /* A4 */ {
+    id:'A4', group:'A', title:'Modalidade FABRICA — endereço oculto', desc:'Bloco de endereço completamente oculto', scrollTo:700,
+    num:'25868', source:'Cliente',
+    buyer:{name:'Tacia',rel:'',tel:'',cpf:'',email:''},
+    gift:{name:'',sexo:'',event:'',date:''},
+    pers:{etqNome:'',etqTema:'',caixaNome:'',caixaArte:'',rotulo:''},
+    prods:[{name:'(NAT211) Brownie 6x6 na caixinha + Cinta Personalizada',qty:15,unit:13.99}],
+    outros:'', discount:-9.85, frete:0,
+    pays:[{forma:'Inter',date:'2025-12-17',valor:200,ok:true}],
+    sameBuyer:true, delDate:'2025-12-20', modal:'FABRICA',
+    rcpt:{name:'Tacia',tel:'',cpf:'',email:''},
+    addr:null, obsFactory:'', obsMotoboy:'', sec9open:false, errors:[],
+    statusMsg:'Pedido #25868 · FABRICA · sem endereço necessário', statusType:'ok'
+  },
+  /* A5 */ {
+    id:'A5', group:'A', title:'Destinatário diferente do comprador', desc:'Checkbox "Mesmo que o comprador" desmarcado', scrollTo:720,
+    num:'25856', source:'',
+    buyer:{name:'Luana',rel:'',tel:'',cpf:'',email:''},
+    gift:{name:'',sexo:'',event:'Natal',date:''},
+    pers:{etqNome:'',etqTema:'',caixaNome:'',caixaArte:'',rotulo:''},
+    prods:[{name:'(NAT101) Chocotone 800g Brigadeiro Gourmet',qty:1,unit:89.90}],
+    outros:'', discount:0, frete:0,
+    pays:[],
+    sameBuyer:false, delDate:'', modal:'MOTOBOY',
+    rcpt:{name:'Flávio Rizzi',tel:'',cpf:'',email:''},
+    addr:{cep:'04743-030',street:'Rua Isabel Schimidt',num:'118',comp:'Sala 04',bairro:'Santo Amaro',city:'São Paulo',uf:'SP'},
+    obsFactory:'cartão De Luana / Para: Dr Flávio Rizzi', obsMotoboy:'', sec9open:false, errors:[],
+    statusMsg:'Pedido #25856 · destinatário diferente do comprador', statusType:'ok'
+  },
+  /* A6 */ {
+    id:'A6', group:'A', title:'Obs. Fábrica com instrução detalhada', desc:'Textarea expandida com instrução de produção', scrollTo:760,
+    num:'25853', source:'',
+    buyer:{name:'Deise da Lívia',rel:'Mãe',tel:'',cpf:'',email:''},
+    gift:{name:'Lívia',sexo:'Feminino',event:'Maternidade',date:'2026-01-15'},
+    pers:{etqNome:'',etqTema:'',caixaNome:'',caixaArte:'',rotulo:''},
+    prods:[
+      {name:'Sacolinha Fumê alça courinho + personalização + tag + correntinha',qty:30,unit:13.90},
+      {name:'(CAN001) Canudo Waffle banhado no meio amargo',qty:30,unit:6.49},
+      {name:'TECIDO PERSONALIZADO NO CANUDO + LAÇO E TAG',qty:30,unit:5.00}
+    ],
+    outros:'', discount:0, frete:53.69,
+    pays:[{forma:'Vindi',date:'2025-12-16',valor:815.39,ok:true}],
+    sameBuyer:false, delDate:'2025-12-23', modal:'SEDEX PLP',
+    rcpt:{name:'',tel:'',cpf:'',email:''},
+    addr:{cep:'86975-000',street:'Rua Gaspar Jerônimo da Silva',num:'393',comp:'',bairro:'Jd Itália',city:'Mandaguari',uf:'PR'},
+    obsFactory:'Charutos enrolados no tecido personalizado + lacinho e tag', obsMotoboy:'', sec9open:false, errors:[],
+    statusMsg:'Pedido #25853 · obs. fábrica preenchida · R$ 815,39', statusType:'ok'
+  },
+  /* A7 */ {
+    id:'A7', group:'A', title:'Seção 9 — Controle Interno expandida', desc:'Seção interna aberta com CDH preenchido', scrollTo:1100,
+    num:'25859', source:'Cliente',
+    buyer:{name:'Bruna Otani Wada',rel:'Mãe',tel:'(11) 99988-7137',cpf:'228.085.478-38',email:'bruna.otaniwada@gmail.com'},
+    gift:{name:'Laura',sexo:'Feminino',event:'Maternidade',date:'2026-01-28'},
+    pers:{etqNome:'Laura',etqTema:'floral',caixaNome:'Laura',caixaArte:'floral rosa',rotulo:''},
+    prods:[{name:'Cartão 7x10 com Mini Tabletinho chocolate ao leite',qty:40,unit:6.90}],
+    outros:'', discount:0, frete:19.96,
+    pays:[{forma:'Créd 2x',date:'2025-12-13',valor:295.96,ok:true}],
+    sameBuyer:true, delDate:'2025-12-22', modal:'SEDEX PLP',
+    rcpt:{name:'Bruna Otani Wada',tel:'(11) 99988-7137',cpf:'228.085.478-38',email:'bruna.otaniwada@gmail.com'},
+    addr:{cep:'06351-380',street:'Alameda Safira',num:'74',comp:'condomínio Golf Village',bairro:'Golf Park',city:'Carapicuíba',uf:'SP'},
+    obsFactory:'MINI TABLETINHO NO CARD + SAQUINHO + FITILHO', obsMotoboy:'',
+    sec9open:true, sec9data:{cdh:'527',neg:'',ddataDesigner:'',obs:'',quem:'',reg:'',tempo:'',caixas:''},
+    errors:[], statusMsg:'Seção 9 expandida · CDH: 527', statusType:'ok'
+  },
+  /* B1 */ {
+    id:'B1', group:'B', title:'Validação — campos obrigatórios faltando', desc:'Erro ao clicar Cadastrar sem preencher campos', scrollTo:0,
+    num:'25860', source:'Instagram',
+    buyer:{name:'',rel:'',tel:'',cpf:'',email:''},
+    gift:{name:'',sexo:'',event:'',date:''},
+    pers:{etqNome:'',etqTema:'',caixaNome:'',caixaArte:'',rotulo:''},
+    prods:[], outros:'', discount:0, frete:0, pays:[],
+    sameBuyer:false, delDate:'', modal:'',
+    rcpt:{name:'',tel:'',cpf:'',email:''},
+    addr:{cep:'',street:'',num:'',comp:'',bairro:'',city:'',uf:''},
+    obsFactory:'', obsMotoboy:'', sec9open:false,
+    errors:['buyer-name','buyer-tel','prod','del-date','modal','rcpt-name'],
+    statusMsg:'Preencha os campos obrigatórios antes de cadastrar', statusType:'er'
+  },
+  /* B2 */ {
+    id:'B2', group:'B', title:'CPF inválido', desc:'Dígito verificador incorreto no campo CPF', scrollTo:0,
+    num:'25861', source:'',
+    buyer:{name:'João Silva',rel:'Pai',tel:'(11) 94321-5678',cpf:'123.456.789-00',email:''},
+    gift:{name:'',sexo:'',event:'',date:''},
+    pers:{etqNome:'',etqTema:'',caixaNome:'',caixaArte:'',rotulo:''},
+    prods:[], outros:'', discount:0, frete:0, pays:[],
+    sameBuyer:false, delDate:'', modal:'',
+    rcpt:{name:'',tel:'',cpf:'',email:''},
+    addr:{cep:'',street:'',num:'',comp:'',bairro:'',city:'',uf:''},
+    obsFactory:'', obsMotoboy:'', sec9open:false,
+    errors:['cpf'],
+    statusMsg:'CPF 123.456.789-00 inválido — verifique o número', statusType:'er'
+  },
+  /* B3 */ {
+    id:'B3', group:'B', title:'CEP não encontrado', desc:'API ViaCEP retornou sem resultado', scrollTo:820,
+    num:'25862', source:'',
+    buyer:{name:'Ana Pereira',rel:'Mãe',tel:'(11) 98765-4321',cpf:'',email:''},
+    gift:{name:'',sexo:'',event:'',date:''},
+    pers:{etqNome:'',etqTema:'',caixaNome:'',caixaArte:'',rotulo:''},
+    prods:[{name:'Kit Aniversário completo',qty:1,unit:120}],
+    outros:'', discount:0, frete:0, pays:[],
+    sameBuyer:false, delDate:'', modal:'SEDEX PLP',
+    rcpt:{name:'Ana Pereira',tel:'(11) 98765-4321',cpf:'',email:''},
+    addr:{cep:'00000-000',street:'',num:'',comp:'',bairro:'',city:'',uf:''},
+    obsFactory:'', obsMotoboy:'', sec9open:false, cepStatus:'error', errors:[],
+    statusMsg:'CEP 00000-000 não encontrado — preencha manualmente', statusType:'er'
+  },
+  /* B4 */ {
+    id:'B4', group:'B', title:'CEP sendo consultado (loading)', desc:'Spinner enquanto a API ViaCEP responde', scrollTo:820,
+    num:'25863', source:'',
+    buyer:{name:'Carlos Lima',rel:'Pai',tel:'(11) 91234-5678',cpf:'',email:''},
+    gift:{name:'',sexo:'',event:'',date:''},
+    pers:{etqNome:'',etqTema:'',caixaNome:'',caixaArte:'',rotulo:''},
+    prods:[{name:'Difusor Premium 30ml',qty:1,unit:45}],
+    outros:'', discount:0, frete:0, pays:[],
+    sameBuyer:false, delDate:'', modal:'SEDEX PLP',
+    rcpt:{name:'Carlos Lima',tel:'(11) 91234-5678',cpf:'',email:''},
+    addr:{cep:'04743-030',street:'',num:'',comp:'',bairro:'',city:'',uf:''},
+    obsFactory:'', obsMotoboy:'', sec9open:false, cepStatus:'loading', errors:[],
+    statusMsg:'Consultando CEP 04743-030…', statusType:'ld'
+  },
+  /* B5 */ {
+    id:'B5', group:'B', title:'Cadastrando — loading geral', desc:'Formulário desabilitado enquanto envia', scrollTo:0,
+    num:'25864', source:'Cliente',
+    buyer:{name:'Maria Fernanda',rel:'Mãe',tel:'(11) 99000-1122',cpf:'',email:''},
+    gift:{name:'Beatriz',sexo:'Feminino',event:'Aniversário',date:'2026-02-14'},
+    pers:{etqNome:'Beatriz',etqTema:'floral',caixaNome:'Beatriz',caixaArte:'rosas',rotulo:''},
+    prods:[{name:'Kit Aniversário completo',qty:20,unit:15}],
+    outros:'', discount:0, frete:25,
+    pays:[{forma:'Inter',date:'2026-01-20',valor:325,ok:false}],
+    sameBuyer:true, delDate:'2026-02-10', modal:'JADLOG COM',
+    rcpt:{name:'Maria Fernanda',tel:'(11) 99000-1122',cpf:'',email:''},
+    addr:{cep:'01310-100',street:'Av. Paulista',num:'1000',comp:'',bairro:'Bela Vista',city:'São Paulo',uf:'SP'},
+    obsFactory:'', obsMotoboy:'', sec9open:false,
+    errors:[], formLoading:true, disabled:true,
+    statusMsg:'Salvando na planilha…', statusType:'ld'
+  },
+  /* B6 */ {
+    id:'B6', group:'B', title:'Cadastro realizado com sucesso', desc:'Banner verde + formulário limpo para novo pedido', scrollTo:0,
+    num:'25860', source:'',
+    buyer:{name:'',rel:'',tel:'',cpf:'',email:''},
+    gift:{name:'',sexo:'',event:'',date:''},
+    pers:{etqNome:'',etqTema:'',caixaNome:'',caixaArte:'',rotulo:''},
+    prods:[{name:'',qty:1,unit:0}], outros:'', discount:0, frete:0, pays:[],
+    sameBuyer:false, delDate:'', modal:'',
+    rcpt:{name:'',tel:'',cpf:'',email:''},
+    addr:{cep:'',street:'',num:'',comp:'',bairro:'',city:'',uf:''},
+    obsFactory:'', obsMotoboy:'', sec9open:false,
+    successMsg:'Pedido #25859 cadastrado com sucesso!', errors:[],
+    statusMsg:'Pedido #25859 salvo na planilha · Nº atualizado para #25860', statusType:'ok'
+  },
+  /* B7 */ {
+    id:'B7', group:'B', title:'Autocomplete aberto — busca "BIC"', desc:'Dropdown de sugestões com resultado destacado', scrollTo:340,
+    num:'25865', source:'',
+    buyer:{name:'',rel:'',tel:'',cpf:'',email:''},
+    gift:{name:'',sexo:'',event:'',date:''},
+    pers:{etqNome:'',etqTema:'',caixaNome:'',caixaArte:'',rotulo:''},
+    prods:[{name:'',qty:1,unit:0}], outros:'', discount:0, frete:0, pays:[],
+    sameBuyer:false, delDate:'', modal:'',
+    rcpt:{name:'',tel:'',cpf:'',email:''},
+    addr:{cep:'',street:'',num:'',comp:'',bairro:'',city:'',uf:''},
+    obsFactory:'', obsMotoboy:'', sec9open:false,
+    acDemo:{
+      query:'BIC',
+      results:[
+        {code:'BIC001',name:'Bichinho Virtual personalizado + Cordão'},
+        {code:'BIC002',name:'Bichinho Virtual com Caixinha Acetato + Cordão'}
+      ]
+    },
+    errors:[],
+    statusMsg:'Autocomplete aberto · 2 resultados para "BIC"', statusType:'ok'
+  }
+];
+
+/* ── Navigation ──────────────────────────────────────────── */
+let cur = 0;
+function showFrame(idx) {
+  cur = idx;
+  const c = FRAMES[idx];
+  // Render
+  document.getElementById('vswin').innerHTML = buildFrame(c);
+  // Scroll
+  const m = document.querySelector('.vswin .fr-main');
+  if (m) m.scrollTop = c.scrollTo || 0;
+  // Meta
+  document.getElementById('vmid').textContent = c.id;
+  document.getElementById('vmtit').textContent = c.title;
+  document.getElementById('vmdesc').textContent = c.desc || '';
+  // Nav highlight
+  document.querySelectorAll('.vfb').forEach((b,i) => b.classList.toggle('on', i===idx));
+}
+function buildNav() {
+  const nav = document.getElementById('vnav');
+  let cur_group = '';
+  let html = '';
+  FRAMES.forEach((f,i) => {
+    if (f.group !== cur_group) {
+      const label = f.group==='A' ? 'Grupo A — Caminhos Felizes' : 'Grupo B — Estados de Feedback';
+      html += `<div class="vgrp">${label}</div>`;
+      cur_group = f.group;
+    }
+    html += `<button class="vfb${i===0?' on':''}" onclick="showFrame(${i})">
+      <span class="vfid">${f.id}</span>
+      <span class="vfn">${f.title}</span>
+    </button>`;
+  });
+  nav.innerHTML = html;
+}
+function calcScale() {
+  const stage = document.querySelector('.vstage');
+  const meta = document.getElementById('vmeta');
+  const pad = 28;
+  const availW = stage.clientWidth - pad;
+  const availH = stage.clientHeight - meta.offsetHeight - 10 - pad;
+  const scale = Math.min(availW / 1280, availH / 800, 1);
+  const win = document.getElementById('vswin');
+  const port = document.getElementById('vport');
+  win.style.transform = `scale(${scale})`;
+  port.style.width = `${Math.round(1280 * scale)}px`;
+  port.style.height = `${Math.round(800 * scale)}px`;
+}
+document.addEventListener('keydown', e => {
+  if (e.key==='ArrowRight' && cur < FRAMES.length-1) showFrame(cur+1);
+  if (e.key==='ArrowLeft'  && cur > 0)               showFrame(cur-1);
+});
+window.addEventListener('resize', calcScale);
+buildNav();
+showFrame(0);
+calcScale();
+</script>
+</body>
+</html>

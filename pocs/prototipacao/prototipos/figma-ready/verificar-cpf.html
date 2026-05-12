@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Maria Cacau — Verificar CPF</title>
+<style>
+/* ─── Tokens ─────────────────────────────────────────────── */
+:root {
+  /* Brand */
+  --choc:       #391B10;
+  --choc-mid:   oklch(28% 0.08 45);
+  --peach:      #F9A879;
+  --peach-dk:   oklch(65% 0.13 45);
+
+  /* Surface system — Mica-lite */
+  --bg:         oklch(97.5% 0.006 65);
+  --surface:    oklch(100% 0.003 65);
+  --surface-2:  oklch(96%   0.009 65);
+  --border:     oklch(87%   0.009 65);
+  --border-lt:  oklch(93%   0.005 65);
+
+  /* Text */
+  --fg:   oklch(18%  0.04 45);
+  --fg-2: oklch(46%  0.02 55);
+  --fg-3: oklch(60%  0.012 60);
+
+  /* Semantic */
+  --green:    oklch(52% 0.16 145); --green-bg:  oklch(94% 0.06 145);
+  --amber:    oklch(60% 0.15 78);  --amber-bg:  oklch(95% 0.06 78);
+  --red:      oklch(54% 0.17 25);  --red-bg:    oklch(95% 0.05 25);
+  --blue:     oklch(56% 0.16 255); --blue-bg:   oklch(94% 0.05 255);
+
+  /* Sidebar */
+  --sb-text:   oklch(91% 0.008 65);
+  --sb-muted:  oklch(58% 0.012 45);
+  --sb-hover:  rgba(255,255,255,0.08);
+  --sb-active: rgba(255,255,255,0.14);
+
+  /* Layout */
+  --sb-w:  220px;
+  --tb-h:   38px;
+  --stb-h:  28px;
+  --r-s:     4px;
+  --r-m:     8px;
+  --r-l:    12px;
+
+  /* Shadows */
+  --sh-s: 0 1px 2px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.04);
+  --sh-m: 0 2px 8px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.05);
+
+  /* Font */
+  --ff:      'Segoe UI Variable', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --ff-mono: 'Cascadia Code', 'Consolas', 'Courier New', monospace;
+}
+
+/* ─── Reset ──────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  font-family: var(--ff);
+  font-size: 13px;
+  background: radial-gradient(ellipse at 25% 20%,
+    oklch(20% 0.06 42),
+    oklch(10% 0.03 40) 65%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 24px;
+}
+
+/* ─── App window ─────────────────────────────────────────── */
+.win {
+  width: 1280px;
+  height: 800px;
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--r-l);
+  overflow: hidden;
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,0.18),
+    0 8px 32px rgba(0,0,0,0.45),
+    0 32px 80px rgba(0,0,0,0.3);
+  background: var(--bg);
+}
+
+/* ─── Titlebar ───────────────────────────────────────────── */
+.tb {
+  height: var(--tb-h);
+  background: var(--choc);
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  user-select: none;
+}
+.tb-brand {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px;
+}
+.tb-logo {
+  width: 22px; height: 22px;
+  background: var(--peach);
+  border-radius: 5px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 800;
+  color: var(--choc);
+  letter-spacing: -0.02em;
+  flex-shrink: 0;
+}
+.tb-title { font-size: 13px; font-weight: 500; color: var(--sb-text); opacity: 0.9; }
+.tb-controls { display: flex; height: 100%; }
+.tb-btn {
+  width: 46px; height: 100%;
+  background: none; border: none; cursor: pointer;
+  color: var(--sb-text); opacity: 0.65;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.1s, opacity 0.1s;
+}
+.tb-btn:hover { background: rgba(255,255,255,0.1); opacity: 1; }
+.tb-btn.x:hover { background: #c42b1c; opacity: 1; }
+.tb-btn svg { width: 10px; height: 10px; }
+
+/* ─── App body ───────────────────────────────────────────── */
+.app-body { display: flex; flex: 1; overflow: hidden; }
+
+/* ─── Sidebar ────────────────────────────────────────────── */
+.sb {
+  width: var(--sb-w);
+  background: var(--choc);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+.sb-head {
+  padding: 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  display: flex; align-items: center; gap: 10px;
+}
+.sb-mark {
+  width: 38px; height: 38px;
+  background: var(--peach);
+  border-radius: var(--r-m);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 800;
+  color: var(--choc);
+  letter-spacing: -0.02em;
+  flex-shrink: 0;
+}
+.sb-name-main { display: block; font-size: 13px; font-weight: 700; color: var(--sb-text); }
+.sb-name-sub  { display: block; font-size: 10px; color: var(--sb-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 1px; }
+.sb-nav { flex: 1; padding: 10px 8px; overflow-y: auto; }
+.sb-nav::-webkit-scrollbar { width: 3px; }
+.sb-nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
+.sb-section {
+  font-size: 10px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.07em;
+  color: var(--sb-muted);
+  padding: 8px 8px 4px;
+  margin-top: 8px;
+}
+.sb-section:first-child { margin-top: 0; }
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px;
+  border-radius: var(--r-m);
+  cursor: pointer;
+  color: var(--sb-text);
+  font-size: 13px;
+  transition: background 0.12s;
+  position: relative;
+  margin-bottom: 2px;
+  user-select: none;
+}
+.nav-item:hover { background: var(--sb-hover); }
+.nav-item.active { background: var(--sb-active); font-weight: 600; }
+.nav-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 50%; transform: translateY(-50%);
+  width: 3px; height: 18px;
+  background: var(--peach);
+  border-radius: 0 2px 2px 0;
+}
+.nav-item.dim { opacity: 0.36; cursor: default; pointer-events: none; }
+.nav-ico { width: 18px; height: 18px; flex-shrink: 0; }
+.nav-pill {
+  margin-left: auto;
+  font-size: 9px; font-weight: 700;
+  padding: 1px 5px; border-radius: 8px;
+  letter-spacing: 0.02em;
+}
+.nav-pill.count { background: var(--peach); color: var(--choc); }
+.nav-pill.soon  { background: rgba(255,255,255,0.12); color: var(--sb-muted); font-weight: 500; }
+
+/* ─── Main content ───────────────────────────────────────── */
+.main {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: var(--bg);
+}
+.main::-webkit-scrollbar { width: 6px; }
+.main::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+/* ─── Panels ─────────────────────────────────────────────── */
+.panel { display: none; padding: 26px 30px; min-height: 100%; }
+.panel.on { display: block; animation: fi 0.15s ease; }
+@keyframes fi { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ─── Page header ────────────────────────────────────────── */
+.ph { margin-bottom: 22px; }
+.ph h1 { font-size: 20px; font-weight: 600; color: var(--fg); letter-spacing: -0.01em; }
+.ph p  { font-size: 13px; color: var(--fg-2); margin-top: 3px; }
+
+/* ─── Filter bar ─────────────────────────────────────────── */
+.fbar {
+  background: var(--surface);
+  border: 1px solid var(--border-lt);
+  border-radius: var(--r-m);
+  box-shadow: var(--sh-s);
+  padding: 14px 18px;
+  display: flex; align-items: flex-end; gap: 14px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+.fg { display: flex; flex-direction: column; gap: 4px; }
+.fg label { font-size: 11px; font-weight: 500; color: var(--fg-2); letter-spacing: 0.01em; }
+.inp {
+  height: 30px; padding: 0 9px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-s);
+  background: var(--surface);
+  font-family: var(--ff); font-size: 13px; color: var(--fg);
+  outline: none;
+  transition: border-color 0.12s, box-shadow 0.12s;
+}
+.inp:focus {
+  border-color: var(--peach-dk);
+  box-shadow: 0 0 0 2px oklch(75% 0.11 48 / 0.2);
+}
+.inp[type="date"] { width: 138px; }
+.inp-cpf { width: 180px; font-family: var(--ff-mono); letter-spacing: 0.05em; font-size: 14px; }
+
+/* ─── Buttons ────────────────────────────────────────────── */
+.btn {
+  height: 30px; padding: 0 14px;
+  border-radius: var(--r-s);
+  font-family: var(--ff); font-size: 13px; font-weight: 500;
+  cursor: pointer; border: none;
+  transition: all 0.12s;
+  display: inline-flex; align-items: center; gap: 6px;
+  white-space: nowrap;
+}
+.btn-p { background: var(--choc); color: #fff; }
+.btn-p:hover { background: var(--choc-mid); }
+.btn-s { background: var(--surface-2); color: var(--fg); border: 1px solid var(--border); }
+.btn-s:hover { background: var(--border-lt); }
+.btn-sm { height: 26px; padding: 0 10px; font-size: 12px; }
+.btn svg { width: 13px; height: 13px; flex-shrink: 0; }
+
+/* ─── Stat cards ─────────────────────────────────────────── */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.stat {
+  background: var(--surface);
+  border: 1px solid var(--border-lt);
+  border-radius: var(--r-m);
+  box-shadow: var(--sh-s);
+  padding: 14px 16px;
+  position: relative;
+  overflow: hidden;
+}
+.stat::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 3px;
+}
+.stat.a::after  { background: var(--peach); }
+.stat.g::after  { background: var(--green); }
+.stat.b::after  { background: var(--blue); }
+.stat.am::after { background: var(--amber); }
+.stat.r::after  { background: var(--red); }
+.stat-lbl { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--fg-3); margin-bottom: 7px; }
+.stat-val { font-size: 22px; font-weight: 700; color: var(--fg); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; line-height: 1; }
+.stat-sub { font-size: 11px; color: var(--fg-3); margin-top: 4px; }
+
+/* ─── Section heading ────────────────────────────────────── */
+.sh { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.sh h2 { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--fg-2); }
+.sh-btns { display: flex; gap: 7px; }
+
+/* ─── Table ──────────────────────────────────────────────── */
+.tw { overflow-x: auto; border-radius: var(--r-m); border: 1px solid var(--border-lt); box-shadow: var(--sh-s); }
+table { width: 100%; border-collapse: collapse; background: var(--surface); font-size: 13px; }
+thead tr { background: var(--surface-2); border-bottom: 1px solid var(--border); }
+thead th {
+  padding: 9px 13px;
+  text-align: left;
+  font-size: 10px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--fg-2); white-space: nowrap;
+}
+thead th:first-child { padding-left: 16px; }
+tbody tr { border-bottom: 1px solid var(--border-lt); transition: background 0.1s; }
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: var(--surface-2); }
+tbody td { padding: 9px 13px; color: var(--fg); vertical-align: middle; }
+tbody td:first-child { padding-left: 16px; }
+tfoot tr { background: var(--surface-2); border-top: 2px solid var(--border); }
+tfoot td { padding: 9px 13px; font-weight: 600; color: var(--fg); }
+tfoot td:first-child { padding-left: 16px; color: var(--fg-2); font-size: 11px; }
+.mn  { font-family: var(--ff-mono); font-size: 12px; font-variant-numeric: tabular-nums; }
+.dim { color: var(--fg-2); }
+.bld { font-weight: 600; }
+
+/* ─── Badge ──────────────────────────────────────────────── */
+.bdg {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 8px; border-radius: 10px;
+  font-size: 11px; font-weight: 500; white-space: nowrap;
+}
+.bdg-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.bdg.g  { background: var(--green-bg); color: var(--green); }
+.bdg.g  .bdg-dot { background: var(--green); }
+.bdg.am { background: var(--amber-bg); color: var(--amber); }
+.bdg.am .bdg-dot { background: var(--amber); }
+.bdg.r  { background: var(--red-bg);   color: var(--red); }
+.bdg.r  .bdg-dot { background: var(--red); }
+.bdg.b  { background: var(--blue-bg);  color: var(--blue); }
+.bdg.b  .bdg-dot { background: var(--blue); }
+.bdg.n  { background: var(--surface-2); color: var(--fg-2); border: 1px solid var(--border); }
+.bdg.n  .bdg-dot { background: var(--fg-3); }
+
+/* ─── Bar chart ──────────────────────────────────────────── */
+.chart-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border-lt);
+  border-radius: var(--r-m);
+  box-shadow: var(--sh-s);
+  padding: 16px 18px;
+  margin-bottom: 18px;
+}
+.chart-lbl { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--fg-2); margin-bottom: 14px; }
+.bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 5px;
+  height: 96px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border-lt);
+  position: relative;
+}
+.bar-item {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  height: 100%;
+  position: relative;
+  cursor: default;
+}
+.bar-item:hover .bar-body { filter: brightness(1.2); }
+.bar-item:hover .bar-tip  { opacity: 1; visibility: visible; }
+.bar-body {
+  width: 100%;
+  max-width: 30px;
+  border-radius: 3px 3px 0 0;
+  background: var(--choc);
+  transition: filter 0.1s;
+}
+.bar-lbl {
+  position: absolute;
+  bottom: -22px;
+  font-size: 8.5px; color: var(--fg-3);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  width: 100%; text-align: center;
+}
+.bar-tip {
+  position: absolute;
+  bottom: calc(100% + 5px);
+  left: 50%; transform: translateX(-50%);
+  background: var(--fg); color: #fff;
+  font-size: 10px; padding: 3px 7px;
+  border-radius: 4px; white-space: nowrap;
+  opacity: 0; visibility: hidden;
+  transition: opacity 0.12s;
+  pointer-events: none; z-index: 10;
+}
+
+/* ─── Carrier bars ───────────────────────────────────────── */
+.carrier-bars { display: flex; flex-direction: column; gap: 10px; }
+.carrier-row { display: flex; align-items: center; gap: 12px; }
+.carrier-name { font-size: 12px; color: var(--fg); width: 110px; flex-shrink: 0; }
+.carrier-track { flex: 1; height: 7px; background: var(--surface-2); border-radius: 4px; overflow: hidden; }
+.carrier-fill  { height: 100%; border-radius: 4px; background: var(--choc); }
+.carrier-cnt   { font-size: 12px; font-weight: 600; font-family: var(--ff-mono); color: var(--fg); width: 28px; text-align: right; flex-shrink: 0; }
+
+/* ─── Delivery list ──────────────────────────────────────── */
+.del-list { display: flex; flex-direction: column; gap: 7px; }
+.del-item {
+  background: var(--surface);
+  border: 1px solid var(--border-lt);
+  border-radius: var(--r-m);
+  padding: 11px 16px;
+  display: grid;
+  grid-template-columns: 1fr 100px 120px 150px;
+  align-items: center;
+  gap: 12px;
+  transition: box-shadow 0.1s, border-color 0.1s;
+}
+.del-item:hover { border-color: var(--border); box-shadow: var(--sh-s); }
+.del-item.issue { border-left: 3px solid var(--amber); padding-left: 13px; }
+.del-name  { font-size: 13px; font-weight: 600; color: var(--fg); }
+.del-meta  { font-size: 11px; color: var(--fg-3); margin-top: 2px; }
+.del-date  { font-size: 12px; color: var(--fg-2); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.del-issue { font-size: 11px; color: var(--amber); background: var(--amber-bg); padding: 2px 8px; border-radius: 4px; white-space: nowrap; text-align: center; }
+.del-ok    { opacity: 0; pointer-events: none; font-size: 11px; }
+
+/* ─── Success notice ─────────────────────────────────────── */
+.notice {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 14px;
+  border-radius: var(--r-m);
+  font-size: 12px; font-weight: 500;
+  margin-bottom: 12px;
+}
+.notice.ok  { background: var(--green-bg); color: var(--green); border: 1px solid oklch(52% 0.16 145 / 0.2); }
+.notice.warn{ background: var(--amber-bg); color: var(--amber); border: 1px solid oklch(60% 0.15 78 / 0.2); }
+.notice svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+/* ─── CPF result ─────────────────────────────────────────── */
+.cpf-res {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 18px;
+  border-radius: var(--r-m);
+  border: 1px solid var(--border-lt);
+  background: var(--surface);
+  box-shadow: var(--sh-s);
+  margin-top: 14px;
+  max-width: 440px;
+}
+.cpf-ico {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.cpf-ico.ok  { background: var(--green-bg); }
+.cpf-ico.err { background: var(--red-bg); }
+.cpf-title   { font-size: 15px; font-weight: 600; }
+.cpf-title.ok  { color: var(--green); }
+.cpf-title.err { color: var(--red); }
+.cpf-desc  { font-size: 12px; color: var(--fg-2); margin-top: 3px; }
+.cpf-value { font-family: var(--ff-mono); font-size: 12px; color: var(--fg-3); margin-top: 7px; letter-spacing: 0.05em; }
+
+/* ─── Results container ──────────────────────────────────── */
+.res { display: none; }
+.res.on { display: block; }
+
+/* ─── Empty state ────────────────────────────────────────── */
+.empty {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 52px 20px; text-align: center; color: var(--fg-3);
+}
+.empty svg { width: 38px; height: 38px; margin-bottom: 12px; opacity: 0.5; }
+.empty p { font-size: 13px; }
+.empty strong { color: var(--fg-2); }
+
+/* ─── Status bar ─────────────────────────────────────────── */
+.stb {
+  height: var(--stb-h);
+  background: var(--surface);
+  border-top: 1px solid var(--border-lt);
+  display: flex; align-items: center;
+  padding: 0 14px; gap: 10px;
+  flex-shrink: 0;
+}
+.stb-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--green); flex-shrink: 0;
+  transition: background 0.2s;
+}
+.stb-dot.loading { background: var(--amber); animation: blink 0.7s ease-in-out infinite; }
+.stb-dot.error   { background: var(--red); }
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
+.stb-msg { font-size: 11px; color: var(--fg-3); flex: 1; }
+.stb-ver { font-size: 11px; color: var(--fg-3); font-family: var(--ff-mono); }
+</style>
+
+<style id="figma-ready">
+/* ── figma-ready: remove scroll para uso com plugins HTML to Figma ── */
+html, body {
+  height: auto;
+  overflow: visible;
+  display: block;
+  background: #f9f4ee;
+  padding: 0;
+  margin: 0;
+}
+@keyframes fi { from { opacity:1; transform:none; } to { opacity:1; transform:none; } }
+</style>
+
+</head>
+<body>
+<div class="win" style="height: auto; min-height: 800px; overflow: visible; border-radius: 0px; box-shadow: none;">
+
+  <!-- ── Titlebar ────────────────────────────────────────── -->
+  <div class="tb">
+    <div class="tb-brand">
+      <div class="tb-logo">MC</div>
+      <span class="tb-title">Maria Cacau — Gestão de Pedidos</span>
+    </div>
+    <div class="tb-controls">
+      <button class="tb-btn" title="Minimizar">
+        <svg viewBox="0 0 10 1"><rect width="10" height="1" fill="currentColor"></rect></svg>
+      </button>
+      <button class="tb-btn" title="Maximizar">
+        <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1">
+          <rect x=".5" y=".5" width="9" height="9"></rect>
+        </svg>
+      </button>
+      <button class="tb-btn x" title="Fechar">
+        <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.3">
+          <line x1="1" y1="1" x2="9" y2="9"></line>
+          <line x1="9" y1="1" x2="1" y2="9"></line>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ── App body ────────────────────────────────────────── -->
+  <div class="app-body" style="overflow: visible; height: auto;">
+
+    <!-- Sidebar -->
+    <nav class="sb" style="overflow: visible;">
+      <div class="sb-head">
+        <div class="sb-mark">MC</div>
+        <div>
+          <span class="sb-name-main">Maria Cacau</span>
+          <span class="sb-name-sub">Gestão de Pedidos</span>
+        </div>
+      </div>
+      <div class="sb-nav" style="overflow: visible;">
+
+        <div class="sb-section">Principal</div>
+
+        <div class="nav-item" data-p="products">
+          <svg class="nav-ico" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round">
+            <rect x="1.5" y="1.5" width="6" height="6" rx="1"></rect><rect x="10.5" y="1.5" width="6" height="6" rx="1"></rect>
+            <rect x="1.5" y="10.5" width="6" height="6" rx="1"></rect><rect x="10.5" y="10.5" width="6" height="6" rx="1"></rect>
+          </svg>
+          Produtos
+        </div>
+
+        <div class="nav-item" data-p="deliveries">
+          <svg class="nav-ico" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round">
+            <path d="M1 5h10v8H1z"></path><path d="M11 7.5l3 .5V13h-3V7.5z"></path><path d="M1 5l1.5-3h7L11 5"></path>
+            <circle cx="4" cy="13.5" r="1.5"></circle><circle cx="12.5" cy="13.5" r="1.5"></circle>
+          </svg>
+          Entregas
+        </div>
+
+        <div class="nav-item active" data-p="cpf">
+          <svg class="nav-ico" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round">
+            <rect x="1" y="3.5" width="16" height="11" rx="1.5"></rect>
+            <circle cx="6" cy="9" r="2"></circle>
+            <path d="M10 7h5M10 11h4"></path>
+          </svg>
+          Verificar CPF
+        </div>
+
+        <div class="sb-section">Em breve</div>
+
+        <div class="nav-item dim">
+          <svg class="nav-ico" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round">
+            <rect x="1" y="5" width="10" height="8" rx="1"></rect><path d="M11 7.5l3 .5V13h-3V7.5z"></path>
+            <circle cx="4" cy="13.5" r="1.5"></circle><circle cx="12.5" cy="13.5" r="1.5"></circle>
+            <path d="M5 5V3"></path><path d="M7 5V2"></path>
+          </svg>
+          Frete por CEP
+          <span class="nav-pill soon">Logo</span>
+        </div>
+
+        <div class="nav-item dim">
+          <svg class="nav-ico" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round">
+            <path d="M3 1h8l5 5v11a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1z"></path>
+            <path d="M11 1v5h5"></path><path d="M6 9h6M6 12h4"></path>
+          </svg>
+          Nota Fiscal
+          <span class="nav-pill soon">Logo</span>
+        </div>
+
+      </div>
+    </nav>
+
+    <!-- Main -->
+    <main class="main" style="overflow: visible; height: auto;">
+
+      <!-- ══════ Panel: Produtos ══════ -->
+      <div id="panel-products" class="panel">
+        <div class="ph">
+          <h1>Resumo de Produtos</h1>
+          <p>Itens a expedir no período, agrupados por produto</p>
+        </div>
+
+        <div class="fbar">
+          <div class="fg">
+            <label>Data inicial</label>
+            <input type="date" class="inp" id="p-from" value="2026-04-27">
+          </div>
+          <div class="fg">
+            <label>Data final</label>
+            <input type="date" class="inp" id="p-to" value="2026-05-03">
+          </div>
+          <button class="btn btn-p" onclick="qProducts()">
+            <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="5.5" cy="5.5" r="4.5"></circle><line x1="9" y1="9" x2="12" y2="12"></line>
+            </svg>
+            Consultar
+          </button>
+          <button class="btn btn-s" onclick="clrProducts()">Limpar</button>
+        </div>
+
+        <div id="pr" class="res on">
+          <div class="stats">
+            <div class="stat a">
+              <div class="stat-lbl">Pedidos</div>
+              <div class="stat-val">17</div>
+              <div class="stat-sub">no período</div>
+            </div>
+            <div class="stat g">
+              <div class="stat-lbl">Itens a expedir</div>
+              <div class="stat-val">651</div>
+              <div class="stat-sub">unidades / kits</div>
+            </div>
+            <div class="stat b">
+              <div class="stat-lbl">SKUs únicos</div>
+              <div class="stat-val">12</div>
+              <div class="stat-sub">produtos diferentes</div>
+            </div>
+            <div class="stat am">
+              <div class="stat-lbl">Sem estoque</div>
+              <div class="stat-val">0</div>
+              <div class="stat-sub">produtos em falta</div>
+            </div>
+          </div>
+
+          <div class="chart-wrap">
+            <div class="chart-lbl">Quantidade por produto (passe o mouse para ver o código)</div>
+            <div class="bars" id="bars">
+    <div class="bar-item">
+      <div class="bar-tip">AGU002 — 16 un</div>
+      <div class="bar-body" style="height:11px"></div>
+      <span class="bar-lbl">AGU002</span>
+    </div>
+    <div class="bar-item">
+      <div class="bar-tip">ALC002 — 10 un</div>
+      <div class="bar-body" style="height:7px"></div>
+      <span class="bar-lbl">ALC002</span>
+    </div>
+    <div class="bar-item">
+      <div class="bar-tip">AQU001 — 40 un</div>
+      <div class="bar-body" style="height:27px"></div>
+      <span class="bar-lbl">AQU001</span>
+    </div>
+    <div class="bar-item">
+      <div class="bar-tip">BIC001 — 30 un</div>
+      <div class="bar-body" style="height:20px"></div>
+      <span class="bar-lbl">BIC001</span>
+    </div>
+    <div class="bar-item">
+      <div class="bar-tip">BRI001 — 30 un</div>
+      <div class="bar-body" style="height:20px"></div>
+      <span class="bar-lbl">BRI001</span>
+    </div>
+    <div class="bar-item">
+      <div class="bar-tip">COF001 — 10 un</div>
+      <div class="bar-body" style="height:7px"></div>
+      <span class="bar-lbl">COF001</span>
+    </div>
+    <div class="bar-item">
+      <div class="bar-tip">DIF003 — 25 un</div>
+      <div class="bar-body" style="height:17px"></div>
+      <span class="bar-lbl">DIF003</span>
+    </div>
+    <div class="bar-item">
+      <div class="bar-tip">DIV001 — 20 un</div>
+      <div class="bar-body" style="height:14px"></div>
+      <span class="bar-lbl">DIV001</span>
+    </div>
+    <div class="bar-item">
+      <div class="bar-tip">GAM001 — 100 un</div>
+      <div class="bar-body" style="height:68px"></div>
+      <span class="bar-lbl">GAM001</span>
+    </div>
+    <div class="bar-item">
+      <div class="bar-tip">JDM001 — 40 un</div>
+      <div class="bar-body" style="height:27px"></div>
+      <span class="bar-lbl">JDM001</span>
+    </div>
+    <div class="bar-item">
+      <div class="bar-tip">LAT006 — 60 un</div>
+      <div class="bar-body" style="height:41px"></div>
+      <span class="bar-lbl">LAT006</span>
+    </div>
+    <div class="bar-item">
+      <div class="bar-tip">LE1006 — 10 un</div>
+      <div class="bar-body" style="height:7px"></div>
+      <span class="bar-lbl">LE1006</span>
+    </div></div>
+          </div>
+
+          <div class="sh">
+            <h2>Detalhamento por produto</h2>
+            <div class="sh-btns">
+              <button class="btn btn-s btn-sm">
+                <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <rect x="1" y="1" width="9" height="9" rx="1"></rect><path d="M4 4h7v7a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z"></path>
+                </svg>
+                Copiar
+              </button>
+              <button class="btn btn-s btn-sm">Salvar</button>
+            </div>
+          </div>
+          <div class="tw">
+            <table>
+              <thead>
+                <tr>
+                  <th>Código</th>
+                  <th>Produto</th>
+                  <th>Total de Itens</th>
+                </tr>
+              </thead>
+              <tbody id="prod-tbody">
+    <tr>
+      <td class="mn dim">AGU002</td>
+      <td class="bld">Água Lindoya Baby 240ml com lacinho</td>
+      <td class="mn bld">16 un</td>
+    </tr>
+    <tr>
+      <td class="mn dim">ALC002</td>
+      <td class="bld">Álcool gel 30ml Giovanna Baby</td>
+      <td class="mn bld">10 un</td>
+    </tr>
+    <tr>
+      <td class="mn dim">AQU001</td>
+      <td class="bld">Aquaplay personalizado + saquinho</td>
+      <td class="mn bld">40 un</td>
+    </tr>
+    <tr>
+      <td class="mn dim">BIC001</td>
+      <td class="bld">Bichinho Virtual personalizado + Cordão</td>
+      <td class="mn bld">30 un</td>
+    </tr>
+    <tr>
+      <td class="mn dim">BRI001</td>
+      <td class="bld">Brigadeiro gourmet de colher (40g)</td>
+      <td class="mn bld">30 un</td>
+    </tr>
+    <tr>
+      <td class="mn dim">COF001</td>
+      <td class="bld">Cofrinho personalizado</td>
+      <td class="mn bld">10 un</td>
+    </tr>
+    <tr>
+      <td class="mn dim">DIF003</td>
+      <td class="bld">Difusor Premium 30ml + Laço + Saquinho</td>
+      <td class="mn bld">25 un</td>
+    </tr>
+    <tr>
+      <td class="mn dim">DIV001</td>
+      <td class="bld">Lata alta com livro para colorir (16p)</td>
+      <td class="mn bld">20 un</td>
+    </tr>
+    <tr>
+      <td class="mn dim">GAM001</td>
+      <td class="bld">Mini game Personalizado + adesivo</td>
+      <td class="mn bld">100 un</td>
+    </tr>
+    <tr>
+      <td class="mn dim">JDM001</td>
+      <td class="bld">Jogo da memória 12 pares</td>
+      <td class="mn bld">40 un</td>
+    </tr>
+    <tr>
+      <td class="mn dim">LAT006</td>
+      <td class="bld">Latinhas 7×5 c/ Adesivo na Tampa</td>
+      <td class="mn bld">60 un</td>
+    </tr>
+    <tr>
+      <td class="mn dim">LE1006</td>
+      <td class="bld">Leiteira Rústica + adesivo (vazia)</td>
+      <td class="mn bld">10 un</td>
+    </tr></tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="2">Total geral</td>
+                  <td class="mn">651 un/kits</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+
+        <div id="pr-empty" class="empty" style="display:none">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3">
+            <rect x="2" y="3" width="20" height="14" rx="2"></rect>
+            <path d="M8 21h8M12 17v4"></path>
+          </svg>
+          <p>Selecione um intervalo de datas e clique em <strong>Consultar</strong></p>
+        </div>
+      </div>
+
+      <!-- ══════ Panel: Entregas ══════ -->
+      <div id="panel-deliveries" class="panel">
+        <div class="ph">
+          <h1>Resumo de Entregas</h1>
+          <p>Entregas previstas a partir de uma data, com indicação de pendências</p>
+        </div>
+
+        <div class="fbar">
+          <div class="fg">
+            <label>A partir de</label>
+            <input type="date" class="inp" id="d-from" value="2026-04-30">
+          </div>
+          <button class="btn btn-p" onclick="qDeliveries()">
+            <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="5.5" cy="5.5" r="4.5"></circle><line x1="9" y1="9" x2="12" y2="12"></line>
+            </svg>
+            Consultar
+          </button>
+          <button class="btn btn-s" onclick="clrDeliveries()">Limpar</button>
+        </div>
+
+        <div id="dr" class="res on">
+          <div class="stats">
+            <div class="stat a">
+              <div class="stat-lbl">Total de entregas</div>
+              <div class="stat-val">6</div>
+              <div class="stat-sub">a partir de 30/04</div>
+            </div>
+            <div class="stat g">
+              <div class="stat-lbl">Confirmadas</div>
+              <div class="stat-val">6</div>
+              <div class="stat-sub">prontas para envio</div>
+            </div>
+            <div class="stat am">
+              <div class="stat-lbl">Pendências</div>
+              <div class="stat-val">0</div>
+              <div class="stat-sub">pedidos com problemas</div>
+            </div>
+            <div class="stat b">
+              <div class="stat-lbl">Transportadoras</div>
+              <div class="stat-val">4</div>
+              <div class="stat-sub">no período</div>
+            </div>
+          </div>
+
+          <div class="notice ok">
+            <svg viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.8">
+              <circle cx="7.5" cy="7.5" r="6.5"></circle>
+              <polyline points="4.5,7.5 6.5,9.5 10.5,5.5"></polyline>
+            </svg>
+            Sem nenhuma pendência para as entregas do período.
+          </div>
+
+          <div class="chart-wrap">
+            <div class="chart-lbl">Por transportadora</div>
+            <div class="carrier-bars">
+              <div class="carrier-row">
+                <span class="carrier-name">Motoboy</span>
+                <div class="carrier-track"><div class="carrier-fill" style="width:50%"></div></div>
+                <span class="carrier-cnt">3</span>
+              </div>
+              <div class="carrier-row">
+                <span class="carrier-name">SEDEX PLP</span>
+                <div class="carrier-track"><div class="carrier-fill" style="width:17%;opacity:.7"></div></div>
+                <span class="carrier-cnt">1</span>
+              </div>
+              <div class="carrier-row">
+                <span class="carrier-name">JADLOG COM</span>
+                <div class="carrier-track"><div class="carrier-fill" style="width:17%;opacity:.7"></div></div>
+                <span class="carrier-cnt">1</span>
+              </div>
+              <div class="carrier-row">
+                <span class="carrier-name">LATAM CARGO</span>
+                <div class="carrier-track"><div class="carrier-fill" style="width:17%;opacity:.7"></div></div>
+                <span class="carrier-cnt">1</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="sh">
+            <h2>Lista de pedidos</h2>
+            <div class="sh-btns">
+              <button class="btn btn-s btn-sm">Copiar</button>
+              <button class="btn btn-s btn-sm">Salvar</button>
+            </div>
+          </div>
+
+          <div class="del-list">
+            <div class="del-item">
+              <div><div class="del-name">Pedido #2841</div>
+                   <div class="del-meta">Motoboy · Trufa de Chocolate (24 un)</div></div>
+              <div class="del-date">30/04/2026</div>
+              <span class="bdg g"><span class="bdg-dot"></span>Confirmado</span>
+              <span class="del-ok">—</span>
+            </div>
+            <div class="del-item">
+              <div><div class="del-name">Pedido #2837</div>
+                   <div class="del-meta">SEDEX PLP · Kit Aniversário + Bombom Artesanal (30 un)</div></div>
+              <div class="del-date">30/04/2026</div>
+              <span class="bdg g"><span class="bdg-dot"></span>Confirmado</span>
+              <span class="del-ok">—</span>
+            </div>
+            <div class="del-item">
+              <div><div class="del-name">Pedido #2839</div>
+                   <div class="del-meta">Motoboy · Caixa Presente M (1 cx)</div></div>
+              <div class="del-date">30/04/2026</div>
+              <span class="bdg g"><span class="bdg-dot"></span>Confirmado</span>
+              <span class="del-ok">—</span>
+            </div>
+            <div class="del-item">
+              <div><div class="del-name">Pedido #2843</div>
+                   <div class="del-meta">JADLOG COM · Bombom Artesanal (60 un)</div></div>
+              <div class="del-date">30/04/2026</div>
+              <span class="bdg g"><span class="bdg-dot"></span>Confirmado</span>
+              <span class="del-ok">—</span>
+            </div>
+            <div class="del-item">
+              <div><div class="del-name">Pedido #2840</div>
+                   <div class="del-meta">Motoboy · Chocolate ao Leite 100g (10 un)</div></div>
+              <div class="del-date">30/04/2026</div>
+              <span class="bdg g"><span class="bdg-dot"></span>Confirmado</span>
+              <span class="del-ok">—</span>
+            </div>
+            <div class="del-item">
+              <div><div class="del-name">Pedido #2845</div>
+                   <div class="del-meta">LATAM CARGO · Difusor Premium 30ml (25 un)</div></div>
+              <div class="del-date">30/04/2026</div>
+              <span class="bdg g"><span class="bdg-dot"></span>Confirmado</span>
+              <span class="del-ok">—</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════ Panel: CPF ══════ -->
+      <div id="panel-cpf" class="panel on">
+        <div class="ph">
+          <h1>Verificação de CPF</h1>
+          <p>Valide o dígito verificador antes de cadastrar um pedido</p>
+        </div>
+
+        <div class="fbar" style="max-width:430px">
+          <div class="fg" style="flex:1">
+            <label>CPF</label>
+            <input type="text" class="inp inp-cpf" id="cpf-in" placeholder="000.000.000-00" maxlength="14" oninput="cpfMask(this)" onkeydown="if(event.key==='Enter') vCPF()" style="width:100%">
+          </div>
+          <button class="btn btn-p" onclick="vCPF()">Verificar</button>
+          <button class="btn btn-s" onclick="clrCPF()">Limpar</button>
+        </div>
+
+        <div id="cpf-r" class="res on">
+    <div class="cpf-res">
+      <div class="cpf-ico err">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--red)" stroke-width="2.2"><circle cx="10" cy="10" r="8.5"></circle><line x1="7" y1="7" x2="13" y2="13"></line><line x1="13" y1="7" x2="7" y2="13"></line></svg>
+      </div>
+      <div>
+        <div class="cpf-title err">CPF inválido</div>
+        <div class="cpf-desc">Dígito verificador incorreto. Verifique se foi digitado corretamente.</div>
+        <div class="cpf-value">417.460.450-83</div>
+      </div>
+    </div></div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- ── Status bar ───────────────────────────────────────── -->
+  <div class="stb">
+    <span class="stb-dot error" id="sdot"></span>
+    <span class="stb-msg" id="smsg">CPF 417.460.450-83 é inválido</span>
+    <span class="stb-ver">v4.1</span>
+  </div>
+
+</div>
+</body>
+</html>
