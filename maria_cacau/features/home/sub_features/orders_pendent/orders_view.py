@@ -2,7 +2,7 @@
 
 from pandas.core.frame import DataFrame
 from pandas.core.series import Series
-from PyQt6.QtCore import QDate, Qt
+from PyQt6.QtCore import QDate, Qt, pyqtSignal
 from PyQt6.QtWidgets import QDateEdit, QHBoxLayout, QSizePolicy, QVBoxLayout
 
 from maria_cacau.assets import strings
@@ -12,7 +12,13 @@ from maria_cacau.design_system.aux_widgets import AuxWidgets
 from maria_cacau.design_system.gui_popup import GuiPopup
 
 
-class GuiEntregas(AuxWidgets):
+class OrdersView(AuxWidgets):
+    generate_report = pyqtSignal()
+    copy_report = pyqtSignal()
+    download_report = pyqtSignal()
+    copy_graph = pyqtSignal()
+    download_graph = pyqtSignal()
+
     ## Construtor
     def __init__(self) -> None:
         super().__init__()
@@ -82,6 +88,9 @@ class GuiEntregas(AuxWidgets):
     ## Método especial: define o texto da área de resumo
     def set_text(self, t_: str) -> None:
         self.txt.setText(t_)
+
+    def update_data(self, ) -> None:
+        pass
 
     ## Método: gera e exibe o resumo das entregas do dia
     def set_resumo(self, d_: str, arq_: DataFrame) -> None:

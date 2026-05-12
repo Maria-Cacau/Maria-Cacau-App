@@ -22,7 +22,7 @@ from maria_cacau.design_system.gui_popup import GuiPopup
 from maria_cacau.features.home.sub_features.cpf_validation.cpf_validation_view import GuiValiCpf
 from maria_cacau.features.home.sub_features.freight_query.freight_query_view import GuiConsFrete
 from maria_cacau.features.home.sub_features.nota_fiscal.nota_fiscal_view import GuiDados
-from maria_cacau.features.home.sub_features.orders_pendent.orders_pendent_view import GuiEntregas
+from maria_cacau.features.home.sub_features.orders_pendent.orders_view import OrdersView
 from maria_cacau.features.home.sub_features.products_resume.products_resume_view import GuiProdutos
 from maria_cacau.features.home.sub_features.status_bar.status_bar_view import GuiStatusBar
 
@@ -117,7 +117,7 @@ class GuiMain(QMainWindow):
         self.setCentralWidget(root)
 
         self.gProdutos = GuiProdutos()
-        self.gEntregas = GuiEntregas()
+        self.gEntregas = OrdersView()
         self.gDados = GuiDados()
         self.gVeriCpf = GuiValiCpf()
         self.gConsCep = GuiConsFrete()
