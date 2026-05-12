@@ -307,3 +307,103 @@ Sim — histórico limpo, responsabilidades separadas. O `screenshot-frames.py` 
 **P: O HTML tem scroll — como garantir que o conteúdo completo seja capturado para extração vetorial também?**
 
 O mesmo JS de expansão do `screenshot-frames.py` foi reaproveitado: antes de extrair os elementos, injeta JS que define `height: auto` e `overflow: visible` em `#vswin`, `.win`, `.ab`, `.main` e `#vport`. Correção feita: o script original usava `.fr-main` (inexistente no HTML) — no `html-to-figma.py` foi corrigido para `.main`, que é o container scrollável real do formulário.
+
+---
+
+## Sessão — Mai/2026 (Arquitetura: Padrões Python e Design System)
+
+---
+
+**P: Como seria uma arquitetura escalável para o projeto PyQt6, e como funciona a modularização no contexto Python?**
+
+A arquitetura validada é Clean Arch + MVC com signals como delegates: View → Controller → UseCase → Repository → Data. O Controller é mandatório — não opcional — porque sem ele o View vira um God Object (como o `GuiMain` atual). A View expõe signals com nome de domínio (`cadastro_solicitado`, `formulario_limpo`) em vez de expor widgets internos. O Controller conecta os signals e orquestra. No Python, modularização usa `__init__.py` como API pública do módulo — o que não está exportado lá é detalhe interno. Funções utilitárias ficam soltas no módulo (não dentro de classes com `@staticmethod`), porque Python tem funções como cidadãs de primeira classe.
+
+---
+
+**P: O que é Protocol em Python? Qual a principal diferença entre ABC e Protocol?**
+
+Ambos definem contratos entre camadas, mas com filosofias diferentes. `ABC` (Abstract Base Class) exige herança explícita — quem implementa precisa declarar `class MinhaClasse(MeuABC)`. `Protocol` usa structural typing (duck typing formalizado): qualquer classe que tiver os métodos certos satisfaz o contrato automaticamente, sem herdar nada. ABC verifica em runtime na instanciação; Protocol é verificado pelo type checker (mypy/pyright) em desenvolvimento. ABC tem acoplamento alto (a classe precisa conhecer o ABC); Protocol tem acoplamento zero. Para contratos entre camadas (Repository, UseCase), Protocol é mais Pythônico. Para base com comportamento compartilhado (BaseView), ABC faz mais sentido.
+
+---
+
+**P: A nível de performance, impacta usar ABC ao invés do Protocol?**
+
+Não há diferença prática. ABC tem uma verificação na instanciação (lookup num `frozenset` de métodos abstratos) — depois disso, chamadas de método são iguais a qualquer classe Python. Protocol é puramente anotação de tipo; em runtime não executa nada. Em app desktop PyQt, o gargalo será sempre I/O de rede (Google Sheets) ou renderização Qt — ABC vs Protocol não aparece no profiler.
+
+---
+
+**P: É má prática usar ABC e Protocol juntos no mesmo projeto?**
+
+Não — é um padrão comum. A divisão natural: ABC para classes base com implementação compartilhada (ex: `BaseView` que define `show_loading`, `hide_loading`); Protocol para contratos puros de camada sem implementação (ex: `CadastroRepository` aceito pelo UseCase). Cada ferramenta no lugar certo.
+
+---
+
+**P: O que faz o decorator `@abstractmethod` além de marcar o contrato?**
+
+Faz duas coisas: (1) marca o método como contrato obrigatório para subclasses; (2) bloqueia instanciação direta da classe se algum `@abstractmethod` não for implementado — Python lança `TypeError` na tentativa de instanciar. Não impede que o método abstrato tenha corpo: a subclasse pode chamar `super()` para aproveitar uma implementação padrão e ainda ser forçada a sobrescrever.
+
+---
+
+**P: O que é `@dataclass` em Python? Quando usar?**
+
+É um decorator que gera automaticamente `__init__`, `__repr__` e `__eq__` a partir dos atributos declarados — equivalente a uma `struct` do Swift. Usado para objetos que só carregam dados entre camadas (DTOs), sem lógica de negócio. `@dataclass(frozen=True)` torna o objeto imutável, equivalente ao `let` no Swift. Métodos utilitários simples que derivam dos próprios dados (formatação, validação de campos) são permitidos; se o método chamar repository ou service, provavelmente não é mais um dataclass.
+
+---
+
+**P: Dá para criar um `@classmethod` que recebe uma entity e retorna o dataclass já populado?**
+
+Sim — é o padrão Pythônico para construtores alternativos, equivalente a um `init` secundário no Swift. Usa `@classmethod` (não `@staticmethod`) porque recebe `cls` como primeiro parâmetro, permitindo chamar `cls(...)` em vez de hardcodar o nome da classe — o que mantém o comportamento correto quando a classe é herdada. O nome convencional é `from_entity` (ou `from_` + origem). Na stdlib: `datetime.fromisoformat`, `Path.from_uri`.
+
+---
+
+**P: `@classmethod` seria o `static` do Swift?**
+
+Quase. Python tem dois: `@staticmethod` é o equivalente direto ao `static` do Swift — não recebe nada implícito. `@classmethod` recebe a classe (`cls`) como primeiro parâmetro, equivalente a um `static` que usa `Self`. A diferença prática: `@classmethod` funciona corretamente com herança (retorna a subclasse, não a base); `@staticmethod` com nome hardcoded quebraria esse comportamento.
+
+---
+
+**P: Em Python não é comum criar classes com métodos estáticos? Seria melhor criar funções globais?**
+
+Correto. Em Python o padrão é um módulo com funções soltas — o módulo já é o namespace. Criar uma classe só para agrupar `@staticmethod` é considerado ruído sem ganho. A régua: tem estado (atributos) → classe; tem comportamento compartilhado entre instâncias → classe com métodos; é só lógica utilitária sem estado → função no módulo. Em Swift classes são obrigatórias porque funções soltas não existem; em Python funções são cidadãs de primeira classe.
+
+---
+
+**P: O nome técnico dos `@...` é "flag"?**
+
+O nome técnico é **decorator** (decorador). Em Swift a Apple usa "property wrappers" para `@State`, `@Binding`, `@Published` aplicados a propriedades, e "attributes" para `@MainActor`, `@discardableResult` — mas o conceito por baixo é o mesmo: uma anotação que modifica ou adiciona comportamento sem alterar o código interno. Em Python decorators podem ser criados pelo desenvolvedor — são funções que recebem outra função/classe e retornam uma versão modificada.
+
+---
+
+**P: Faz sentido criar Protocols para Views em Python/PyQt, como o `Actionable` do Swift?**
+
+Sim, especialmente no Design System. Um `Actionable` Protocol abstrai o signal por trás do componente — o controller chama `set_action(callback)` sem saber se é `clicked`, `triggered` ou `activated`. Para Views de feature, signals com nome de domínio já resolvem isso de forma mais idiomática para o PyQt. Protocols para Views fazem sentido para comportamentos transversais: `Loadable` (`show_loading`, `hide_loading`), `Alertable` (`show_error`, `show_success`).
+
+---
+
+**P: Faz sentido pensar em temas no Design System nesse primeiro momento?**
+
+Não. Tema é uma camada de indireção que só vale quando há múltiplos temas (dark/light) ou quando o DS será consumido por projetos com identidades visuais diferentes. Para um app com identidade única, tokens diretos (`colors.PRIMARY`, `typography.FONT_SIZE_MD`) são suficientes e mais simples. A camada de tema pode ser adicionada depois sem quebrar nada — os tokens continuam existindo, o tema só agruparia referências a eles. Regra prática: tema entra quando aparecer o segundo tema.
+
+---
+
+**P: Enums são comuns em Python? Faria sentido usar para configurar estilos de componentes do DS?**
+
+Sim, `Enum` existe e é bem usado. O padrão com `@property` equivale à variável computável do Swift com `switch self`: cada case do enum expõe propriedades (`font`, `color`, `spacing`) que o componente lê sem saber o que está por baixo. O `match self` (Python 3.10+) é o equivalente do `switch self` do Swift. O componente aceita o enum como parâmetro e aplica as propriedades — desacoplado e extensível.
+
+---
+
+**P: O `@property` é exclusivo do enum?**
+
+Não — funciona em qualquer classe. Transforma um método em algo que parece atributo: chamado sem parênteses, mas executa uma função. Equivalente à variável computável do Swift (`var total: Double { return ... }`). Tem também `@nome.setter` (intercepta atribuição) e `@nome.deleter` (raro). O setter executa antes de persistir o valor — na prática é um `willSet` do Swift, com o valor antigo ainda disponível para comparação antes de atribuir.
+
+---
+
+**P: Python tem observadores como `didSet`/`willSet` do Swift?**
+
+Não nativamente da mesma forma. O `@property` setter funciona como `willSet` — executa antes de persistir, valor antigo ainda disponível. Não existe hook nativo para `didSet` (depois da atribuição); é simulado atribuindo e chamando um método logo em seguida. Para observação de mudanças com múltiplos observadores (equivalente ao `@Published` do SwiftUI), o mecanismo idiomático no PyQt é usar signals.
+
+---
+
+**P: Tem algo em Python parecido com o `consume` do Swift?**
+
+Não. `consume` é sobre ownership — transfere a posse, invalida a variável original em tempo de compilação. Python usa garbage collector com contagem de referências; não há controle de ownership. O `del` remove a referência local, mas se outro lugar ainda aponta para o objeto, ele continua vivo. É uma troca consciente: Python simplifica o modelo mental de memória, mas abre mão do controle fino que Swift e Rust oferecem.
