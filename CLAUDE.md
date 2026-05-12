@@ -22,6 +22,29 @@ Quando o usuário pedir "finalizar a demanda" (ou variações), executar sempre:
 
 Nunca trazer código de outras branches, nunca abrir PR automaticamente.
 
+## Documentação de Estudo em Andamento
+
+Quando o usuário pedir para atualizar a documentação e o contexto envolver um tema de estudo ou trabalho em andamento, atualizar o arquivo `self-study.md` da pasta correspondente (`pocs/<tema>/self-study.md`).
+
+O `self-study.md` deve sempre deixar claro:
+- Qual a intenção e objetivo do estudo
+- O status atual de cada etapa (concluído / em andamento / pendente)
+- As decisões já fechadas (para não reabrir sem motivo)
+- Os próximos passos concretos para retomar na próxima sessão
+
+Esse arquivo é o ponto de entrada para qualquer IA ou sessão futura continuar de onde parou, sem precisar reler tudo.
+
+## Dados Sensíveis em Arquivos de Resultado
+
+Arquivos JSON em `pocs/` ou `scripts/` podem conter dados reais da planilha (CPF, e-mail, telefone, cartão). Nunca commitar esses arquivos com dados reais.
+Antes de qualquer commit com JSONs de resultado:
+- Substituir CPFs por `"000.000.000-00"`
+- Substituir e-mails por `"exemplo@email.com"`
+- Substituir telefones por `"(00) 00000-0000"`
+- Substituir números de cartão por `"0000 0000 0000 0000"`
+
+Se os dados forem necessários localmente, adicionar o arquivo ao `.gitignore` em vez de sanitizar.
+
 ## graphify
 
 This project has a graphify knowledge graph at graphify-out/.
