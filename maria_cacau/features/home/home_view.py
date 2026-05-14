@@ -22,7 +22,7 @@ from maria_cacau.design_system.gui_popup import GuiPopup
 from maria_cacau.features.home.sub_features.cpf_validation.cpf_validation_view import GuiValiCpf
 from maria_cacau.features.home.sub_features.freight_query.freight_query_view import GuiConsFrete
 from maria_cacau.features.home.sub_features.nota_fiscal.nota_fiscal_view import GuiDados
-from maria_cacau.features.home.sub_features.orders_pendent.orders_view import OrdersView
+from maria_cacau.features.home.sub_features.orders_pendent.view import OrdersView
 from maria_cacau.features.home.sub_features.products_resume.products_resume_view import GuiProdutos
 from maria_cacau.features.home.sub_features.status_bar.status_bar_view import GuiStatusBar
 
@@ -201,8 +201,9 @@ class GuiMain(QMainWindow):
 
     ## ------------------------------------------------------------------------------------------------
     ## Ações de botão:
-        self.gEntregas.btOk.clicked.connect(self.on_ok_entregas)
-        self.gEntregas.btCopiarTxt.clicked.connect(lambda: observability.log(AppEvent.BTN_COPY, feature='entregas'))
+        # TODO: MIGRAR
+        # self.gEntregas.btOk.clicked.connect(self.on_ok_entregas)
+        # self.gEntregas.btCopiarTxt.clicked.connect(lambda: observability.log(AppEvent.BTN_COPY, feature='entregas'))
 
         self.gProdutos.btOk.clicked.connect(self.on_ok_produtos)
         self.gProdutos.btCopiarTxt.clicked.connect(lambda: observability.log(AppEvent.BTN_COPY, feature='produtos'))
@@ -483,7 +484,6 @@ class GuiMain(QMainWindow):
         manager.clear_cache()
         self.datas = {}
         self.dtEnt = ''
-        self.gEntregas.resumos.clear()
         observability.log(AppEvent.CACHE_CLEAR)
 
     ## Método: Carrega planilhas salvas do cache local
