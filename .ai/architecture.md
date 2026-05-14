@@ -15,6 +15,15 @@ Maria-Cacau-Contagem/
 │   ├── __main__.py               # entry point
 │   ├── core/
 │   │   ├── charts.py                     # ChartWidget (QWidget) + ChartType enum (BAR/PIE)
+│   │   ├── network/
+│   │   │   ├── api.py                    # class API (ABC) — interface pública de alto nível
+│   │   │   ├── _method.py                # HTTPMethod (StrEnum)
+│   │   │   ├── _request.py               # HTTPRequest (dataclass) — DTO de parâmetros
+│   │   │   ├── _response.py              # HTTPResponse (dataclass) — DTO de resposta
+│   │   │   ├── _errors.py                # NetworkError, HTTPRequestError, HTTPResponseError
+│   │   │   ├── _client.py                # HTTPClientContract (Protocol) + LocalClient
+│   │   │   ├── _config.py                # configure() / override() / clear_override() — singleton do client ativo
+│   │   │   └── __init__.py               # exports públicos: API, HTTPMethod, HTTPResponse, LocalClient, erros, config
 │   │   ├── sheets/
 │   │   │   ├── service.py                # autenticação e leitura bruta do Google Sheets
 │   │   │   ├── manager.py                # orquestra service + handler; singleton `manager`
@@ -50,6 +59,53 @@ Maria-Cacau-Contagem/
 ## Padrão de arquitetura
 **Feature-first**: cada funcionalidade vive numa pasta isolada com sua própria view.
 Futuramente cada feature pode ter `view.py` + `view_model.py` (Clean Architecture).
+
+## Camada de network (`core/network/`)
+
+Módulo de transporte HTTP/local desacoplado. Cuida **só do transporte** — semântica de negócio fica no consumer.
+
+**Arquivos com `_` prefixado** são internos. O consumer importa apenas do `__init__.py`:
+```python
+from maria_cacau.core.network import API, HTTPMethod, configure, LocalClient
+```
+
+**Setup no `__main__.py`** (uma vez):
+```python
+from maria_cacau.core.network import configure, LocalClient
+configure(LocalClient(backend=Backend()))
+```
+
+**Criar um endpoint** — herdar de `API`, implementar `path`, ajustar `self.parameters` se necessário:
+```python
+class GetPedidosPendentesAPI(API):
+    @property
+    def path(self) -> str:
+        return "/pedidos/pendentes"
+
+class CriarPedidoAPI(API):
+    def __init__(self, dados: dict):
+        super().__init__()
+        self.parameters.method = HTTPMethod.POST
+        self.parameters.body = dados
+
+    @property
+    def path(self) -> str:
+        return "/pedidos"
+```
+
+**Dois cenários suportados:**
+
+| Cenário | Como configurar |
+|---|---|
+| Backend local (agora) | `configure(LocalClient(backend=Backend()))` |
+| API HTTP real (futuro) | `configure(HTTPClient(base_url="https://..."))` — `HTTPClient` ainda não implementado |
+
+**Override para testes:**
+```python
+override(HTTPClient(base_url="http://localhost:8080"))
+# ... testes
+clear_override()
+```
 
 ## Camada de storage
 
