@@ -1,0 +1,81 @@
+{
+    "date": "30/04/26",
+    "total": 6,
+    "orders": [
+        {
+            "number": "2026",
+            "status": "active",
+            "source": "Instagram",
+            "tiny_code": 0,
+
+            "customer": {
+                "name": "Maria Silva",
+                "relationship": "Mãe",
+                "phone": "(31) 99999-9999",
+                "cpf": "000.000.000-00",
+                "email": "exemplo@email.com"
+            },
+
+            "receiver": {
+                "name": "João Silva",
+                "gender": "Masculino",
+                "event": {
+                    "type": "Aniversário",
+                    "date": "30/04/26"
+                }
+            },
+
+            "customization": {
+                "label_name": "",
+                "label_theme": "",
+                "box_name": "",
+                "box_art": ""
+            },
+
+            "products": [
+                {
+                    "name": "Água Lindoya Baby 240ml com lacinho",
+                    "quantity": 10,
+                    "price": 8.50,
+                    "total": 85.00
+                }
+            ],
+            "products_note": "",
+
+            "financial": {
+                "subtotal": 250.00,
+                "discount": 0.00,
+                "shipping": 25.00,
+                "total": 275.00,
+                "amount_pendent": -50.00,
+                "pay_on_pickup": false,
+                "payments": [
+                    {
+                        "installment": 1,
+                        "date": "15/04/26",
+                        "amount": 225.00,
+                        "type": "Pix",
+                        "confirmed": true
+                    }
+                ]
+            },
+
+            "delivery": {
+                "date": "30/04/26",
+                "type": "MOTOBOY",
+                "recipient_name": "João Silva",
+                "address": {
+                    "street": "Rua das Flores",
+                    "number": "123",
+                    "complement": "Apto 4",
+                    "neighborhood": "Centro",
+                    "city": "São Paulo",
+                    "state": "SP",
+                    "zip": "01310-100"
+                },
+                "factory_notes": "",
+                "motoboy_info": ""
+            }
+        }
+    ]
+}

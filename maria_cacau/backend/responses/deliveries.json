@@ -1,0 +1,11 @@
+{
+    "$schema": "../schemas/deliveries.schema.json",
+    "unique": 0,
+    "total": 0,
+    "deliveries": [
+        {
+            "type": "",
+            "count": 0
+        }
+    ]
+}
