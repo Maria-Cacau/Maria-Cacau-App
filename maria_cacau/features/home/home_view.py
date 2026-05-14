@@ -8,23 +8,29 @@ from pathlib import Path
 from PyQt6.QtCore import QObject, QThread, QUrl, pyqtSignal
 from PyQt6.QtGui import QAction, QDesktopServices, QPainter, QPixmap
 from PyQt6.QtWidgets import (QApplication, QDialog, QDialogButtonBox,
-                             QFileDialog, QFormLayout, QHBoxLayout, QInputDialog,
-                             QLineEdit, QMainWindow, QMenu, QMenuBar, QMessageBox,
-                             QVBoxLayout, QWidget)
+                             QFileDialog, QFormLayout, QHBoxLayout,
+                             QInputDialog, QLineEdit, QMainWindow, QMenu,
+                             QMenuBar, QMessageBox, QVBoxLayout, QWidget)
 
 from maria_cacau.assets import strings
 from maria_cacau.core import errors
 from maria_cacau.core.observability import AppEvent, observability
-from maria_cacau.core.storage.cache import CacheStorage
 from maria_cacau.core.sheets.manager import manager
 from maria_cacau.core.sheets.service import service
+from maria_cacau.core.storage.cache import CacheStorage
 from maria_cacau.design_system.gui_popup import GuiPopup
-from maria_cacau.features.home.sub_features.cpf_validation.cpf_validation_view import GuiValiCpf
-from maria_cacau.features.home.sub_features.freight_query.freight_query_view import GuiConsFrete
-from maria_cacau.features.home.sub_features.nota_fiscal.nota_fiscal_view import GuiDados
-from maria_cacau.features.home.sub_features.orders_pendent.view import OrdersView
-from maria_cacau.features.home.sub_features.products_resume.products_resume_view import GuiProdutos
-from maria_cacau.features.home.sub_features.status_bar.status_bar_view import GuiStatusBar
+from maria_cacau.features.home.sub_features.cpf_validation.cpf_validation_view import \
+    GuiValiCpf
+from maria_cacau.features.home.sub_features.freight_query.freight_query_view import \
+    GuiConsFrete
+from maria_cacau.features.home.sub_features.nota_fiscal.nota_fiscal_view import \
+    GuiDados
+from maria_cacau.features.home.sub_features.orders_pendent.view import \
+    OrdersView
+from maria_cacau.features.home.sub_features.products_resume.products_resume_view import \
+    GuiProdutos
+from maria_cacau.features.home.sub_features.status_bar.status_bar_view import \
+    GuiStatusBar
 
 _SHEETS_KEY   = 'sheets'
 _sheets_cache = CacheStorage(Path.home() / '.mariacacau')

@@ -5,7 +5,6 @@ from typing import Protocol
 from ._request import HTTPRequest
 from ._response import HTTPResponse
 
-
 ### MARK: - CONTRACTS
 
 ## Protocol = duck typing explícito: não precisa herdar, só implementar execute().

@@ -4,9 +4,11 @@ from dataclasses import dataclass
 from pandas.core.series import Series
 
 from maria_cacau.core import errors
-from maria_cacau.core.sheets.sheet_columns import SheetColumns as SColumns, SheetData as SData
-from .repository import OrdersRepository
+from maria_cacau.core.sheets.sheet_columns import SheetColumns as SColumns
+from maria_cacau.core.sheets.sheet_columns import SheetData as SData
+
 from .models import DeliveryModel, OrdersModel
+from .repository import OrdersRepository
 
 
 class OrdersUseCase():

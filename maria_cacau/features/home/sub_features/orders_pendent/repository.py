@@ -4,6 +4,7 @@ from pandas import DataFrame
 
 from maria_cacau.core.sheets.manager import manager
 
+
 class OrdersRepository():
     def __init__(self) -> None:
         self.cache: dict = {}

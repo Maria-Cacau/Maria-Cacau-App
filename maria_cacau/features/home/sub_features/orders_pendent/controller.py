@@ -3,6 +3,7 @@
 import time
 
 from maria_cacau.core.observability import observability
+
 from .events import FeatureEvents as ObsEv
 from .models import OrdersModel
 from .signals import signals

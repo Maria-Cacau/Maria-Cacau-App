@@ -1,12 +1,11 @@
 """Comunicação alto nivel para chamadas de api"""
 
 from abc import ABC, abstractmethod
-from typing import TypeVar, Type, final
+from typing import Type, TypeVar, final
 
+from ._config import get_client
 from ._request import HTTPRequest
 from ._response import HTTPResponse
-from ._config import get_client
-
 
 EntityT = TypeVar("EntityT")
 

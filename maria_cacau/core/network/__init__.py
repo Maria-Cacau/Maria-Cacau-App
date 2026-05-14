@@ -1,6 +1,6 @@
-from .api import API
+from ._client import HTTPClientContract, LocalClient
+from ._config import clear_override, configure, override
+from ._errors import HTTPRequestError, HTTPResponseError, NetworkError
 from ._method import HTTPMethod
 from ._response import HTTPResponse
-from ._errors import NetworkError, HTTPRequestError, HTTPResponseError
-from ._config import configure, override, clear_override
-from ._client import LocalClient, HTTPClientContract
+from .api import API

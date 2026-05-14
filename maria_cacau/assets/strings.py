@@ -1,4 +1,4 @@
-from maria_cacau import __app_name__, __version__, __year__, __company__
+from maria_cacau import __app_name__, __company__, __version__, __year__
 
 APP_TITLE = __app_name__
 

@@ -3,6 +3,7 @@
 from typing import TYPE_CHECKING
 
 from ._errors import NetworkNotConfiguredError
+
 if TYPE_CHECKING:
     from ._client import HTTPClientContract
 

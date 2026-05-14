@@ -1,6 +1,7 @@
 """Dados e parâmetros de uma request"""
 
 from dataclasses import dataclass, field
+
 from ._method import HTTPMethod
 
 

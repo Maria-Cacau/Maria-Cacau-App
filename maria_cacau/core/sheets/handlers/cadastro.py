@@ -9,6 +9,7 @@ from pandas import DataFrame
 from maria_cacau.core import errors
 from maria_cacau.design_system.gui_popup import GuiPopup
 
+
 class CadastroAnalyseHandler:
     def __init__(self, raw_rows: list, show_popup: bool = True) -> None:
         self._popup = GuiPopup()
