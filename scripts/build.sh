@@ -50,7 +50,10 @@ fi
 
 # Instala o pacote e suas dependências
 python -m pip install --upgrade pip
-pip install -e .
+pip install -e ".[dev]"
+
+# Registra a pasta de hooks do projeto
+git config core.hooksPath .githooks
 
 # Libera o direnv para ativar automaticamente (só se disponível)
 if command -v direnv &> /dev/null; then
