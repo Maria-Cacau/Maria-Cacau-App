@@ -431,3 +431,95 @@ Não é nativo — é uma lib terceira (`pip install git-filter-repo`). O git te
 **P: É possível rodar um script automaticamente após um `git merge`?**
 
 Sim, via hook `post-merge`. Roda após qualquer `git merge` ou `git pull` bem-sucedido. Padrão útil: verificar se `pyproject.toml` mudou com `git diff-tree` e rodar `pip install -e .` só quando necessário — evita rodar setup completo em todo merge.
+
+---
+
+## Sessão — Mai/2026 (Arquitetura: Módulo de Network)
+
+---
+
+**P: O módulo `core/network` está certo dessa forma? (api.py, request, response, client, config)**
+
+Estrutura geral boa — separação de responsabilidades correta. Dois problemas encontrados: (1) **bug real**: `field(default_factory=HTTPMethod.GET)` em `_request.py` — `default_factory` espera um callable, mas `HTTPMethod.GET` é uma string `"GET"`; em runtime levanta `TypeError`. Correto: `method: HTTPMethod = HTTPMethod.GET`. (2) `API(ABC)` sem nenhum `@abstractmethod` não é verdadeiramente abstrata — Python permite instanciar diretamente. O `import json` dentro do método `json()` do `HTTPResponse` também é ruído menor (melhor no topo do arquivo).
+
+---
+
+**P: Quero que `call()` e `entity()` sejam finais (sem override) e que o `__init__` seja acionado automaticamente ao herdar. Como garantir que o `path` seja fornecido?**
+
+O padrão correto: `path` como `@property @abstractmethod`. O `__init__` da base lê `self.path` — sem precisar receber `path` como argumento. Subclasses só declaram a property; ao instanciar, o `__init__` base roda automaticamente e lê o valor. Para travar `call` e `entity`: `@final` do `typing` — não impede override em runtime, mas mypy/pyright reclamam. Se algum `@abstractmethod` não for implementado, Python lança `TypeError` na instanciação (comportamento nativo de ABC).
+
+---
+
+**P: Chamar o `TypeVar` de `Entity` em vez de `T` faria sentido?**
+
+Faz sentido no contexto — comunica intenção. O trade-off: `T` é o padrão neutro do Python, `Entity` foge da convenção mas é mais legível. Ambos são válidos. `EntityT` foi o escolhido: sufixo `T` sinaliza que é um `TypeVar`, prefixo dá contexto semântico. É o mesmo padrão que a stdlib usa em `AnyStr`, `KT`, `VT`.
+
+---
+
+**P: `ENTITY_T` (maiúsculas) seria uma boa forma de nomear o `TypeVar`?**
+
+Não. Em Python, maiúsculas são convenção para constantes (`CONSTANTE = valor`). `ENTITY_T` seria lido como constante, não como tipo genérico. A convenção para `TypeVar` é PascalCase: `EntityT = TypeVar("EntityT")`.
+
+---
+
+## Sessão — Mai/2026 (Estudo: Arquitetura GSNetworking + Design Network Python)
+
+---
+
+**P: Quais são os pontos fortes e o que estaria pendente/poderia melhorar na arquitetura do GSNetworking?**
+
+Pontos fortes: separação total de responsabilidades (lib cuida só do transporte, consumer decide Codable e erros de domínio), plugin system extensível com ordem de execução (`amongTheFirsts/unaware/amongTheLasts`) e resolução Mock > Primary > First, certificate pinning robusto com wildcards e SHA256/SHA512, proteção de headers por nível (`.mandatory`, `.inmutable`) que impede plugins de sobrescrever campos críticos, e testabilidade com mocks inclusos no próprio módulo. Pontos de melhoria: `URLSession` é recriada a cada request (property computada, sem connection pool reaproveitado), WebSockets usa callbacks em vez de async/await (inconsistência com HTTP), sem plugin padrão para token refresh/OAuth, `assert()` no `baseURL` em vez de erro tipado, e sem suporte nativo a progress de upload/download ou deduplicação de requests.
+
+---
+
+**P: O que é `field(default_factory=dict)`?**
+
+Solução para o problema de valores padrão mutáveis em `@dataclass`. Em Python, colocar `headers: dict = {}` como padrão direto cria um único dict compartilhado entre todas as instâncias — o que causa contaminação cruzada entre objetos. `field(default_factory=dict)` diz ao dataclass para chamar `dict()` a cada nova instância, criando um dict independente. O argumento é qualquer callable: `default_factory=list`, `default_factory=lambda: {"Content-Type": "application/json"}`. Em Swift isso não existe porque `struct` já cria cópias por valor.
+
+---
+
+**P: O que é esse `|` sendo usado? Exemplo: `dict[str, str] | None`**
+
+É a sintaxe de union type do Python 3.10+, equivalente ao `Optional` do Swift. `dict[str, str] | None` significa "pode ser um `dict[str, str]` ou `None`" — o mesmo que `[String: String]?` em Swift. Antes do Python 3.10 era necessário `from typing import Optional` e escrever `Optional[Dict[str, str]]`. O `|` funciona para qualquer combinação: `int | str` (um ou outro, sempre presente), `int | str | None` (qualquer dos três incluindo nada).
+
+---
+
+**P: O import dentro de um método é uma boa prática?**
+
+Não como padrão geral — import no topo do arquivo é a convenção. Import dentro de método tem dois usos legítimos: evitar importação circular (quando módulo A importa B e B importa A) e adiar carregamento de dependências pesadas e opcionais (ex: `import reportlab` só quando a função de exportar PDF for chamada). No contexto do `json()` do `HTTPResponse`, o `import json` estava desnecessariamente dentro do método — `json` é stdlib, leve, e não há ciclo. O correto é no topo do arquivo.
+
+---
+
+**P: Esse método não deveria se chamar `to_json` por padrão?**
+
+Não — `to_json` seria semanticamente errado. A convenção em Python é que `to_json` **serializa** (objeto → string/bytes JSON). O método faz o oposto: **desserializa** os bytes do body em `dict`. O nome `.json()` foi herdado do `httpx` e `requests`, que estabeleceram esse padrão no ecossistema Python. Seguir o padrão das libs consagradas tem valor: qualquer dev Python reconhece imediatamente o que o método faz.
+
+---
+
+**P: Em Swift usamos enum para lidar com erros. Em Python a boa prática seria criar classes separadas mesmo?**
+
+Sim. Em Swift `enum` com associated values é o mecanismo natural para erros tipados. Em Python o padrão é hierarquia de classes herdando de `Exception`. A razão é que Python usa `try/except` com tipos de exceção — `except HTTPResponseError` captura especificamente esse erro, enquanto `except NetworkError` captura todos os erros da lib. Enums em Python não integram com esse mecanismo. A hierarquia `NetworkError → HTTPRequestError / HTTPResponseError` é o equivalente pythônico direto.
+
+---
+
+**P: O que é esse `TYPE_CHECKING`?**
+
+É uma constante de `typing` que vale `False` em runtime e `True` apenas quando ferramentas de análise estática (mypy, Pylance) estão verificando tipos. Usado com `if TYPE_CHECKING: from módulo import Tipo` para importar tipos apenas na análise — nunca em execução — quebrando importações circulares. No contexto do design proposto, não era necessário: não havia ciclo real entre `_config.py` e `_client.py`. Foi removido em favor de import direto, que é sempre preferível quando não há ciclo.
+
+---
+
+**P: Por que aspas no tipo ao invés do tipo direto? Exemplo: `response: "HTTPResponse"`**
+
+As aspas criam uma *forward reference* — o Python trata o tipo como string e não tenta resolvê-lo imediatamente. Útil em um único caso legítimo: referenciar uma classe dentro da própria definição dela (ex: `next: "Node | None"` dentro de `class Node`), quando a classe ainda não terminou de ser definida. Fora isso, se o tipo vem de outro arquivo, basta importar e usar diretamente. As aspas no documento foram descuido — foram removidas e substituídas por imports diretos.
+
+---
+
+**P: O que é `T = TypeVar("T")`?**
+
+É a forma do Python 3.12- de declarar um tipo genérico — equivalente ao `<T>` do Swift. Cria um placeholder que representa "algum tipo definido na chamada". Em `entity(self, cls: Type[T]) -> T`, garante que o tipo recebido e o tipo retornado são o mesmo: se passar `Pedido`, recebe `Pedido`, não `Any`. A diferença pro Swift é que Python precisa receber a classe explicitamente como parâmetro (`cls`) porque não tem inferência nesse nível. No Python 3.13 (versão do projeto), a sintaxe moderna elimina o `TypeVar`: `def entity[T](self, cls: type[T]) -> T` — sem imports adicionais.
+
+---
+
+**P: A configuração do WireMock precisa ser necessariamente no arquivo main ou poderia estar em outro local?**
+
+Pode estar em qualquer lugar — `configure()` e `override()` apenas alteram variáveis globais do módulo, então qualquer código que rode antes do primeiro request pode chamá-las. O `__main__.py` é a sugestão mais comum por ser o ponto de entrada, mas não é obrigatório. Casos comuns: arquivo de configuração de ambiente, setup de testes via `conftest.py` (com `yield` + `clear_override()` para garantir limpeza mesmo em falha), ou menu interno de dev. A única regra real é: quem chama `override()` é responsável por chamar `clear_override()` depois.
