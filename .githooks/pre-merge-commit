@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# Roda isort antes de finalizar um merge commit.
+
+source venv/bin/activate
+
+if ! command -v isort &> /dev/null; then
+    echo "isort não encontrado — instalando deps de dev..."
+    pip install -e ".[dev]"
+fi
+
+echo "Rodando isort..."
+isort .
+
+if ! git diff --quiet; then
+    echo "isort reorganizou imports. Revise e commite as mudanças antes de continuar o merge."
+    exit 1
+fi
+
+echo "isort OK."

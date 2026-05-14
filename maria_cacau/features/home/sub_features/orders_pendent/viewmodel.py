@@ -2,8 +2,8 @@
 
 from concurrent.futures import ThreadPoolExecutor
 
-from .use_case import OrdersUseCase
 from .signals import signals
+from .use_case import OrdersUseCase
 
 
 class OrdersViewModel():

@@ -8,6 +8,7 @@ from pandas import DataFrame
 from maria_cacau.core.sheets.handlers.cadastro import CadastroAnalyseHandler
 from maria_cacau.core.sheets.service import service
 
+
 class SheetsManager:
     def __init__(self) -> None:
         self._cadastro: CadastroAnalyseHandler = None

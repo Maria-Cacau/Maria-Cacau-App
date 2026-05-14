@@ -1,12 +1,11 @@
 """POC — date picker moderno com QDateEdit + QSS."""
 
 import sys
+
 from PyQt6.QtCore import QDate
 from PyQt6.QtGui import QFont
-from PyQt6.QtWidgets import (
-    QApplication, QDateEdit, QHBoxLayout, QLabel,
-    QPushButton, QVBoxLayout, QWidget,
-)
+from PyQt6.QtWidgets import (QApplication, QDateEdit, QHBoxLayout, QLabel,
+                             QPushButton, QVBoxLayout, QWidget)
 
 _QSS_FIELD = """
     QDateEdit {

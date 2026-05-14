@@ -12,6 +12,7 @@ from google.oauth2.service_account import Credentials
 from maria_cacau.core.observability import AppEvent, observability
 from maria_cacau.core.storage.security import SecurityStorage
 
+
 def _parse_date(s: str) -> datetime:
     for fmt in ('%d/%m/%y', '%d/%m/%Y'):
         try:

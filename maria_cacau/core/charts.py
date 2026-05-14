@@ -4,6 +4,7 @@ import re
 from enum import Enum, auto
 
 import matplotlib
+
 matplotlib.use('QtAgg')
 
 import seaborn as sns
@@ -76,6 +77,7 @@ class ChartWidget(QWidget):
 
     def copy_to_clipboard(self) -> None:
         from io import BytesIO
+
         from PyQt6.QtGui import QImage
         from PyQt6.QtWidgets import QApplication
         buf = BytesIO()

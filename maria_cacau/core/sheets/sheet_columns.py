@@ -2,6 +2,7 @@
 
 from enum import Enum
 
+
 class SheetColumns(Enum):
     DELIVERY_TYPE = "modalidade"
     PAYMENT_PENDENT = "quanto\nfalta\npagar?"

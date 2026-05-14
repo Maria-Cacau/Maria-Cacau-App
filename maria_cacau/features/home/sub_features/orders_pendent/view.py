@@ -11,6 +11,7 @@ from maria_cacau.assets import strings
 from maria_cacau.core.charts import ChartType, ChartWidget
 from maria_cacau.design_system.aux_widgets import AuxWidgets
 from maria_cacau.design_system.gui_popup import GuiPopup
+
 from .models import OrdersModel
 
 
