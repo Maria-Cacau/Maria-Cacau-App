@@ -523,3 +523,25 @@ As aspas criam uma *forward reference* — o Python trata o tipo como string e n
 **P: A configuração do WireMock precisa ser necessariamente no arquivo main ou poderia estar em outro local?**
 
 Pode estar em qualquer lugar — `configure()` e `override()` apenas alteram variáveis globais do módulo, então qualquer código que rode antes do primeiro request pode chamá-las. O `__main__.py` é a sugestão mais comum por ser o ponto de entrada, mas não é obrigatório. Casos comuns: arquivo de configuração de ambiente, setup de testes via `conftest.py` (com `yield` + `clear_override()` para garantir limpeza mesmo em falha), ou menu interno de dev. A única regra real é: quem chama `override()` é responsável por chamar `clear_override()` depois.
+
+---
+
+## Sessão — Mai/2026 (Setup: isort, deps de dev e git hooks)
+
+---
+
+**P: Como instalar as dependências de desenvolvimento definidas em `pyproject.toml`? O `build.sh` não estava fazendo isso.**
+
+`pip install -e .` instala apenas as dependências da seção `[project.dependencies]`. Para instalar os extras declarados em `[project.optional-dependencies]`, é necessário nomear o grupo: `pip install -e ".[dev]"`. Para múltiplos grupos: `pip install -e ".[dev,build]"`. O `build.sh` foi atualizado para usar `".[dev]"`.
+
+---
+
+**P: Quais tipos de hooks o git oferece?**
+
+Os hooks são divididos por contexto. **Commit**: `pre-commit`, `prepare-commit-msg`, `commit-msg`, `post-commit`. **Push**: `pre-push`. **Merge/Rebase**: `pre-merge-commit`, `post-merge`, `pre-rebase`. **Checkout**: `post-checkout`. **Server-side**: `pre-receive`, `update`, `post-receive`. Não existe hook `pre-merge` — o mais próximo de "antes de abrir PR" é o `pre-push` (roda antes do push ao remote); para garantir que o merge local esteja limpo, o correto é `pre-merge-commit`.
+
+---
+
+**P: Dentro de um git hook, precisa ativar o venv antes de rodar comandos Python?**
+
+Sim. O git executa hooks em um subshell sem qualquer ativação de ambiente virtual — `isort` e `pip` resolveriam para as versões do sistema (ou não encontrariam o comando). A solução é adicionar `source venv/bin/activate` no início do hook para garantir que os binários corretos do projeto sejam usados.
