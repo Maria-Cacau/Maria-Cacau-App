@@ -9,16 +9,6 @@ from pandas import DataFrame
 from maria_cacau.core import errors
 from maria_cacau.design_system.gui_popup import GuiPopup
 
-
-def _parse_date(s: str) -> datetime:
-    for fmt in ('%d/%m/%y', '%d/%m/%Y'):
-        try:
-            return datetime.strptime(s, fmt)
-        except ValueError:
-            continue
-    return datetime.min
-
-
 class CadastroAnalyseHandler:
     def __init__(self, raw_rows: list, show_popup: bool = True) -> None:
         self._popup = GuiPopup()
@@ -31,9 +21,6 @@ class CadastroAnalyseHandler:
             "pula modal": ['motoboy', 'guarita', 'feira', 'fabrica', 'entrega'],
             "entrega":    ['pedido', 'destinatário', 'modalidade', 'tel', 'quanto\nfalta\npagar?', 'data'],
             "produtos":   ['pedido', 'data', 'modalidade', 'tel', 'q1', 'prod1', 'q2', 'prod2', 'q3', 'prod3', 'q4', '-', 'q5', 'prod5', 'q6', 'prod6', 'q7', 'prod7', 'outro\nespec.'],
-            "belga":      ['prod1', 'prod2', 'prod3', '-', 'prod5', 'prod6', 'prod7', 'outro\nespec.', 'modalidade', 'evento'],
-            "gsage":      ['destinatário', 'cpf', 'email', 'cep', 'rua', 'compl.', 'bairro', 'cidade', '$frete', 'total', 'belga', 'pedido', 'modalidade', 'tel'],
-            "glbl":       ["NOME", "CPF", "EMAIL", "CEP", "RUA", "COMPL", "BAIRRO", "CIDADE", "FRETE", "TOTAL", "BELGA?", "PEDIDO", "ENTREGA", "TEL"],
         }
 
         all_cols = list(set(
@@ -74,22 +61,12 @@ class CadastroAnalyseHandler:
     def get_dates(self) -> dict:
         return self.dtsPed
 
-    ## Método especial: Pega as N datas mais recentes
-    def get_recent_dates(self, n: int = 20) -> dict:
-        keys = sorted(self.dtsPed, key=_parse_date)[-n:]
-        return {k: self.dtsPed[k] for k in keys}
-
     ## Método especial: Devolve a planilha filtrada por data
     def get_data(self, l_: list, d_: str) -> DataFrame:
         if d_ in self.arqUsados:
             return self.arqUsados[d_][l_]
         self.arqUsados[d_] = self.arq[self.arq['data'].str[:10] == d_].reset_index(drop=True)
         return self.arqUsados[d_][l_]
-
-    ## Método especial: Devolve a planilha filtrada com exceções a mais
-    def get_dados(self, l_: list, d_: str) -> DataFrame:
-        arq = self.get_data(l_, d_)
-        return arq.loc[(arq['modalidade'] != 'MOTOBOY') & (arq['evento'] != 'Amostras')].reset_index(drop=True).drop(columns=['evento'])
 
     @staticmethod
     def _normalize_headers(headers: list) -> list:
