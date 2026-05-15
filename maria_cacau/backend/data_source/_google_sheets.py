@@ -20,12 +20,10 @@ class GoogleSheetsDataSource:
         self._sheet_id: str | None          = None
         self._vm: _SheetsViewModel | None   = None
 
-    # ── Estado ────────────────────────────────────────────────────────────
+    ### Protocol
 
     def is_ready(self) -> bool:
         return self._vm is not None
-
-    # ── Ciclo de vida ─────────────────────────────────────────────────────
 
     def set_credentials(self, raw_json: str) -> None:
         with _guard.authentication():
@@ -41,8 +39,6 @@ class GoogleSheetsDataSource:
         if self._client is not None:
             self._setup_vm()
 
-    # ── Dados ─────────────────────────────────────────────────────────────
-
     def fetch_orders_by_date(self, date: str) -> list[dict]:
         _guard.validate_date(date)
         return self._vm.fetch({date})
@@ -53,7 +49,7 @@ class GoogleSheetsDataSource:
         _guard.validate_date_range(start, end)
         return self._vm.fetch(utils.date_range(start, end))
 
-    # ── Interno ───────────────────────────────────────────────────────────
+    ### Interno
 
     def _setup_vm(self) -> None:
         self._vm = _SheetsViewModel(self._client, self._sheet_id)
