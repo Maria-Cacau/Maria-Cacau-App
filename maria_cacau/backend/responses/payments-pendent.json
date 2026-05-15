@@ -63,7 +63,7 @@
             "delivery": {
                 "date": "30/04/26",
                 "type": "MOTOBOY",
-                "recipient_name": "João Silva",
+                "receiver_name": "João Silva",
                 "address": {
                     "street": "Rua das Flores",
                     "number": "123",
