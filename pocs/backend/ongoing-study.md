@@ -24,17 +24,16 @@ O problema que motivou o backend: as features conhecem `SheetColumns`, `pandas.D
 |---|---|
 | Definir arquitetura e decisões | Concluído |
 | Definir contratos JSON (responses + schemas) | Concluído |
-| Criar `models/order.py` | Concluído |
-| Definir endpoints e responsabilidades | Concluído |
 | Implementar `data_source/` | Concluído |
-| Criar `repositories/sheets_repository.py` | Pendente |
-| Criar `services/payments_service.py` + `PaymentsMapper` | Pendente |
-| Criar `services/deliveries_service.py` + `DeliveriesMapper` | Pendente |
-| Criar `routes/orders.py` | Pendente |
+| Criar `shared/models.py` (dataclasses do domínio) | Concluído |
+| Criar `shared/mapper.py` (`OrderMapper`) | Concluído |
+| Criar `subfeatures/deliveries/` (repo + service + route) | Concluído |
+| Criar `subfeatures/payments/` (repo + service) | Concluído (service pendente de testes reais) |
+| Criar `subfeatures/payments/route.py` | Concluído (stub) |
+| Criar `subfeatures/summary/` (repo + service + route) | Pendente |
 | Criar `routes/auth.py` | Pendente |
 | Criar `routes/source.py` | Pendente |
 | Criar `routes/status.py` | Pendente |
-| Criar `_server.py` | Pendente |
 | Criar contrato de erros | Pendente |
 | Migrar `orders_pendent` para usar o backend | Pendente |
 
@@ -48,12 +47,12 @@ Feature (use_case)
     │  API call via LocalClient
     ▼
 ┌──────────┐
-│  Route   │  Só HTTP: parseia params, valida conexão, chama service + mapper, devolve response
+│  Route   │  Só HTTP: parseia params, valida conexão via before_request, chama service + mapper, devolve jsonify
 └────┬─────┘
      │
      ▼
 ┌─────────────────┐
-│ Service + Mapper │  Regra de negócio → monta Order objects → Mapper serializa
+│ Service + Mapper │  Regra de negócio → filtra/agrupa DataFrame → monta objetos de domínio → Mapper serializa
 └────────┬─────────┘
          │
          ▼
@@ -69,9 +68,9 @@ Feature (use_case)
 
 **Regras de cada camada:**
 - **Route:** zero lógica. Valida conexão via `before_request`, chama service, chama mapper, devolve `jsonify`.
-- **Service:** recebe DataFrame, aplica regras de negócio, monta `Order` objects.
-- **Mapper:** transforma `list[Order]` em dict JSON-ready (`dataclasses.asdict`). Fica no mesmo arquivo do service.
-- **Repository:** recebe `list[dict]` do data source, converte para `DataFrame`. Único lugar que conhece as colunas.
+- **Service:** recebe DataFrame, aplica regras de negócio, monta objetos de domínio via `OrderMapper`.
+- **Mapper:** transforma resultado do service em dict JSON-ready (`dataclasses.asdict`). Fica no mesmo arquivo do service.
+- **Repository:** recebe `list[dict]` do data source, converte para `DataFrame` com cast numérico das colunas do seu domínio.
 - **DataSource:** acessa a planilha com otimização de dois passes. Retorna `list[dict]` neutro.
 
 ---
@@ -80,86 +79,136 @@ Feature (use_case)
 
 ```
 maria_cacau/backend/
-├── __init__.py                     # exporta só BackendServer
+├── __init__.py
 ├── _server.py                      # BackendServer — Flask app + blueprints + execute()
 ├── data_source/
-│   ├── __init__.py                 # exporta data_source, DataSourceProtocol, SheetCols, ProductCols, PaymentCols, SheetTabs
+│   ├── __init__.py                 # exporta data_source, DataSourceProtocol, SheetCols, ProductCols, PaymentCols, SheetTabs, PAYMENT_SLOTS, PRODUCT_SLOTS
 │   ├── _google_sheets.py           # GoogleSheetsDataSource — stateless, sem acesso a disco
 │   ├── _viewmodel.py               # _SheetsViewModel — schema cacheado, prewarm, fetch com dois passes
 │   ├── _protocol.py                # DataSourceProtocol — contrato agnóstico de fonte de dados
 │   ├── _utils.py                   # funções puras: normalize_date, to_dicts, to_ranges, date_range
 │   ├── _helper.py                  # ponte com core/storage — usado pelas routes (auth/source), não pelo DataSource
-│   ├── sheet_mapper.py             # SheetCols, ProductCols, PaymentCols, SheetTabs — enums de colunas/tabs
+│   ├── sheet_mapper.py             # SheetCols, ProductCols, PaymentCols, SheetTabs, PAYMENT_SLOTS, PRODUCT_SLOTS
 │   └── errors/
 │       ├── _errors.py              # exceções tipadas (DataSourceError como base)
 │       └── _handler.py             # _SheetsGuard (context managers + validações) + decorators handle_api
-├── models/
+├── utils/
 │   ├── __init__.py
-│   └── order.py                    # Address, Event, Customer, Receiver, Customization,
-│                                   # ProductItem, PaymentItem, Financial, Delivery, Order
-├── routes/
-│   ├── __init__.py
-│   ├── status.py                   # GET /status
-│   ├── auth.py                     # POST /auth, DELETE /auth
-│   ├── source.py                   # POST /source, GET /source, PUT /source/{id}, DELETE /source/{id}
-│   └── orders.py                   # GET /orders, GET /orders/deliveries, GET /orders/payments-pendent
-├── services/
-│   ├── __init__.py
-│   ├── payments_service.py         # PaymentsService + PaymentsMapper
-│   └── deliveries_service.py       # DeliveriesService + DeliveriesMapper
-├── repositories/
-│   ├── __init__.py
-│   └── sheets_repository.py        # SheetsRepository — list[dict] → DataFrame
-└── schemas/
-    ├── shared.schema.json
-    ├── order.schema.json
-    ├── deliveries.schema.json
-    └── payments-pendent.schema.json
+│   └── numbers.py                  # normalize_decimal — converte número BR → EN (ex: "1.234,56" → "1234.56")
+├── features/
+│   ├── __init__.py                 # re-exporta todos os blueprints (ponto de entrada do _server.py)
+│   └── orders/
+│       ├── __init__.py             # re-exporta blueprints de subfeatures
+│       ├── schemas/
+│       │   └── shared.schema.json  # tipos compartilhados do domínio (Address, Customer, Financial, etc.)
+│       ├── shared/
+│       │   ├── __init__.py
+│       │   ├── models.py           # dataclasses: Order, Customer, Receiver, Delivery, Financial, etc.
+│       │   └── mapper.py           # OrderMapper.to_model(row) — converte Series → Order
+│       └── subfeatures/
+│           ├── __init__.py         # re-exporta blueprints de cada subfeature
+│           ├── deliveries/
+│           │   ├── __init__.py
+│           │   ├── models.py       # DeliveryTypeCount, DeliveriesSummary
+│           │   ├── repository.py   # DeliveriesRepository — fetch por data, sem cast numérico
+│           │   ├── service.py      # DeliveriesService + DeliveriesMapper
+│           │   ├── route.py        # deliveries_bp — GET /orders/deliveries
+│           │   └── response/
+│           │       ├── schema.json
+│           │       └── example.json
+│           ├── payments/
+│           │   ├── __init__.py
+│           │   ├── repository.py   # PaymentsRepository — cast numérico de financeiro + produtos + parcelas
+│           │   ├── service.py      # PaymentsService + PaymentsMapper
+│           │   ├── route.py        # payments_bp — GET /orders/payments-pendent
+│           │   └── response/
+│           │       ├── schema.json
+│           │       └── example.json
+│           └── summary/
+│               ├── __init__.py
+│               ├── repository.py   # OrdersRepository — fetch por período (pendente)
+│               ├── service.py      # OrdersService + OrdersMapper (pendente)
+│               ├── route.py        # orders_bp — GET /orders (pendente)
+│               └── response/
+│                   ├── schema.json
+│                   └── example.json
 ```
 
 ---
 
 ## Rotas Definidas
 
-| Método | Path | Responsabilidade |
-|---|---|---|
-| `GET` | `/status` | Estado geral — autenticado + planilha configurada |
-| `POST` | `/auth` | Recebe JSON bruto das credenciais, autentica o DataSource |
-| `DELETE` | `/auth` | Limpa credenciais salvas no disco |
-| `POST` | `/source` | Registra nova planilha (nome + sheet_id) |
-| `GET` | `/source` | Lista todas as planilhas salvas |
-| `PUT` | `/source/{sheet_id}` | Seleciona a planilha ativa no DataSource |
-| `DELETE` | `/source/{sheet_id}` | Remove planilha da lista salva |
-| `GET` | `/orders/payments-pendent` | Pedidos com pagamento pendente por data |
-| `GET` | `/orders/deliveries` | Contagem de entregas por data |
-| `GET` | `/orders` | Pedidos por período (range de datas) |
+| Método | Path | Blueprint | Status |
+|---|---|---|---|
+| `GET` | `/status` | — | Pendente |
+| `POST` | `/auth` | — | Pendente |
+| `DELETE` | `/auth` | — | Pendente |
+| `POST` | `/source` | — | Pendente |
+| `GET` | `/source` | — | Pendente |
+| `PUT` | `/source/{sheet_id}` | — | Pendente |
+| `DELETE` | `/source/{sheet_id}` | — | Pendente |
+| `GET` | `/orders/payments-pendent` | `payments_bp` | Implementado |
+| `GET` | `/orders/deliveries` | `deliveries_bp` | Implementado |
+| `GET` | `/orders` | `orders_bp` | Pendente |
 
 ---
 
-## Validação de Conexão (before_request)
+## Padrões Estabelecidos
 
-Antes de qualquer rota de dados, o Blueprint valida se o data source está pronto:
+### Blueprint re-export chain
+
+Cada nível de `__init__.py` re-exporta os blueprints do nível abaixo. O `_server.py` só conhece `features`:
 
 ```python
-@orders_bp.before_request
-def check_connection():
-    if not data_source.is_ready():
-        return jsonify({"code": "SHEET_NOT_CONNECTED", ...}), 503
+# _server.py
+from .features import deliveries_bp, payments_bp, orders_bp
 ```
 
-Registrado uma vez por Blueprint — todas as rotas ganham a validação automaticamente.
+Ao adicionar uma nova subfeature, basta registrá-la em `subfeatures/__init__.py` — o restante da cadeia propaga automaticamente.
+
+### Repository por subfeature
+
+Cada subfeature tem seu próprio repository. O repository é o único lugar que:
+- Chama o data source
+- Converte `list[dict]` → `DataFrame`
+- Faz cast numérico das colunas **do seu domínio**
+
+`PaymentsRepository` converte financeiro, produtos e parcelas. `DeliveriesRepository` retorna o DataFrame bruto (sem cast, pois não precisa de números).
+
+### OrderMapper
+
+`shared/mapper.py` centraliza a conversão de uma linha do DataFrame em um `Order` completo. Evita duplicação entre subfeatures que precisam do model completo:
+
+```python
+# Em qualquer service de orders:
+return [OrderMapper.to_model(row) for _, row in df.iterrows()]
+```
+
+### Slots de produto e pagamento
+
+Constantes `PAYMENT_SLOTS = 6` e `PRODUCT_SLOTS = 7` em `sheet_mapper.py`, exportadas pelo `data_source/__init__.py`. Qualquer `range` que itere slots usa essas constantes — fonte única de verdade.
+
+### normalize_decimal
+
+`utils/numbers.py` centraliza a conversão de formato numérico BR → EN. Usada nos repositories para cast de colunas monetárias:
+
+```python
+df[col].astype(str).apply(normalize_decimal)  # "1.234,56" → "1234.56"
+```
+
+### Estrutura de contratos por subfeature
+
+Cada subfeature tem uma pasta `response/` com:
+- `schema.json` — contrato JSON Schema da response
+- `example.json` — exemplo de payload real
+
+Tipos compartilhados (Address, Customer, etc.) ficam em `orders/schemas/shared.schema.json`.
 
 ---
 
 ## GoogleSheetsDataSource
 
 Vive em `data_source/_google_sheets.py`. Singleton exposto como `data_source: Final` no `__init__.py` do pacote.
-
-**Responsabilidades:**
-- Receber credenciais e autenticar com Google (em memória, sem tocar disco)
-- Guardar o `sheet_id` ativo em memória
-- Disparar prewarm em background quando ambos estiverem prontos
-- Delegar acesso à planilha para `_SheetsViewModel`
 
 **Métodos públicos (DataSourceProtocol):**
 
@@ -171,124 +220,34 @@ Vive em `data_source/_google_sheets.py`. Singleton exposto como `data_source: Fi
 | `fetch_orders_by_date(date)` | Delega para `_vm.fetch({date})` |
 | `fetch_orders_by_period(start, end)` | Delega para `_vm.fetch(date_range)` |
 
-**Fluxo de inicialização (responsabilidade do cliente/feature):**
-```
-App inicia
-  → feature lê credenciais do disco (_helper.read_credentials)
-  → POST /auth  → set_credentials(raw_json) → _client em memória
-  → feature lê sheet_id do disco (_helper.read_sheets)
-  → PUT /source/{id} → set_sheet(id) → _vm criado + prewarm em background
-  → GET /status → is_ready() == True
-```
-
-**_SheetsViewModel (interno):**
-- Criado por `_setup_vm()` quando ambos `_client` e `_sheet_id` estão disponíveis
-- Cacheia `_header` e `_data_col` na primeira chamada; no-op nas seguintes
-- `prewarm()` abre a planilha em background e já popula o cache de schema
-- `fetch(dates)` faz os dois passes: lê coluna DATA → batch_get nas linhas alvo
-
-**Dois passes (otimização de API):**
-1. Usa schema cacheado para localizar índice da coluna DATA
-2. Lê só a coluna DATA (leve) e identifica linhas das datas pedidas
-3. `batch_get` apenas nessas linhas, em lotes de até 100 ranges
-
----
-
-## SheetsRepository
-
-Vive em `repositories/sheets_repository.py`. Recebe `list[dict]` do data source e entrega `DataFrame` para os services.
-
-**Métodos:**
-
-| Método | Descrição |
-|---|---|
-| `get_cadastro_by_date(date) -> DataFrame` | usado por payments-pendent e deliveries |
-| `get_cadastro_by_period(start, end) -> DataFrame` | usado por orders |
-
-Único lugar que importa `SheetCols`, `ProductCols`, `PaymentCols`.
-
----
-
-## Padrão Mapper
-
-Cada service tem uma classe Mapper no mesmo arquivo:
-
-```python
-class PaymentsMapper:
-    @staticmethod
-    def to_response(orders: list[Order]) -> dict:
-        return {"total": len(orders), "orders": [dataclasses.asdict(o) for o in orders]}
-
-class PaymentsService:
-    def get_pendent(self, date: str) -> list[Order]: ...
-```
-
----
-
-## Como o Roteamento Funciona
-
-Flask com `test_client()` — in-process, sem servidor HTTP real (Abordagem A):
-
-```python
-class BackendServer:
-    def execute(self, request: HTTPRequest) -> HTTPResponse:
-        flask_response = _flask_client.open(
-            request.path,
-            method=request.method,
-            query_string=request.params,
-            json=request.body,
-        )
-        return HTTPResponse(
-            status_code=flask_response.status_code,
-            headers=dict(flask_response.headers),
-            body=flask_response.data,
-        )
-```
-
----
-
-## Contrato de Erros
-
-```json
-{
-  "code": "SHEET_NOT_CONNECTED",
-  "user_message": "Planilha não configurada.",
-  "dev_message": "GoogleSheetsDataSource.is_ready() returned False"
-}
-```
-
-- Erros do backend → `HTTPResponse` com status 4xx/5xx
-- Erros da feature → tratados no `use_case` da feature
-
 ---
 
 ## Decisões Arquiteturais
 
 - **Isolamento total:** backend não importa nada de `maria_cacau.*` exceto `core/storage`
-- **Backend stateless:** `GoogleSheetsDataSource` não lê nem escreve disco. Persistência é responsabilidade do cliente (feature/route)
-- **`_helper.py` nas routes:** leitura/escrita de credenciais e planilhas no disco acontece nas routes `auth` e `source`, não no DataSource
-- **`set_credentials(raw_json)`:** recebe o JSON bruto, não o path do arquivo. Quem lê o arquivo é a feature antes de chamar `POST /auth`
-- **`_SheetsViewModel` separado:** mantém `GoogleSheetsDataSource` limpo com só o contrato público; toda lógica de acesso à planilha fica na viewmodel
-- **Schema cacheado na viewmodel:** `_header` e `_data_col` são lidos uma vez e reutilizados. Invalidados quando `set_sheet` é chamado com nova planilha
-- **Prewarm via `set_sheet`:** disparado em background quando ambos client e sheet_id estão prontos; aproveita para popular o cache de schema
-- **Roteamento Flask (Abordagem A):** `test_client()` in-process. Abordagem B (match/case) foi considerada e descartada — ver `pocs/backend/routes-design.md`
-- **Retorno `list[dict]`:** data source retorna formato neutro — funciona para Sheets, SQL ou qualquer fonte futura
-- **Tratamento de erros em `errors/`:** DataSource não tem `try/except`. Mapeamento fica em `_SheetsGuard` (context managers) e decorator `handle_api`. `_prewarm` é a única exceção — silencia erros pois é otimização
+- **Feature-based, não layer-based:** organização por domínio (`features/orders/subfeatures/`) em vez de por responsabilidade técnica (`services/`, `repositories/`). Cada feature tem tudo que precisa dentro da sua pasta
+- **`subfeatures/` dentro de `orders/`:** `deliveries`, `payments` e `summary` são projeções do mesmo domínio de pedidos — agrupados sob `orders/` com nível `subfeatures/` para deixar `orders/` livre para `shared/`, `schemas/` e futuros `create/`, `update/`
+- **`shared/` em vez de `models/`:** nome comunica que os arquivos são compartilhados entre subfeatures. `models.py` + `mapper.py` em vez de `order.py` + `order_mapper.py` — contexto vem da pasta pai
+- **Repository por subfeature, não compartilhado:** cada subfeature tem seu repository com o cast específico do seu domínio. Evita um repository-deus que conhece todos os campos
+- **`OrderMapper` compartilhado:** a conversão `Series → Order` é genérica e reutilizada por qualquer subfeature que precise do model completo
+- **`__init__.py` chain para blueprints:** `subfeatures/__init__` → `orders/__init__` → `features/__init__`. `_server.py` só importa de `features`
+- **Backend stateless:** `GoogleSheetsDataSource` não lê nem escreve disco. Persistência é responsabilidade das routes `auth` e `source`
+- **`set_credentials(raw_json)`:** recebe o JSON bruto, não o path do arquivo
+- **Roteamento Flask (Abordagem A):** `test_client()` in-process — ver `pocs/backend/routes-design.md`
+- **Retorno `list[dict]`:** data source retorna formato neutro — agnóstico de fonte de dados
+- **Tratamento de erros em `errors/`:** DataSource sem `try/except`. Mapeamento em `_SheetsGuard` + decorator `handle_api`
 
 ---
 
 ## Próximos Passos (ordem sugerida)
 
-1. Implementar `repositories/sheets_repository.py` — converte `list[dict]` em `DataFrame`, importa colunas do `data_source`
-2. Criar `services/deliveries_service.py` + `DeliveriesMapper`
-3. Criar `services/payments_service.py` + `PaymentsMapper`
-4. Criar `routes/orders.py` — Blueprint com `before_request` + três endpoints
-5. Criar `routes/auth.py` — `POST /auth` lê arquivo + chama `set_credentials`; `DELETE /auth` limpa disco
-6. Criar `routes/source.py` — CRUD de planilhas usando `_helper` + `set_sheet`
-7. Criar `routes/status.py` — retorna `is_ready()` + info de conexão
-8. Criar `_server.py` — Flask app + blueprints + `BackendServer`
-9. Definir contrato de erros JSON (mapeamento DataSourceError → HTTP status)
-10. Migrar `orders_pendent` — limpar `use_case`, reescrever `repository`
+1. Implementar `subfeatures/summary/service.py` — resumo de pedidos por período
+2. Criar `routes/auth.py` — `POST /auth` + `DELETE /auth`
+3. Criar `routes/source.py` — CRUD de planilhas
+4. Criar `routes/status.py` — `GET /status`
+5. Registrar rotas de infra (`auth`, `source`, `status`) no `_server.py`
+6. Definir contrato de erros JSON (mapeamento `DataSourceError` → HTTP status)
+7. Migrar `orders_pendent` — limpar `use_case`, reescrever `repository`
 
 ---
 
@@ -297,9 +256,8 @@ class BackendServer:
 - `pocs/backend/routes-design.md` — comparação Flask vs funções diretas (decisão: Flask)
 - `pocs/backend/poc-studies.md` — rascunho das classes (algumas decisões foram revisadas)
 - `pocs/modules/Network_Python_Design.md` — design do módulo network
-- `pocs/architecture/overview.md` — arquitetura geral do projeto
-- `maria_cacau/backend/models/order.py` — dataclasses do domínio
-- `maria_cacau/backend/data_source/sheet_mapper.py` — mapeamento de colunas/tabs
-- `maria_cacau/backend/schemas/` — JSON Schema dos contratos
-- `maria_cacau/backend/responses/` — exemplos de response
+- `maria_cacau/backend/features/orders/shared/models.py` — dataclasses do domínio
+- `maria_cacau/backend/features/orders/shared/mapper.py` — OrderMapper
+- `maria_cacau/backend/data_source/sheet_mapper.py` — mapeamento de colunas/tabs + slots
+- `maria_cacau/backend/features/orders/schemas/shared.schema.json` — JSON Schema compartilhado
 - `maria_cacau/features/home/sub_features/orders_pendent/` — primeira feature a migrar

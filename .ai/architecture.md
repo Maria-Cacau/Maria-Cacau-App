@@ -196,6 +196,47 @@ Módulo `maria_cacau/core/charts.py` — widget reutilizável baseado em `matplo
 Qualquer path de asset deve ser resolvido via `asset('images/foo.png')` de `maria_cacau/__init__.py`.
 Internamente usa `Path(__file__).parent / 'assets' / relative_path`, garantindo resolução correta tanto em dev quanto no `.exe` compilado pelo Nuitka.
 
+## Módulo Backend (`maria_cacau/backend/`)
+
+Backend local in-process baseado em Flask `test_client()`. Serve como camada de serviços entre as features da UI e o Google Sheets. Em desenvolvimento na branch `feat/backend`.
+
+**Fluxo:** `Feature → LocalClient → BackendServer → Route → Service → Repository → DataSource`
+
+### Organização interna
+
+```
+backend/
+├── _server.py              # BackendServer — Flask app + blueprints + execute()
+├── data_source/            # GoogleSheetsDataSource, protocol, enums de colunas, erros
+├── utils/                  # Utilitários compartilhados (ex: normalize_decimal)
+└── features/
+    └── orders/             # Domínio de pedidos
+        ├── shared/         # models.py (dataclasses) + mapper.py (OrderMapper)
+        ├── schemas/        # shared.schema.json — tipos JSON Schema compartilhados
+        └── subfeatures/
+            ├── deliveries/ # GET /orders/deliveries
+            ├── payments/   # GET /orders/payments-pendent
+            └── summary/    # GET /orders (pendente)
+```
+
+Cada subfeature tem `repository.py`, `service.py`, `route.py` e `response/` (schema + example).
+Rotas de infra (`auth`, `source`, `status`) entrarão em `features/auth/` e `features/sheets/` — fora de `orders/`.
+
+### Padrões do backend
+
+| Padrão | Descrição |
+|---|---|
+| **Repository por subfeature** | Cada repo faz cast numérico apenas das colunas do seu domínio |
+| **OrderMapper** | `shared/mapper.py` converte `Series → Order` — reutilizado por qualquer subfeature |
+| **Blueprint chain** | `subfeatures/__init__` → `orders/__init__` → `features/__init__`. `_server.py` importa só de `features` |
+| **`response/` por subfeature** | `schema.json` + `example.json` junto ao código da feature |
+| **Slots como constante** | `PAYMENT_SLOTS = 6` e `PRODUCT_SLOTS = 7` em `sheet_mapper.py` — fonte única de verdade |
+| **normalize_decimal** | `utils/numbers.py` — converte formato BR → EN para cast numérico |
+
+> Documentação detalhada: `pocs/backend/ongoing-study.md`
+
+---
+
 ## Fonte única de verdade
 - **Versão, ano e empresa** → `pyproject.toml` (`[project]` e `[tool.maria-cacau]`)
 - **Metadados do app** (nome exibido, copyright, ícones) → `maria_cacau/__init__.py` (lê do pyproject.toml)
