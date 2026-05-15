@@ -1,9 +1,14 @@
-"""Mapeamento das colunas da aba Cadastro da planilha."""
+"""Mapeamento de colunas e tabs da planílha."""
 
 from enum import StrEnum
 
 
-class Col(StrEnum):
+class SheetTabs(StrEnum):
+    """Tabs da planilha"""
+
+    DATABASE = "Cadastro"
+
+class SheetCols(StrEnum):
     """Colunas fixas da aba Cadastro, agrupadas por domínio."""
 
     # Identificação
@@ -51,7 +56,7 @@ class Col(StrEnum):
     MOTOBOY_INFO           = "info motoboy"
 
 
-class ProductCol(StrEnum):
+class ProductCols(StrEnum):
     """Colunas dos slots de produto (1–7). Usar com .slot(n)."""
 
     NAME  = "prod{}"
@@ -63,7 +68,7 @@ class ProductCol(StrEnum):
         return self.value.format(n)
 
 
-class PaymentCol(StrEnum):
+class PaymentCols(StrEnum):
     """Colunas das parcelas de pagamento (1–6). Usar com .slot(n)."""
 
     DATE      = "data {}ºpgto"
