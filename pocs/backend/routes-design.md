@@ -1,11 +1,12 @@
 # Routes Design — Abordagens Comparadas
 
 > Registro das abordagens analisadas para o roteamento do backend local.
-> Decisão final: **Abordagem B** (funções diretas + `match/case`).
+> Decisão final: **Abordagem A** (Flask com `test_client()`).
+> A Abordagem B foi considerada mas descartada — ver seção de decisão abaixo.
 
 ---
 
-## Abordagem A — Flask com `test_client()`
+## Abordagem A — Flask com `test_client()` ✅ Escolhida
 
 Usa o Flask real, mas sem `app.run()`. O roteamento é feito pelo próprio Flask via `test_client()`, que processa requests in-process (sem rede).
 
@@ -79,7 +80,7 @@ Dependência do Flask no projeto. Camada de conversão obrigatória: `flask.Resp
 
 ---
 
-## Abordagem B — Funções diretas + `match/case` ✅ Escolhida
+## Abordagem B — Funções diretas + `match/case` (considerada, não escolhida)
 
 Sem dependência externa. As funções de rota recebem params explicitamente e retornam `HTTPResponse` diretamente. O `BackendServer` roteia com `match/case`.
 
