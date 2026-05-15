@@ -2,6 +2,9 @@
 
 from enum import StrEnum
 
+PAYMENT_SLOTS = 6
+PRODUCT_SLOTS = 7
+
 
 class SheetTabs(StrEnum):
     """Tabs da planilha"""
