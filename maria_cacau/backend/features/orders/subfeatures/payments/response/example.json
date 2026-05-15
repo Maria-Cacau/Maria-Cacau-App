@@ -1,5 +1,5 @@
 {
-    "$schema": "../schemas/payments-pendent.schema.json",
+    "$schema": "./schema.json",
     "total": 1,
     "orders": [
         {

@@ -1,5 +1,5 @@
 {
-    "$schema": "../schemas/deliveries.schema.json",
+    "$schema": "./schema.json",
     "unique": 0,
     "total": 0,
     "deliveries": [

@@ -2,7 +2,7 @@
 
 from pandas import DataFrame
 
-from ..data_source import data_source
+from .....data_source import data_source
 
 
 class DeliveriesRepository:

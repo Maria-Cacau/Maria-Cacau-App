@@ -1,11 +1,13 @@
 from flask import Flask
 
-from .routes.orders import orders_bp
+from .features import deliveries_bp, payments_bp, orders_bp
 from ..core.network._request import HTTPRequest
 from ..core.network._response import HTTPResponse
 
 
 _app = Flask(__name__)
+_app.register_blueprint(deliveries_bp)
+_app.register_blueprint(payments_bp)
 _app.register_blueprint(orders_bp)
 _client = _app.test_client()
 
