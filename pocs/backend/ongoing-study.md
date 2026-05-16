@@ -29,12 +29,11 @@ O problema que motivou o backend: as features conhecem `SheetColumns`, `pandas.D
 | Criar `shared/mapper.py` (`OrderMapper`) | Concluído |
 | Criar `subfeatures/deliveries/` (repo + service + route) | Concluído |
 | Criar `subfeatures/payments/` (repo + service) | Concluído (service pendente de testes reais) |
-| Criar `subfeatures/payments/route.py` | Concluído (stub) |
-| Criar `subfeatures/summary/` (repo + service + route) | Pendente |
+| Criar `subfeatures/payments/route.py` | Concluído |
+| Criar `subfeatures/summary/` (repo + service + route) | Pendente (service não implementado) |
+| Definir contrato de erros (`backend/errors/`) | Concluído |
 | Criar `routes/auth.py` | Pendente |
 | Criar `routes/source.py` | Pendente |
-| Criar `routes/status.py` | Pendente |
-| Criar contrato de erros | Pendente |
 | Migrar `orders_pendent` para usar o backend | Pendente |
 
 ---
@@ -90,15 +89,19 @@ maria_cacau/backend/
 │   ├── _helper.py                  # ponte com core/storage — usado pelas routes (auth/source), não pelo DataSource
 │   ├── sheet_mapper.py             # SheetCols, ProductCols, PaymentCols, SheetTabs, PAYMENT_SLOTS, PRODUCT_SLOTS
 │   └── errors/
-│       ├── _errors.py              # exceções tipadas (DataSourceError como base)
+│       ├── _errors.py              # DataSourceError + subclasses DS01–DS18 (code, user_message, dev_message)
 │       └── _handler.py             # _SheetsGuard (context managers + validações) + decorators handle_api
+├── errors/
+│   ├── __init__.py                 # exporta BackendError + translate()
+│   ├── _errors.py                  # BackendError — contrato HTTP (code, user_message, dev_message, http_status, to_dict())
+│   └── _mapper.py                  # tabela {DataSourceError → http_status} + translate()
 ├── utils/
 │   ├── __init__.py
 │   └── numbers.py                  # normalize_decimal — converte número BR → EN (ex: "1.234,56" → "1234.56")
 ├── features/
-│   ├── __init__.py                 # re-exporta todos os blueprints (ponto de entrada do _server.py)
+│   ├── __init__.py                 # re-exporta orders_bp (ponto de entrada do _server.py)
 │   └── orders/
-│       ├── __init__.py             # re-exporta blueprints de subfeatures
+│       ├── __init__.py             # blueprint pai orders_bp — before_request (check_connection) + register sub-blueprints
 │       ├── schemas/
 │       │   └── shared.schema.json  # tipos compartilhados do domínio (Address, Customer, Financial, etc.)
 │       ├── shared/
@@ -126,9 +129,9 @@ maria_cacau/backend/
 │           │       └── example.json
 │           └── summary/
 │               ├── __init__.py
-│               ├── repository.py   # OrdersRepository — fetch por período (pendente)
-│               ├── service.py      # OrdersService + OrdersMapper (pendente)
-│               ├── route.py        # orders_bp — GET /orders (pendente)
+│               ├── repository.py   # OrdersRepository — fetch por período
+│               ├── service.py      # OrdersService + OrdersMapper (service pendente)
+│               ├── route.py        # summary_bp — GET /orders
 │               └── response/
 │                   ├── schema.json
 │                   └── example.json
@@ -138,33 +141,46 @@ maria_cacau/backend/
 
 ## Rotas Definidas
 
-| Método | Path | Blueprint | Status |
-|---|---|---|---|
-| `GET` | `/status` | — | Pendente |
-| `POST` | `/auth` | — | Pendente |
-| `DELETE` | `/auth` | — | Pendente |
-| `POST` | `/source` | — | Pendente |
-| `GET` | `/source` | — | Pendente |
-| `PUT` | `/source/{sheet_id}` | — | Pendente |
-| `DELETE` | `/source/{sheet_id}` | — | Pendente |
-| `GET` | `/orders/payments-pendent` | `payments_bp` | Implementado |
-| `GET` | `/orders/deliveries` | `deliveries_bp` | Implementado |
-| `GET` | `/orders` | `orders_bp` | Pendente |
+| Método | Path | Blueprint | Status | Descrição |
+|---|---|---|---|---|
+| `POST` | `/auth` | — | Pendente | Recebe JSON bruto das credenciais e autentica o DataSource |
+| `DELETE` | `/auth` | — | Pendente | Limpa credenciais salvas no disco |
+| `POST` | `/source` | — | Pendente | Registra nova planilha (nome + sheet_id) |
+| `GET` | `/source` | — | Pendente | Lista todas as planilhas salvas |
+| `PUT` | `/source/{sheet_id}` | — | Pendente | Seleciona a planilha ativa no DataSource |
+| `DELETE` | `/source/{sheet_id}` | — | Pendente | Remove planilha da lista salva |
+| `GET` | `/orders/payments-pendent` | `payments_bp` | Implementado | Pedidos com pagamento pendente (`amount_pendent > 0`) para uma data |
+| `GET` | `/orders/deliveries` | `deliveries_bp` | Implementado | Contagem de pedidos agrupada por tipo de entrega para uma data |
+| `GET` | `/orders` | `orders_bp` | Pendente | Resumo completo dos pedidos em um período (range de datas) |
 
 ---
 
 ## Padrões Estabelecidos
 
-### Blueprint re-export chain
+### Blueprint re-export chain com blueprint pai
 
-Cada nível de `__init__.py` re-exporta os blueprints do nível abaixo. O `_server.py` só conhece `features`:
+`orders/__init__.py` cria um blueprint pai `orders_bp` que agrega os três sub-blueprints. O `_server.py` registra só o pai:
+
+```python
+# orders/__init__.py
+orders_bp = Blueprint("orders", __name__)
+orders_bp.register_blueprint(deliveries_bp)
+orders_bp.register_blueprint(payments_bp)
+orders_bp.register_blueprint(summary_bp)
+
+@orders_bp.before_request
+def check_connection():
+    if not data_source.is_ready():
+        raise DataSourceNotReadyError()
+```
 
 ```python
 # _server.py
-from .features import deliveries_bp, payments_bp, orders_bp
+from .features import orders_bp
+_app.register_blueprint(orders_bp)
 ```
 
-Ao adicionar uma nova subfeature, basta registrá-la em `subfeatures/__init__.py` — o restante da cadeia propaga automaticamente.
+Ao adicionar uma nova subfeature de orders, basta registrá-la em `subfeatures/__init__.py` — ela herda automaticamente o `before_request` do pai. Rotas de infra (`auth`, `source`, `status`) serão registradas diretamente em `_server.py` e **não** herdam o `check_connection`.
 
 ### Repository por subfeature
 
@@ -230,12 +246,15 @@ Vive em `data_source/_google_sheets.py`. Singleton exposto como `data_source: Fi
 - **`shared/` em vez de `models/`:** nome comunica que os arquivos são compartilhados entre subfeatures. `models.py` + `mapper.py` em vez de `order.py` + `order_mapper.py` — contexto vem da pasta pai
 - **Repository por subfeature, não compartilhado:** cada subfeature tem seu repository com o cast específico do seu domínio. Evita um repository-deus que conhece todos os campos
 - **`OrderMapper` compartilhado:** a conversão `Series → Order` é genérica e reutilizada por qualquer subfeature que precise do model completo
-- **`__init__.py` chain para blueprints:** `subfeatures/__init__` → `orders/__init__` → `features/__init__`. `_server.py` só importa de `features`
+- **`__init__.py` chain para blueprints:** `subfeatures/__init__` → `orders/__init__` (blueprint pai) → `features/__init__`. `_server.py` só importa de `features`
+- **Blueprint pai para `orders/`:** `orders/__init__.py` cria `orders_bp` pai com `before_request`. Sub-blueprints herdam o check automaticamente. Rotas de infra entram direto no `_server.py` e não herdam o check.
 - **Backend stateless:** `GoogleSheetsDataSource` não lê nem escreve disco. Persistência é responsabilidade das routes `auth` e `source`
 - **`set_credentials(raw_json)`:** recebe o JSON bruto, não o path do arquivo
 - **Roteamento Flask (Abordagem A):** `test_client()` in-process — ver `pocs/backend/routes-design.md`
 - **Retorno `list[dict]`:** data source retorna formato neutro — agnóstico de fonte de dados
-- **Tratamento de erros em `errors/`:** DataSource sem `try/except`. Mapeamento em `_SheetsGuard` + decorator `handle_api`
+- **Contrato de erros em duas camadas:** `DataSourceError` carrega `code`, `user_message`, `dev_message` (agnóstico de transporte). `BackendError` em `backend/errors/` adiciona `http_status`. `_mapper.py` faz a tradução via tabela `{DataSourceError type → http_status}`. `@app.errorhandler(DataSourceError)` no `_server.py` captura tudo automaticamente.
+- **Códigos de erro `DS01–DS18`:** prefixo `DS` para DataSource, numerados na ordem de declaração em `_errors.py`. Quando o MySQL substituir o Google Sheets, novos erros entram com prefixo diferente (ex: `MY01`).
+- **`summary_bp` em vez de `orders_bp` no summary:** evita conflito de nome com o blueprint pai `orders_bp`. O path `/orders` não é afetado — o nome do blueprint é só identificador interno.
 
 ---
 
@@ -246,8 +265,7 @@ Vive em `data_source/_google_sheets.py`. Singleton exposto como `data_source: Fi
 3. Criar `routes/source.py` — CRUD de planilhas
 4. Criar `routes/status.py` — `GET /status`
 5. Registrar rotas de infra (`auth`, `source`, `status`) no `_server.py`
-6. Definir contrato de erros JSON (mapeamento `DataSourceError` → HTTP status)
-7. Migrar `orders_pendent` — limpar `use_case`, reescrever `repository`
+6. Migrar `orders_pendent` — limpar `use_case`, reescrever `repository`
 
 ---
 

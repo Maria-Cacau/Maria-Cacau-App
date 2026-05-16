@@ -677,3 +677,37 @@ Válido mas não convencional. Context manager em Python tem semântica forte de
 **P: O que é `@contextmanager`?**
 
 Decorator de `contextlib` que transforma uma função geradora em um context manager sem precisar implementar `__enter__` e `__exit__` manualmente. O código antes do `yield` roda no `__enter__`, o código depois roda no `__exit__`. Um `try/except` ao redor do `yield` captura exceções lançadas dentro do bloco `with`. Exemplo canônico da stdlib: `contextlib.suppress(FileNotFoundError)` — ignora a exceção especificada sem nenhum bloco extra. O `@contextmanager` é a alternativa legível a criar uma classe inteira só para gerenciar um recurso ou interceptar exceções.
+
+---
+
+## Sessão — Mai/2026 (Arquitetura: Contrato de erros e blueprint pai)
+
+---
+
+**P: Qual a boa prática em Python/Flask para criar um contrato de erros com as 4 informações (user_message, dev_message, http_status, error_code), considerando que o data source é isolado?**
+
+O equivalente ao protocolo Swift em Python é uma classe base com class-level attributes. Cada subclasse define os valores como atributos de classe — sem `__init__`, sem repetição. Flask oferece `@app.errorhandler(TipoDeErro)`: registrado uma vez no servidor, captura automaticamente qualquer exceção daquele tipo lançada em qualquer route da aplicação. O resultado é routes limpas sem `try/except` e sem `before_request` hardcoded. O `DataSourceError` deve carregar apenas os campos agnósticos de transporte (`code`, `user_message`, `dev_message`); o `http_status` fica em `BackendError` porque é um conceito HTTP — não pertence à camada de dados.
+
+---
+
+**P: Podemos usar duck typing — o DataSourceError ter os mesmos parâmetros que o BackendError para eliminar o translator?**
+
+Sim, funcionaria. O `@app.errorhandler(DataSourceError)` acessaria `e.code`, `e.user_message`, `e.dev_message`, `e.http_status` diretamente. O trade-off: `http_status` é um conceito HTTP dentro de uma camada que deveria ser agnóstica de transporte. Se o data source for substituído por MySQL ou usado em outro contexto (CLI, gRPC), os status codes HTTP são ruído. A decisão foi usar duck typing parcial: `DataSourceError` carrega os 3 campos agnósticos, e o translator adiciona apenas o `http_status`.
+
+---
+
+**P: O data source vai ser substituído por MySQL. Faz sentido o translator só para http_status, retornando -1 do lado do DataSource?**
+
+Sim — é a separação correta. `DataSourceError` carrega `code`, `user_message`, `dev_message` (agnósticos). O `backend/errors/_mapper.py` mantém uma tabela `{DataSourceError subclass → http_status}` e a função `translate()` monta o `BackendError` com os 4 campos. Quando o MySQL chegar: novas subclasses de `DataSourceError` com novo prefixo (ex: `MY01`), mesma estrutura do translator, `BackendError` e o contrato HTTP intocados.
+
+---
+
+**P: O blueprint do summary ter o nome "summary" em vez de "orders" afeta o path do endpoint GET /orders?**
+
+Não. O nome do blueprint (`Blueprint("summary", __name__)`) é apenas um identificador interno do Flask — usado em `url_for()` e no namespace de funções. O path da rota é definido exclusivamente no decorator (`@summary_bp.get("/orders")`). A renomeação foi necessária para evitar conflito de nome com o blueprint pai `orders_bp` criado em `orders/__init__.py` — dois blueprints com o mesmo nome no mesmo Flask app causam erro.
+
+---
+
+**P: Faz sentido colocar o before_request no nível da app ou no nível de orders?**
+
+No nível de `orders/`. O `check_connection` verifica se o data source está pronto — isso só faz sentido para rotas que acessam dados. As rotas de infra (`/auth`, `/source`, `/status`) não acessam o data source e não devem ser bloqueadas por esse check. Flask suporta blueprints aninhados: `before_request` no blueprint pai aplica-se a todos os sub-blueprints registrados nele. `orders/__init__.py` cria o blueprint pai `orders_bp`, registra `deliveries_bp`, `payments_bp` e `summary_bp` nele, e declara o `before_request` — cobertura automática para todas as subfeatures de orders.
