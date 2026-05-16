@@ -1,14 +1,22 @@
-from flask import Flask
+from flask import Flask, jsonify
 
-from .features import deliveries_bp, payments_bp, orders_bp
+from .features import orders_bp
+from .data_source.errors._errors import DataSourceError
+from .errors import translate
 from ..core.network._request import HTTPRequest
 from ..core.network._response import HTTPResponse
 
 
 _app = Flask(__name__)
-_app.register_blueprint(deliveries_bp)
-_app.register_blueprint(payments_bp)
 _app.register_blueprint(orders_bp)
+
+
+@_app.errorhandler(DataSourceError)
+def handle_data_source_error(e: DataSourceError):
+    err = translate(e)
+    return jsonify(err.to_dict()), err.http_status
+
+
 _client = _app.test_client()
 
 
