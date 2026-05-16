@@ -702,6 +702,16 @@ Sim — é a separação correta. `DataSourceError` carrega `code`, `user_messag
 
 ---
 
+## Sessão — Mai/2026 (Arquitetura: Shared Kernel e domain models)
+
+---
+
+**P: Faria sentido criar um repo "MCDomain" com os models/entidades compartilhados entre o backend e a aplicação?**
+
+A ideia tem nome no DDD: *shared kernel* — um pacote que carrega os tipos que ambos os lados do sistema conhecem. A lógica é válida: backend e app estão na mesma linguagem (Python), e a app precisa saber o shape do JSON para desserializar as respostas. Duplicar os models nos dois lados seria ruído real. A decisão foi: por ora, a app importa direto de `backend/shared/models.py` — o pacote já existe, só o empacotamento fica para quando o backend virar remoto (FastAPI no Railway). Quando isso acontecer, um pacote separado (`maria-cacau-domain`) faz sentido como dependência compartilhada. A distinção que fica clara: *entity/wire models* (contrato compartilhado, viveriam no MCDomain) vs *view-models* (orientados à UI, exclusivos da feature). Referência: `pocs/backend/shared-domain.md`.
+
+---
+
 **P: O blueprint do summary ter o nome "summary" em vez de "orders" afeta o path do endpoint GET /orders?**
 
 Não. O nome do blueprint (`Blueprint("summary", __name__)`) é apenas um identificador interno do Flask — usado em `url_for()` e no namespace de funções. O path da rota é definido exclusivamente no decorator (`@summary_bp.get("/orders")`). A renomeação foi necessária para evitar conflito de nome com o blueprint pai `orders_bp` criado em `orders/__init__.py` — dois blueprints com o mesmo nome no mesmo Flask app causam erro.
