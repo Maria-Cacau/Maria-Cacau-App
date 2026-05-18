@@ -35,7 +35,12 @@ O problema que motivou o backend: as features conhecem `SheetColumns`, `pandas.D
 | Criar `routes/auth.py` | Pendente |
 | Criar `routes/source.py` | Pendente |
 | Migrar `orders_pendent` — estrutura `data/`, `domain/`, `presentation/` | Concluído |
-| Migrar `orders_pendent` — implementar `domain/use_case.py` | Pendente |
+| Migrar `orders_pendent` — implementar `domain/use_case.py` | Concluído |
+| Migrar `orders_pendent` — `report` e `chartData` no `OrdersModel` | Pendente |
+| Migrar `orders_pendent` — conectar `butGenerate` ao signal `generate_report` | Pendente |
+| Migrar `orders_pendent` — habilitar botões de cópia/download após dados carregarem | Pendente |
+| Migrar `orders_pendent` — tratar signal `error` no controller | Pendente |
+| Migrar `orders_pendent` — remover `view-old.py` | Pendente |
 
 ---
 
@@ -261,12 +266,21 @@ Vive em `data_source/_google_sheets.py`. Singleton exposto como `data_source: Fi
 
 ## Próximos Passos (ordem sugerida)
 
-1. Implementar `domain/use_case.py` da `orders_pendent` — chamadas paralelas + montar `OrdersModel`
-2. Implementar `subfeatures/summary/service.py` — resumo de pedidos por período
-3. Criar `routes/auth.py` — `POST /auth` + `DELETE /auth`
-4. Criar `routes/source.py` — CRUD de planilhas
-5. Criar `routes/status.py` — `GET /status`
-6. Registrar rotas de infra (`auth`, `source`, `status`) no `_server.py`
+### Bloco 1 — Finalizar migração da `orders_pendent` (bloqueante)
+
+1. Adicionar propriedades `report` e `chartData` ao `OrdersModel` (lógica do `view-old.py:set_resumo`)
+2. Conectar `butGenerate.clicked` ao signal `generate_report` na view
+3. Habilitar `butCopyData` e `butDownloadData` em `update_data`
+4. Conectar `signals.error` no controller (exibir popup ou mensagem na view)
+5. Remover `view-old.py`
+
+### Bloco 2 — Backend (iniciar após Bloco 1 concluído)
+
+6. Implementar `subfeatures/summary/service.py` — resumo de pedidos por período
+7. Criar `routes/auth.py` — `POST /auth` + `DELETE /auth`
+8. Criar `routes/source.py` — CRUD de planilhas
+9. Criar `routes/status.py` — `GET /status`
+10. Registrar rotas de infra (`auth`, `source`, `status`) no `_server.py`
 
 ---
 

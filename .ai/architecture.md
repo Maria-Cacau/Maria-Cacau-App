@@ -34,11 +34,11 @@ Maria-Cacau-Contagem/
 │   │   │   ├── security.py               # SecurityStorage — arquivo protegido em ~/.mariacacau/
 │   │   │   └── cache.py                  # CacheStorage — JSON em ~/.mariacacau/
 │   │   ├── observability.py              # AppEvent enum + singleton `observability` → logs.log
-│   │   └── errors.py                     # códigos de erro com docstrings
+│   │   └── errors.py                     # AppError (erros legados) + ErrorModel (duck typing de BackendError/DataSourceError → PopupModel)
 │   ├── design_system/
 │   │   ├── aux_widgets.py        # factory de widgets reutilizáveis
 │   │   ├── aux_frames.py         # frame composto (label + input + botão)
-│   │   └── gui_popup.py          # GuiPopup + PopupModel (dataclass) + PopupIcon (enum) — sem dependência de core
+│   │   └── gui_popup.py          # GuiPopup + PopupModel (dataclass) + PopupIcon (enum) — zero dependência de core ou features
 │   ├── assets/
 │   │   ├── strings.py            # textos de UI centralizados
 │   │   └── images/               # ícones e imagens
@@ -49,12 +49,35 @@ Maria-Cacau-Contagem/
 │               ├── cpf_validation/        # validação matemática de CPF com feedback visual
 │               ├── nota_fiscal/           # placeholder "Em breve" (v5.0)
 │               ├── products_resume/
-│               ├── orders_pendent/        # ✅ migrada — data/ + domain/ + presentation/
+│               ├── orders_pendent/        # ⏳ migração em andamento — data/ + domain/ ✅ | presentation/ pendente
 │               ├── freight_query/
 │               └── status_bar/        # barra de status global (credenciais, planilha, loading)
 ├── pyproject.toml                # fonte única de verdade para deps e metadados
 └── ...
 ```
+
+## Regras de dependência entre módulos
+
+| Módulo | Pode importar de | Proibido |
+|---|---|---|
+| `design_system/` | `assets/` apenas | `core/`, `features/`, `backend/` |
+| `core/` | `design_system/` | `features/`, `backend/` |
+| `backend/` | `core/storage` apenas | Todo o resto de `maria_cacau.*` |
+| `features/` | `core/`, `design_system/`, `assets/` | `backend/` (acessa via `LocalClient`) |
+
+> `design_system/` tinha uma importação de `core/` que foi removida no PR #39. Essa remoção foi necessária para permitir que `core/errors.py` importe `PopupModel` do Design System no `ErrorModel`.
+
+## ErrorModel (`core/errors.py`)
+
+Classe que converte qualquer erro do backend ou data source em um `PopupModel` do Design System, usando duck typing — aceita qualquer objeto com `code`, `user_message` e `dev_message`, sem herança obrigatória.
+
+```python
+# Qualquer um desses funciona — sem importar os tipos concretos:
+ErrorModel.from_error(backend_error)     # BackendError
+ErrorModel.from_error(datasource_error)  # DataSourceError
+```
+
+O método `to_popup() -> PopupModel` monta o popup a partir dos dados do erro. A presentation layer chama `popup.show(error_model.to_popup())`.
 
 ## Padrão de arquitetura
 **Feature-first + Clean Arch + MVC**: cada funcionalidade vive numa pasta isolada com camadas bem definidas.

@@ -13,17 +13,67 @@ Estudar e definir a arquitetura ideal para o projeto Maria Cacau (PyQt6 + Python
 
 ## Status atual
 
-**Fase:** estudo e definição concluídos — pronto para iniciar aplicação.
+**Fase:** refatoração arquitetural em andamento — branch `feat/arch-MVC`.
 
 | Etapa | Status |
 |---|---|
 | Definir arquitetura geral | Concluído — ver `overview.md` |
 | Estudar padrões Python (ABC, Protocol, dataclass, enum) | Concluído — ver `CBL.md` |
 | Estudar modularização e Design System | Concluído — ver `overview.md` |
-| Ajustar arquitetura atual do projeto | Em andamento (branch separada) |
+| Criar `core/network/` (LocalClient + API) | Concluído |
+| Criar `backend/` com DataSource e serviços | Concluído — ver `pocs/backend/ongoing-study.md` |
+| Migrar `orders_pendent` — camada `data/` | Concluído |
+| Migrar `orders_pendent` — camada `domain/` | Concluído |
+| Migrar `orders_pendent` — camada `presentation/` | Em andamento |
+| Criar `ErrorModel` em `core/errors.py` | Em andamento (sessão atual) |
+| Remover dependência de `core` dentro do Design System | Concluído (PR #39) |
 | Construir o Design System | Pendente |
 | Atualizar app para novas telas (protótipo aprovado) | Pendente |
 | Adicionar feature de novo pedido | Pendente |
+
+---
+
+## Estado atual da migração MVC
+
+A refatoração segue o fluxo de fora pra dentro: primeiro a infraestrutura, depois as features.
+
+**O que foi feito:**
+1. **DataSource** (`backend/data_source/`) — comunicação com o Google Sheets isolada numa camada própria. Retorna `list[dict]` neutro, sem acoplamento ao domínio
+2. **Backend** (`backend/`) — Flask in-process com dois serviços operacionais: `GET /orders/deliveries` e `GET /orders/payments-pendent`
+3. **Feature `orders_pendent` — camada `data/`** — `apis.py`, `repository.py`, `mapper.py` conectando à API do backend via `LocalClient`
+4. **Feature `orders_pendent` — camada `domain/`** — `models.py`, `use_case.py` (chamadas paralelas), `signals.py`, `events.py`
+
+**Em andamento (sessão atual):**
+- Criação do `ErrorModel` em `core/errors.py` — veja seção abaixo
+- Finalização da camada `presentation/` da `orders_pendent`
+
+**Bloqueio resolvido (PR #39):**
+O Design System tinha uma dependência de `core` — o que impedia `core` de importar do Design System para o `ErrorModel`. Essa dependência foi removida. A direção `core → design_system` agora é válida.
+
+---
+
+## ErrorModel (`core/errors.py`)
+
+### Motivação
+Os erros do backend (`BackendError`) e do data source (`DataSourceError`) seguem o mesmo contrato:
+```
+code: str          # ex: "DS01", "BE04"
+user_message: str  # mensagem amigável para o usuário
+dev_message: str   # detalhe técnico para debug
+```
+A camada de `presentation/` precisa converter esse erro em um popup do Design System — sem conhecer de onde veio o erro.
+
+### Solução: duck typing
+`ErrorModel` em `core/errors.py` aceita qualquer objeto que tenha `code`, `user_message`, `dev_message` (não precisa herdar nada). Expõe um método para criar o `PopupModel` do Design System a partir desses dados.
+
+### Regras de dependência
+
+| Módulo | Pode importar de |
+|---|---|
+| `design_system/` | `assets/` apenas — zero dependência de `core` ou `features` |
+| `core/` | `design_system/` (permitido após PR #39) |
+| `features/` | `core/`, `design_system/`, `assets/` |
+| `backend/` | `core/storage` apenas (isolamento total) |
 
 ---
 
@@ -69,9 +119,11 @@ Registradas em `overview.md`. Não reabrir sem motivo claro.
 
 ## Próximos passos para retomar
 
-1. Continuar o refactor arquitetural na branch em andamento
-2. Definir quais features refatorar primeiro (começar pelas mais simples)
-3. Estruturar a pasta `design_system/` com a nova organização
+1. Implementar `ErrorModel` em `core/errors.py` (duck typing + método para `PopupModel`)
+2. Finalizar presentation layer da `orders_pendent` (ver itens pendentes em `pocs/backend/ongoing-study.md`)
+3. Implementar `subfeatures/summary/service.py` no backend
+4. Criar rotas de infra do backend (`auth`, `source`, `status`)
+5. Estruturar a pasta `design_system/` com a nova organização (fase posterior)
 
 ---
 
