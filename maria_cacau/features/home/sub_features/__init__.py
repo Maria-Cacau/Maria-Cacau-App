@@ -1,1 +1,2 @@
+from .cpf_validation import CpfValidationController
 from .delivery import DeliveryController

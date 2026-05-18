@@ -4,6 +4,7 @@ from .models import CpfValidationResult
 
 
 def _is_valid_cpf(cpf: str) -> bool:
+    """Valida um CPF pela regra dos dois dígitos verificadores (algoritmo da Receita Federal)."""
     digits = []
     for c in cpf:
         if '0' <= c <= '9':
