@@ -24,8 +24,10 @@ Estudar e definir a arquitetura ideal para o projeto Maria Cacau (PyQt6 + Python
 | Criar `backend/` com DataSource e serviços | Concluído — ver `pocs/backend/ongoing-study.md` |
 | Migrar `orders_pendent` — camada `data/` | Concluído |
 | Migrar `orders_pendent` — camada `domain/` | Concluído |
-| Migrar `orders_pendent` — camada `presentation/` | Em andamento |
-| Criar `ErrorModel` em `core/errors.py` | Em andamento (sessão atual) |
+| Migrar `orders_pendent` — camada `presentation/` | Concluído |
+| Criar `core/error/` com `ErrorModel` | Concluído |
+| Atualizar `home_view.py` para usar `OrdersController` | Concluído |
+| Configurar `LocalClient` no `__main__.py` | Concluído |
 | Remover dependência de `core` dentro do Design System | Concluído (PR #39) |
 | Construir o Design System | Pendente |
 | Atualizar app para novas telas (protótipo aprovado) | Pendente |
@@ -43,9 +45,14 @@ A refatoração segue o fluxo de fora pra dentro: primeiro a infraestrutura, dep
 3. **Feature `orders_pendent` — camada `data/`** — `apis.py`, `repository.py`, `mapper.py` conectando à API do backend via `LocalClient`
 4. **Feature `orders_pendent` — camada `domain/`** — `models.py`, `use_case.py` (chamadas paralelas), `signals.py`, `events.py`
 
-**Em andamento (sessão atual):**
-- Criação do `ErrorModel` em `core/errors.py` — veja seção abaixo
-- Finalização da camada `presentation/` da `orders_pendent`
+**Concluído nesta sessão:**
+- `core/error/` — `ErrorModel` (duck typing + `to_popup()`) + `errors.py` movido
+- `orders_pendent` — camada `presentation/` completa: `OrdersViewData`, report no ViewModel, tratamento de erro via `ErrorMapper → Repository → ViewModel → Controller`
+- `home_view.py` — usa `OrdersController`, sem referências ao fluxo legado
+- `__main__.py` — `configure(LocalClient(BackendServer()))` adicionado
+
+**Próximo:**
+- Bridge temporária: restaurar credenciais do cache local no startup para validar a feature end-to-end (ver `pocs/backend/ongoing-study.md`)
 
 **Bloqueio resolvido (PR #39):**
 O Design System tinha uma dependência de `core` — o que impedia `core` de importar do Design System para o `ErrorModel`. Essa dependência foi removida. A direção `core → design_system` agora é válida.
@@ -119,11 +126,10 @@ Registradas em `overview.md`. Não reabrir sem motivo claro.
 
 ## Próximos passos para retomar
 
-1. Implementar `ErrorModel` em `core/errors.py` (duck typing + método para `PopupModel`)
-2. Finalizar presentation layer da `orders_pendent` (ver itens pendentes em `pocs/backend/ongoing-study.md`)
-3. Implementar `subfeatures/summary/service.py` no backend
-4. Criar rotas de infra do backend (`auth`, `source`, `status`)
-5. Estruturar a pasta `design_system/` com a nova organização (fase posterior)
+1. Bridge temporária de autenticação — restaurar credenciais do cache no startup do `BackendServer` para validar `orders_pendent` end-to-end
+2. Implementar `subfeatures/summary/service.py` no backend
+3. Criar rotas de infra do backend (`auth`, `source`, `status`)
+4. Estruturar a pasta `design_system/` com a nova organização (fase posterior)
 
 ---
 

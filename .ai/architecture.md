@@ -84,7 +84,7 @@ from maria_cacau.core.network import API, HTTPMethod, configure, LocalClient
 **Setup no `__main__.py`** (uma vez):
 ```python
 from maria_cacau.core.network import configure, LocalClient
-configure(LocalClient(backend=Backend()))
+configure(LocalClient(backend=BackendServer()))
 ```
 
 **Criar um endpoint** — herdar de `API`, implementar `path`, ajustar `self.parameters` se necessário:
@@ -109,7 +109,7 @@ class CriarPedidoAPI(API):
 
 | Cenário | Como configurar |
 |---|---|
-| Backend local (agora) | `configure(LocalClient(backend=Backend()))` |
+| Backend local (agora) | `configure(LocalClient(backend=BackendServer()))` |
 | API HTTP real (futuro) | `configure(HTTPClient(base_url="https://..."))` — `HTTPClient` ainda não implementado |
 
 **Override para testes:**

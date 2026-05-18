@@ -36,11 +36,14 @@ O problema que motivou o backend: as features conhecem `SheetColumns`, `pandas.D
 | Criar `routes/source.py` | Pendente |
 | Migrar `orders_pendent` — estrutura `data/`, `domain/`, `presentation/` | Concluído |
 | Migrar `orders_pendent` — implementar `domain/use_case.py` | Concluído |
-| Migrar `orders_pendent` — `report` e `chartData` no `OrdersModel` | Pendente |
-| Migrar `orders_pendent` — conectar `butGenerate` ao signal `generate_report` | Pendente |
-| Migrar `orders_pendent` — habilitar botões de cópia/download após dados carregarem | Pendente |
-| Migrar `orders_pendent` — tratar signal `error` no controller | Pendente |
-| Migrar `orders_pendent` — remover `view-old.py` | Pendente |
+| Migrar `orders_pendent` — `OrdersViewData` com `report` + `chart_data` (ViewModel constrói) | Concluído |
+| Migrar `orders_pendent` — tratamento de erro (ErrorMapper → Repository → ViewModel → Controller) | Concluído |
+| Migrar `orders_pendent` — habilitar botões após dados carregarem | Concluído |
+| Migrar `orders_pendent` — remover `view-old.py` | Concluído |
+| Criar `core/error/` (`ErrorModel` + `errors.py`) | Concluído |
+| Atualizar `home_view.py` para usar `OrdersController` | Concluído |
+| Configurar `LocalClient(BackendServer())` no `__main__.py` | Concluído |
+| Bridge temporária: restaurar credenciais do cache no startup (sem `routes/auth`) | Pendente |
 
 ---
 
@@ -266,20 +269,17 @@ Vive em `data_source/_google_sheets.py`. Singleton exposto como `data_source: Fi
 
 ## Próximos Passos (ordem sugerida)
 
-### Bloco 1 — Finalizar migração da `orders_pendent` (bloqueante)
+### Bloco 1 — Bridge temporária de autenticação (próximo)
 
-1. Adicionar propriedades `report` e `chartData` ao `OrdersModel` (lógica do `view-old.py:set_resumo`)
-2. Conectar `butGenerate.clicked` ao signal `generate_report` na view
-3. Habilitar `butCopyData` e `butDownloadData` em `update_data`
-4. Conectar `signals.error` no controller (exibir popup ou mensagem na view)
-5. Remover `view-old.py`
+1. No startup do `BackendServer`, ler credenciais e `sheet_id` salvos em `core/storage` via `_helper.py` e repassar ao `data_source` (`set_credentials` + `set_sheet`) — sem precisar das rotas `auth`/`source` ainda
+2. Objetivo: validar a feature `orders_pendent` end-to-end com dados reais antes de implementar as rotas de infra
 
-### Bloco 2 — Backend (iniciar após Bloco 1 concluído)
+### Bloco 2 — Backend (após validação da bridge)
 
-6. Implementar `subfeatures/summary/service.py` — resumo de pedidos por período
-7. Criar `routes/auth.py` — `POST /auth` + `DELETE /auth`
-8. Criar `routes/source.py` — CRUD de planilhas
-9. Criar `routes/status.py` — `GET /status`
+3. Implementar `subfeatures/summary/service.py` — resumo de pedidos por período
+4. Criar `routes/auth.py` — `POST /auth` + `DELETE /auth`
+5. Criar `routes/source.py` — CRUD de planilhas
+6. Criar `routes/status.py` — `GET /status`
 10. Registrar rotas de infra (`auth`, `source`, `status`) no `_server.py`
 
 ---
