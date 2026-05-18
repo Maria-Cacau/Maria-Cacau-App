@@ -545,3 +545,201 @@ Os hooks são divididos por contexto. **Commit**: `pre-commit`, `prepare-commit-
 **P: Dentro de um git hook, precisa ativar o venv antes de rodar comandos Python?**
 
 Sim. O git executa hooks em um subshell sem qualquer ativação de ambiente virtual — `isort` e `pip` resolveriam para as versões do sistema (ou não encontrariam o comando). A solução é adicionar `source venv/bin/activate` no início do hook para garantir que os binários corretos do projeto sejam usados.
+
+---
+
+## Sessão — Mai/2026 (Arquitetura: Módulo Backend)
+
+---
+
+**P: Dá para usar Flask com `@route` como módulo local, sem fazer o `.run()`? Isso causaria algum problema?**
+
+Sim. Flask não precisa de `.run()` para funcionar como roteador — o `.run()` sobe o servidor HTTP real (Werkzeug). O que faz o roteamento é o `app.wsgi_app`, que pode ser chamado diretamente. O padrão idiomático é usar `app.test_client()`, que expõe um `client.open()` in-process: recebe path, method, query_string e body, e retorna um `TestResponse` — sem socket, sem thread, sem servidor real. O `BackendServer` usa esse mecanismo para converter `HTTPRequest → Flask → HTTPResponse`.
+
+---
+
+**P: Se adicionarmos o Flask mas não chamarmos `.run()`, e usarmos funções diretas em vez de `@route`, qual é o problema?**
+
+O problema central é o `flask.request` — o proxy de contexto de requisição do Flask. Fora do ciclo de requisição do Flask (ou seja, fora de um `test_client` ou servidor real), `flask.request` não existe e levanta `RuntimeError: Working outside of request context`. Chamar a função de view diretamente sem passar pelo Flask burla o roteamento mas ainda depende de `flask.request` dentro da função. A solução correta é passar pelo `test_client` — que inicializa o contexto corretamente — ou abandonar o Flask e usar funções puras com parâmetros explícitos.
+
+---
+
+**P: Qual a melhor prática para documentar o contrato de um JSON? JSONC ou JSON Schema?**
+
+JSON Schema (`draft-2020-12`) é a melhor prática para contratos: é um padrão aberto (json-schema.org), suporta validação programática, integra com VS Code (IntelliSense em arquivos com `$schema`), e pode ser usado em testes unitários (`jsonschema` no Python). JSONC (JSON com comentários) é atalho de documentação — útil em config, mas não valida nada. Para contratos de API, mesmo que in-process, JSON Schema é mais robusto.
+
+---
+
+**P: Como o JSON Schema permite reutilizar sub-objetos entre schemas diferentes?**
+
+Via `$defs` + `$ref`. No `shared.schema.json` define-se os objetos reutilizáveis dentro de `"$defs"`: `Address`, `Customer`, `PaymentItem`, etc. Outros schemas referenciam com `"$ref": "./shared.schema.json#/$defs/Customer"` — o validador resolve o caminho relativo + fragmento JSON Pointer. É o mecanismo padrão de composição do JSON Schema, equivalente ao `typealias` / `struct` compartilhado no Swift.
+
+---
+
+**P: Qual é a tradução de "parcela" (de compra parcelada) para o inglês?**
+
+`installment` (AmE) ou `instalment` (BrE). É o termo técnico consagrado no contexto financeiro: `installment plan` = plano de parcelamento, `installment payment` = pagamento em parcela. Não confundir com `payment` (pagamento em geral) nem com `portion` (que é mais genérico). Adotado como nome do campo no modelo `PaymentItem`.
+
+---
+
+**P: O `backend/` faz mais sentido estar fora do `core/`, na mesma hierarquia?**
+
+Sim — decisão de arquitetura. `core/` é infraestrutura pura (network, storage, sheets): não conhece regras de negócio, não conhece a planilha. `backend/` tem regras de negócio e conhece os dados do domínio (colunas, modelos, lógica de serviço). Misturar os dois dentro de `core/` quebraria essa separação. Fluxo correto: `features/ → backend/ → core/` — cada camada só conhece a camada abaixo.
+
+---
+
+**P: Faz sentido usar `@dataclass` do Python para representar o contrato JSON dos models?**
+
+Sim — é o padrão mais Pythônico para objetos de dados sem lógica. `@dataclass` gera `__init__`, `__repr__` e `__eq__` automaticamente a partir dos atributos. Para serialização, `dataclasses.asdict()` converte recursivamente o objeto (e objetos aninhados) para `dict` JSON-ready. Campos obrigatórios (sem default) ficam antes dos opcionais (com default ou `| None`) — o Python impõe essa ordem no `__init__` gerado.
+
+---
+
+**P: Faz sentido o mapper ser uma classe separada dentro do próprio arquivo de service?**
+
+Sim. O Mapper fica no mesmo arquivo do service (`payments_service.py`) e tem uma única responsabilidade: transformar `list[Order]` em `dict` JSON-ready via `dataclasses.asdict()`. A route fica limpa — só chama service + mapper + `jsonify`. O padrão é: `class PaymentsMapper` com `@staticmethod to_response(orders) -> dict` e `class PaymentsService` com a lógica. É análogo ao Presenter do Clean Arch, mas mais simples por ser in-process.
+
+---
+
+**P: `StrEnum` vs `Enum` — qual a diferença e quando usar `StrEnum`?**
+
+`StrEnum` (Python 3.11+) é um `Enum` cujos valores são strings e que herda de `str` diretamente. Isso significa que o próprio membro do enum **é** uma string — comparação direta `col == "pedido"` funciona sem `.value`. Com `Enum` clássico, seria necessário `col.value == "pedido"`. Para mapeamento de colunas da planilha, `StrEnum` é ideal: `df[Col.ORDER]` funciona diretamente como chave de DataFrame sem conversão explícita.
+
+---
+
+## Sessão — Mai/2026 (Arquitetura: GoogleSheetsDataSource e camadas do backend)
+
+---
+
+**P: Qual o padrão Flask/backend para separar acesso a dados, regras de negócio e rotas? Como trazer a mesma experiência de um banco SQL para a planilha?**
+
+O padrão clássico é `Route → Service → Repository`. É o equivalente ao que o SQLAlchemy faz com banco de dados: `SQLAlchemy engine` (gerencia conexão) é análogo ao `GoogleSheetsDataSource`; o `Repository/DAO` (sabe como buscar os dados) é o `SheetsRepository`; o `Service` aplica regra de negócio. A planilha é a fonte de dados — o data source sabe como se conectar e otimizar o acesso; o repository não sabe que existe gspread; o service não sabe que existe planilha.
+
+---
+
+**P: Repository vs Use Case — qual a diferença? Por que o backend usa Repository e não Use Case?**
+
+Repository = sabe *como buscar dados* de uma fonte. Não tem regra de negócio — só retorna dados. Use Case = orquestra *o fluxo de uma operação*, coordena repositórios, serviços e cache. No backend Flask, o Use Case não existe como camada formal — o Service absorve essa responsabilidade. O Use Case aparece fora do backend, dentro das features (PyQt6), porque a feature precisa orquestrar: chama o backend, aplica cache, monta o ViewModel.
+
+---
+
+**P: O que são os "dois passes" no acesso à planilha?**
+
+Otimização para não baixar a planilha inteira. Passo 1: lê só a coluna DATA (muito leve). Passo 2: identifica quais linhas têm as datas pedidas e faz `batch_get` só nessas linhas. Sem isso a alternativa seria `get_all_values()` — baixa todas as linhas toda vez. É o equivalente ao MySQL executar `SELECT ... WHERE data = ?` internamente: o consumer não sabe como funciona, só vê o resultado.
+
+---
+
+**P: Faz sentido chamar de `DataSource` em vez de `Service` para a camada de acesso à planilha?**
+
+Sim — e é mais preciso. "Service" no backend já tem um papel definido (regra de negócio). A camada que gerencia a conexão com a planilha é análoga ao SQLAlchemy engine — não é um service, é a fonte de dados. `GoogleSheetsDataSource` comunica isso claramente. Quando a planilha virar SQL, o `GoogleSheetsDataSource` é substituído por `SQLDataSource` com a mesma interface — nada mais muda.
+
+---
+
+**P: Como funciona o `before_request` do Flask e como usar para validar conexão antes de cada rota?**
+
+`before_request` é um hook que roda automaticamente antes de qualquer rota registrada no Blueprint. Registrado uma vez, todas as rotas do Blueprint ganham a validação sem código repetido. No nosso caso: `if not data_source.is_ready(): return jsonify({...}), 503`. É o ponto correto para checar pré-condições de infraestrutura — equivalente a um middleware de autenticação no Express.js.
+
+---
+
+**P: Por que o prewarm usa uma thread? O que ele faz?**
+
+O prewarm faz chamadas de rede: refresh do token OAuth e pré-aquecimento da conexão TLS com o Google. Isso pode levar segundos. Rodar na thread principal travaria a inicialização do app. Com uma thread em background, o app sobe instantaneamente e o prewarm acontece em paralelo. O `wait_ready()` no `before_request` sincroniza quando necessário — se o usuário demorou navegando pela UI, o prewarm já terminou e `wait_ready()` retorna na hora sem custo.
+
+---
+
+**P: Por que o `connect()` é chamado pelo `BackendServer` e não no `__init__` do próprio DataSource?**
+
+Separação de ciclo de vida. O data source não gerencia quando ele se conecta — quem decide é o servidor. Se amanhã o backend for deployado como serviço real, o `connect()` sai do `BackendServer` e vai para o startup do servidor sem mudar nada no `GoogleSheetsDataSource`. Se o `__init__` chamasse `connect()` automaticamente, a classe perderia esse controle externo.
+
+---
+
+## Sessão — Mai/2026 (Estudo: Erros no DataSource e separação de responsabilidades)
+
+---
+
+**P: Como seria o levantamento de erros no GoogleSheetsDataSource — quais erros cada método pode gerar?**
+
+Mapeados 16 erros em 7 categorias: credenciais (4: arquivo não encontrado, corrompido, formato inválido, falha ao salvar), autenticação/token (2: credencial rejeitada pelo Google, token OAuth expirado), planilha (4: sheet_id inválido, planilha não encontrada, sem permissão, falha ao salvar), rede (2: sem conexão, timeout), API Google (2: resposta fora do contrato, quota excedida), dados da planilha (3: data inválida, range invertido, estrutura inesperada), estado do DataSource (2: não pronto ao chamar fetch, prewarm falhou). O único reuso real é `TokenExpiredError` — aparece no prewarm e no fetch em runtime com causa idêntica (token OAuth inválido). O `PrewarmFailedError` é especial: o erro da thread background é guardado na instância e relançado em `wait_ready()`.
+
+---
+
+**P: Dá para centralizar todo o tratamento de erros em outra classe, deixando o `GoogleSheetsDataSource` só com lógica?**
+
+Sim. O padrão é separar em `_error_handlers.py` com uma classe `_SheetsGuard` (context managers + validações) e funções decorator (`handle_api`, `handle_sheet_setup`). O DataSource fica com ~80 linhas de lógica pura; o `_error_handlers.py` fica com ~70 linhas de tratamento. A única exceção é `_do_prewarm()`: a thread background precisa guardar o erro na instância para relançar depois, então mantém `try/except` explícito — único caso onde o padrão não encaixa.
+
+---
+
+**P: Usar `@contextmanager` para centralizar tratamento de erros é uma boa prática em Python?**
+
+Válido mas não convencional. Context manager em Python tem semântica forte de gerenciamento de recurso (abre → usa → fecha) — usar só para mapear exceções funciona, mas `with _guard.api():` não comunica imediatamente que é um guard de erro. O padrão mais idiomático para tratamento de erros é o decorator (`@handle_api`), que aparece na assinatura do método e comunica a intenção diretamente. O híbrido é a solução honesta: decorator para métodos simples onde o tipo de erro dominante é único; context manager quando há múltiplas operações distintas dentro do mesmo método que levantam erros diferentes (ex: `set_credentials` faz leitura de arquivo + I/O local + autenticação Google — três contextos de erro separados).
+
+---
+
+**P: O que é `@contextmanager`?**
+
+Decorator de `contextlib` que transforma uma função geradora em um context manager sem precisar implementar `__enter__` e `__exit__` manualmente. O código antes do `yield` roda no `__enter__`, o código depois roda no `__exit__`. Um `try/except` ao redor do `yield` captura exceções lançadas dentro do bloco `with`. Exemplo canônico da stdlib: `contextlib.suppress(FileNotFoundError)` — ignora a exceção especificada sem nenhum bloco extra. O `@contextmanager` é a alternativa legível a criar uma classe inteira só para gerenciar um recurso ou interceptar exceções.
+
+---
+
+## Sessão — Mai/2026 (Arquitetura: Contrato de erros e blueprint pai)
+
+---
+
+**P: Qual a boa prática em Python/Flask para criar um contrato de erros com as 4 informações (user_message, dev_message, http_status, error_code), considerando que o data source é isolado?**
+
+O equivalente ao protocolo Swift em Python é uma classe base com class-level attributes. Cada subclasse define os valores como atributos de classe — sem `__init__`, sem repetição. Flask oferece `@app.errorhandler(TipoDeErro)`: registrado uma vez no servidor, captura automaticamente qualquer exceção daquele tipo lançada em qualquer route da aplicação. O resultado é routes limpas sem `try/except` e sem `before_request` hardcoded. O `DataSourceError` deve carregar apenas os campos agnósticos de transporte (`code`, `user_message`, `dev_message`); o `http_status` fica em `BackendError` porque é um conceito HTTP — não pertence à camada de dados.
+
+---
+
+**P: Podemos usar duck typing — o DataSourceError ter os mesmos parâmetros que o BackendError para eliminar o translator?**
+
+Sim, funcionaria. O `@app.errorhandler(DataSourceError)` acessaria `e.code`, `e.user_message`, `e.dev_message`, `e.http_status` diretamente. O trade-off: `http_status` é um conceito HTTP dentro de uma camada que deveria ser agnóstica de transporte. Se o data source for substituído por MySQL ou usado em outro contexto (CLI, gRPC), os status codes HTTP são ruído. A decisão foi usar duck typing parcial: `DataSourceError` carrega os 3 campos agnósticos, e o translator adiciona apenas o `http_status`.
+
+---
+
+**P: O data source vai ser substituído por MySQL. Faz sentido o translator só para http_status, retornando -1 do lado do DataSource?**
+
+Sim — é a separação correta. `DataSourceError` carrega `code`, `user_message`, `dev_message` (agnósticos). O `backend/errors/_mapper.py` mantém uma tabela `{DataSourceError subclass → http_status}` e a função `translate()` monta o `BackendError` com os 4 campos. Quando o MySQL chegar: novas subclasses de `DataSourceError` com novo prefixo (ex: `MY01`), mesma estrutura do translator, `BackendError` e o contrato HTTP intocados.
+
+---
+
+## Sessão — Mai/2026 (Arquitetura: Shared Kernel e domain models)
+
+---
+
+**P: Faria sentido criar um repo "MCDomain" com os models/entidades compartilhados entre o backend e a aplicação?**
+
+A ideia tem nome no DDD: *shared kernel* — um pacote que carrega os tipos que ambos os lados do sistema conhecem. A lógica é válida: backend e app estão na mesma linguagem (Python), e a app precisa saber o shape do JSON para desserializar as respostas. Duplicar os models nos dois lados seria ruído real. A decisão foi: por ora, a app importa direto de `backend/shared/models.py` — o pacote já existe, só o empacotamento fica para quando o backend virar remoto (FastAPI no Railway). Quando isso acontecer, um pacote separado (`maria-cacau-domain`) faz sentido como dependência compartilhada. A distinção que fica clara: *entity/wire models* (contrato compartilhado, viveriam no MCDomain) vs *view-models* (orientados à UI, exclusivos da feature). Referência: `pocs/backend/shared-domain.md`.
+
+---
+
+## Sessão — Mai/2026 (Migração: orders_pendent para o backend)
+
+---
+
+**P: Por que as aspas no tipo de retorno de um método que retorna a própria classe? Exemplo: `-> "DeliveriesAPI"`**
+
+É uma *forward reference*. Quando Python parseia um método dentro de uma classe, a classe ainda não terminou de ser definida — então o nome dela não existe como símbolo no escopo ainda. As aspas dizem ao Python "não avalia agora, trata como string". A alternativa é adicionar `from __future__ import annotations` no topo do arquivo, o que torna todas as anotações lazy por padrão — eliminando a necessidade de aspas em qualquer ponto do arquivo.
+
+---
+
+**P: As chamadas paralelas aos dois endpoints (deliveries + payments) deveriam acontecer no repository ou no use case?**
+
+No use case. O repository sabe *como buscar* de uma fonte — seus métodos são independentes por endpoint. O use case decide *quando e como combinar* os dados e montar o view-model. Colocar orquestração no repository faria ele conhecer o `OrdersModel` (um conceito de UI), quebrando a separação de responsabilidades. O paralelismo com `ThreadPoolExecutor` é uma decisão de orquestração — pertence ao use case.
+
+---
+
+**P: `events.py` e `signals.py` pertencem ao `domain/` ou ao `presentation/`?**
+
+Ao `domain/`, apesar de hoje serem consumidos apenas na camada de apresentação. `events.py` define eventos de domínio da feature (ações que acontecem); `signals.py` é o mecanismo de comunicação entre camadas. Ambos podem ser consumidos por outras camadas no futuro — colocá-los em `presentation/` limitaria o acesso sem motivo. A regra prática: se o arquivo não tem dependência de PyQt6 ou UI, provavelmente é domínio. `signals.py` usa `pyqtSignal`, mas é o canal de comunicação da feature inteira — não exclusivo da UI.
+
+---
+
+**P: O blueprint do summary ter o nome "summary" em vez de "orders" afeta o path do endpoint GET /orders?**
+
+Não. O nome do blueprint (`Blueprint("summary", __name__)`) é apenas um identificador interno do Flask — usado em `url_for()` e no namespace de funções. O path da rota é definido exclusivamente no decorator (`@summary_bp.get("/orders")`). A renomeação foi necessária para evitar conflito de nome com o blueprint pai `orders_bp` criado em `orders/__init__.py` — dois blueprints com o mesmo nome no mesmo Flask app causam erro.
+
+---
+
+**P: Faz sentido colocar o before_request no nível da app ou no nível de orders?**
+
+No nível de `orders/`. O `check_connection` verifica se o data source está pronto — isso só faz sentido para rotas que acessam dados. As rotas de infra (`/auth`, `/source`, `/status`) não acessam o data source e não devem ser bloqueadas por esse check. Flask suporta blueprints aninhados: `before_request` no blueprint pai aplica-se a todos os sub-blueprints registrados nele. `orders/__init__.py` cria o blueprint pai `orders_bp`, registra `deliveries_bp`, `payments_bp` e `summary_bp` nele, e declara o `before_request` — cobertura automática para todas as subfeatures de orders.

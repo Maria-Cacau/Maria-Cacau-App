@@ -1,4 +1,4 @@
-"""Sinais compartilhadaos dentro do módulo"""
+"""Sinais compartilhados dentro do módulo"""
 
 from typing import Final
 
@@ -9,6 +9,6 @@ from .models import OrdersModel
 
 class OrdersSignals(QObject):
     report_generated = pyqtSignal(OrdersModel)
-    error        = pyqtSignal(str)
+    error = pyqtSignal(str)
 
 signals: Final = OrdersSignals()
