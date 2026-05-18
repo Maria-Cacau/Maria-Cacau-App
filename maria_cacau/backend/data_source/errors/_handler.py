@@ -3,12 +3,12 @@ import json
 from contextlib import contextmanager
 from datetime import datetime
 
-import gspread
 import google.auth.exceptions
+import gspread
 import requests
 
-from ._errors import *
 from .._utils import normalize_date
+from ._errors import *
 
 
 def _is_valid_date(value: str) -> bool:

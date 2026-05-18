@@ -3,7 +3,7 @@
 import dataclasses
 
 from .....data_source import SheetCols
-from .models import DeliveryTypeCount, DeliveriesSummary
+from .models import DeliveriesSummary, DeliveryTypeCount
 from .repository import DeliveriesRepository
 
 

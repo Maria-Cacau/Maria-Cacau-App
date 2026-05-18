@@ -712,6 +712,44 @@ A ideia tem nome no DDD: *shared kernel* — um pacote que carrega os tipos que 
 
 ---
 
+## Sessão — Mai/2026 (Finalização: delivery feature)
+
+---
+
+**P: Faz sentido manter ações de copiar/salvar gráfico dentro do `ChartWidget` mesmo sendo Design System?**
+
+Sim. O argumento central é encapsulamento: o `ChartWidget` é o único que conhece o `_fig` interno (matplotlib `Figure`). Extrair essas ações para a view ou controller exigiria expor o `_fig` publicamente ou retornar bytes PNG fora do componente — complexidade sem benefício. Além disso, `copy_to_clipboard` e `save_to_file` são *capabilities do widget*, não regras de domínio: assim como `QTextBrowser` sabe copiar o próprio texto, `ChartWidget` sabe exportar o próprio gráfico. Qualquer feature que reusar o componente ganha o export de graça.
+
+---
+
+**P: Singular ou plural para o nome de uma pasta de feature? (`delivery` vs `deliveries`)**
+
+Para módulos de feature a convenção é singular — representa *o que a tela é*, não *o que ela lista*. Plural faz sentido no backend porque o endpoint *retorna uma coleção*. No frontend, olhando o próprio projeto (`home`, `products_resume`), o padrão é singular. `delivery` foi adotado também pela consistência com o blueprint do backend (`deliveries_bp`) — que usa plural por retornar dados — sem contaminar a nomenclatura da feature de UI.
+
+---
+
+## Sessão — Mai/2026 (Migração: orders_pendent para o backend)
+
+---
+
+**P: Por que as aspas no tipo de retorno de um método que retorna a própria classe? Exemplo: `-> "DeliveriesAPI"`**
+
+É uma *forward reference*. Quando Python parseia um método dentro de uma classe, a classe ainda não terminou de ser definida — então o nome dela não existe como símbolo no escopo ainda. As aspas dizem ao Python "não avalia agora, trata como string". A alternativa é adicionar `from __future__ import annotations` no topo do arquivo, o que torna todas as anotações lazy por padrão — eliminando a necessidade de aspas em qualquer ponto do arquivo.
+
+---
+
+**P: As chamadas paralelas aos dois endpoints (deliveries + payments) deveriam acontecer no repository ou no use case?**
+
+No use case. O repository sabe *como buscar* de uma fonte — seus métodos são independentes por endpoint. O use case decide *quando e como combinar* os dados e montar o view-model. Colocar orquestração no repository faria ele conhecer o `OrdersModel` (um conceito de UI), quebrando a separação de responsabilidades. O paralelismo com `ThreadPoolExecutor` é uma decisão de orquestração — pertence ao use case.
+
+---
+
+**P: `events.py` e `signals.py` pertencem ao `domain/` ou ao `presentation/`?**
+
+Ao `domain/`, apesar de hoje serem consumidos apenas na camada de apresentação. `events.py` define eventos de domínio da feature (ações que acontecem); `signals.py` é o mecanismo de comunicação entre camadas. Ambos podem ser consumidos por outras camadas no futuro — colocá-los em `presentation/` limitaria o acesso sem motivo. A regra prática: se o arquivo não tem dependência de PyQt6 ou UI, provavelmente é domínio. `signals.py` usa `pyqtSignal`, mas é o canal de comunicação da feature inteira — não exclusivo da UI.
+
+---
+
 **P: O blueprint do summary ter o nome "summary" em vez de "orders" afeta o path do endpoint GET /orders?**
 
 Não. O nome do blueprint (`Blueprint("summary", __name__)`) é apenas um identificador interno do Flask — usado em `url_for()` e no namespace de funções. O path da rota é definido exclusivamente no decorator (`@summary_bp.get("/orders")`). A renomeação foi necessária para evitar conflito de nome com o blueprint pai `orders_bp` criado em `orders/__init__.py` — dois blueprints com o mesmo nome no mesmo Flask app causam erro.

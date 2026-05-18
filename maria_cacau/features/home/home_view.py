@@ -23,8 +23,7 @@ from maria_cacau.features.home.sub_features.freight_query.freight_query_view imp
     GuiConsFrete
 from maria_cacau.features.home.sub_features.nota_fiscal.nota_fiscal_view import \
     GuiDados
-from maria_cacau.features.home.sub_features.orders_pendent.view import \
-    OrdersView
+from maria_cacau.features.home.sub_features import DeliveryController
 from maria_cacau.features.home.sub_features.products_resume.products_resume_view import \
     GuiProdutos
 from maria_cacau.features.home.sub_features.status_bar.status_bar_view import \
@@ -121,7 +120,7 @@ class GuiMain(QMainWindow):
         self.setCentralWidget(root)
 
         self.gProdutos = GuiProdutos()
-        self.gEntregas = OrdersView()
+        self.deliveriesFeature = DeliveryController()
         self.gDados = GuiDados()
         self.gVeriCpf = GuiValiCpf()
         self.gConsCep = GuiConsFrete()
@@ -190,7 +189,7 @@ class GuiMain(QMainWindow):
         mainLayout.addWidget(self.gProdutos.root, stretch=3)
 
         rightLayout = QVBoxLayout()
-        rightLayout.addWidget(self.gEntregas.root, stretch=8)
+        rightLayout.addWidget(self.deliveriesFeature.view.root, stretch=8)
 
         bottomLayout = QHBoxLayout()
         bottomLayout.addWidget(self.gDados.root, stretch=4)
@@ -205,10 +204,6 @@ class GuiMain(QMainWindow):
 
     ## ------------------------------------------------------------------------------------------------
     ## Ações de botão:
-        # TODO: MIGRAR
-        # self.gEntregas.btOk.clicked.connect(self.on_ok_entregas)
-        # self.gEntregas.btCopiarTxt.clicked.connect(lambda: observability.log(AppEvent.BTN_COPY, feature='entregas'))
-
         self.gProdutos.btOk.clicked.connect(self.on_ok_produtos)
         self.gProdutos.btCopiarTxt.clicked.connect(lambda: observability.log(AppEvent.BTN_COPY, feature='produtos'))
 
@@ -234,12 +229,6 @@ class GuiMain(QMainWindow):
     def _ensure_datas(self) -> None:
         if not self.datas:
             self.datas = manager.cadastro.get_dates()
-
-    ## Método: bloqueia/desbloqueia todos os inputs de consulta da aplicação
-    def _set_busy(self, busy: bool) -> None:
-        enabled = not busy
-        self.gEntregas.btOk.setEnabled(enabled)
-        self.gProdutos.btOk.setEnabled(enabled)
 
     ## Método: executa fn em background; chama on_done(result) ou on_error(exc) na main thread
     def _run_async(self, fn, on_done, on_error=None) -> None:
@@ -277,15 +266,12 @@ class GuiMain(QMainWindow):
             return
 
         self.statusBar.set_loading()
-        self._set_busy(True)
 
         def _on_done(_):
-            self._set_busy(False)
             self._ensure_datas()
             self._show_produtos(_start)
 
         def _on_error(exc):
-            self._set_busy(False)
             self.statusBar.set_ready()
             observability.log(AppEvent.ERROR, msg=str(exc), where='produtos', duration_s=round(time.time() - _start, 1))
 
@@ -325,43 +311,6 @@ class GuiMain(QMainWindow):
         observability.log(AppEvent.QUERY_PRODUTOS, start=start_str, end=end_str, duration_s=round(time.time() - _start, 1))
         self.statusBar.set_success()
         del dia, d
-
-    ## Método: ação do botão "OK" da área de Entregas
-    def on_ok_entregas(self) -> None:
-        if not service.is_connected():
-            observability.log(AppEvent.ERROR, msg='consulta sem conexão', where='on_ok_entregas')
-            return
-        dt: str = self.gEntregas.get_date()
-        if self.dtEnt == dt:
-            return
-        if dt in self.gEntregas.resumos:
-            self.gEntregas.set_text(self.gEntregas.resumos[dt])
-            self.dtEnt = dt
-            return
-
-        self.statusBar.set_loading()
-        self._set_busy(True)
-        _start = time.time()
-
-        def _on_done(arq):
-            self._set_busy(False)
-            if arq.empty:
-                self.statusBar.set_ready()
-                self.gEntregas.set_text(f'Sem entregas para {dt}.')
-                return
-            self.gEntregas.set_resumo(dt, arq)
-            self.gEntregas.set_text(self.gEntregas.res)
-            self.gEntregas.btCopiarTxt.setEnabled(True)
-            self.dtEnt = dt
-            observability.log(AppEvent.QUERY_ENTREGAS, date=dt, duration_s=round(time.time() - _start, 1))
-            self.statusBar.set_success()
-
-        def _on_error(exc):
-            self._set_busy(False)
-            self.statusBar.set_ready()
-            observability.log(AppEvent.ERROR, msg=str(exc), where='entregas', duration_s=round(time.time() - _start, 1))
-
-        self._run_async(lambda: manager.get_entregas_for_date(dt), _on_done, _on_error)
 
     ## Método: Ação do menu "Conectar com planilha"
     def on_conectar_planilha(self) -> None:

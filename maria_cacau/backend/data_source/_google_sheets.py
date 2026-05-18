@@ -19,6 +19,7 @@ class GoogleSheetsDataSource:
         self._client: gspread.Client | None = None
         self._sheet_id: str | None          = None
         self._vm: _SheetsViewModel | None   = None
+        self._lock                          = threading.Lock()
 
     ### Protocol
 
@@ -41,13 +42,15 @@ class GoogleSheetsDataSource:
 
     def fetch_orders_by_date(self, date: str) -> list[dict]:
         _guard.validate_date(date)
-        return self._vm.fetch({date})
+        with self._lock:
+            return self._vm.fetch({date})
 
     def fetch_orders_by_period(self, start: str, end: str) -> list[dict]:
         _guard.validate_date(start)
         _guard.validate_date(end)
         _guard.validate_date_range(start, end)
-        return self._vm.fetch(utils.date_range(start, end))
+        with self._lock:
+            return self._vm.fetch(utils.date_range(start, end))
 
     ### Interno
 

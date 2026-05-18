@@ -52,25 +52,181 @@ Maria-Cacau-Contagem/
 │               ├── cpf_validation/        # validação matemática de CPF com feedback visual
 │               ├── nota_fiscal/           # placeholder "Em breve" (v5.0)
 │               ├── products_resume/
-│               ├── orders_pendent/        # ✅ migrada — data/ + domain/ + presentation/
+│               ├── delivery/              # ✅ migrada — data/ + domain/ + presentation/
 │               ├── freight_query/
 │               └── status_bar/        # barra de status global (credenciais, planilha, loading)
 ├── pyproject.toml                # fonte única de verdade para deps e metadados
 └── ...
 ```
 
-## Padrão de arquitetura
-**Feature-first + Clean Arch + MVC**: cada funcionalidade vive numa pasta isolada com camadas bem definidas.
+## Princípio de Isolamento
 
-Estrutura padrão de uma feature migrada:
+O projeto é dividido em três mundos que não se conhecem entre si:
+
+```
+┌─────────────────────────────┐
+│  Aplicação (features/, UI)  │  Não sabe que existe backend/ nem datasource/
+└────────────┬────────────────┘
+             │ LocalClient (HTTPRequest/HTTPResponse)
+┌────────────▼────────────────┐
+│  Backend (backend/)         │  Não sabe que existe a aplicação nem o datasource diretamente
+└────────────┬────────────────┘
+             │ DataSourceProtocol
+┌────────────▼────────────────┐
+│  DataSource (data_source/)  │  Não sabe que existe o backend nem a aplicação
+└─────────────────────────────┘
+```
+
+**Aplicação:** conhece apenas o contrato HTTP (`HTTPRequest`, `HTTPResponse`). Não importa nada de `backend/`. Não sabe se o backend é local, remoto ou um mock.
+
+**Backend:** expõe rotas HTTP via Flask `test_client()`. Não importa nada de `features/`. Recebe requests, processa, devolve JSON. A única exceção é `core/storage` — usado pela infra de `data_source/_helper.py` para persistência de credenciais, sem regra de negócio.
+
+**DataSource:** acessa o Google Sheets. Não conhece Flask, não conhece nenhuma feature, não conhece `http_status`. Levanta `DataSourceError` com campos agnósticos de transporte (`code`, `user_message`, `dev_message`).
+
+**Visão de futuro:** hoje os três mundos vivem no mesmo repositório por conveniência. Quando o sistema migrar para Railway, o backend vira um serviço FastAPI independente e o `LocalClient` é trocado por um `HTTPClient` real — sem mudar nenhuma feature. Cada mundo pode ter seu próprio repositório e ciclo de deploy.
+
+---
+
+## Padrão de arquitetura de feature
+
+**Feature-first + Clean Arch + MVC**: cada funcionalidade vive numa pasta isolada com três camadas bem definidas. O **domínio é o centro** — tanto `data/` quanto `presentation/` importam de `domain/`, nunca uma da outra.
+
 ```
 feature/
-├── data/           # repository.py, apis.py, mapper.py — acesso a dados via LocalClient
-├── domain/         # models.py, use_case.py, signals.py, events.py — regras e contratos
-└── presentation/   # view.py, viewmodel.py, controller.py — UI e orquestração Qt
+├── domain/         # centro — models, contratos, comunicação entre camadas
+├── data/           # acesso a dados — olha para domain/, nunca para presentation/
+└── presentation/   # UI — olha para domain/, nunca para data/
 ```
 
 Features ainda não migradas usam a estrutura flat legada (`view.py`, `viewmodel.py`, etc. na raiz da pasta).
+
+Cada feature migrada deve ter um `README.md` na raiz da sua pasta documentando: o que a feature faz, diagrama de arquitetura (Mermaid flowchart), tabela de responsabilidade das classes, e diagramas de sequência do fluxo principal e do fluxo de erro. Ver `delivery/README.md` como template.
+
+### Domain
+
+É o único lugar de onde qualquer outra camada pode importar. Contém:
+
+**`models.py`** — todos os dataclasses da feature, sem exceção. Isso inclui modelos que só a camada de apresentação usa (ex: `DeliveryViewData`). A regra é: se é um contrato de dados entre camadas, vive em `domain/`, não na camada que o consome. Criar um model dentro de `presentation/` quebraria a dependência unidirecional.
+
+```python
+@dataclass
+class DeliveryModel:              # produzido pelo UseCase, consumido pelo ViewModel
+    deliveries: DeliveriesSummary
+    pendent_orders: list[PendentOrder]
+
+@dataclass
+class DeliveryViewData:           # produzido pelo ViewModel, consumido pela View
+    report: str                   # mesmo sendo só de UI, vive em domain/
+    chart_data: dict
+```
+
+**`use_case.py`** — orquestra a operação. Decide quando e como combinar dados, mas não sabe nada de UI nem de HTTP. Recebe o repository como dependência. Quando precisa de chamadas paralelas, usa `ThreadPoolExecutor`.
+
+```python
+class DeliveryUseCase:
+    def get_orders(self, date: str) -> DeliveryModel:
+        with ThreadPoolExecutor(max_workers=2) as executor:
+            future_d = executor.submit(self.repository.get_deliveries, date)
+            future_p = executor.submit(self.repository.get_pendent_payments, date)
+        return DeliveryModel(deliveries=future_d.result(), pendent_orders=future_p.result())
+```
+
+**`signals.py`** — mecanismo de comunicação entre threads. O ViewModel roda em background thread; o Controller vive na main thread do Qt. `pyqtSignal` garante que o resultado cruza threads com segurança. Fica em `domain/` porque é o canal da feature inteira — não exclusivo da UI.
+
+**`events.py`** — enum de eventos de observabilidade. Valores string para o log. Um valor por ação relevante do usuário ou resultado de consulta.
+
+### Data
+
+Responsável exclusivamente por buscar dados e converter para os tipos do domínio. Não conhece widgets, signals nem ViewModel.
+
+**`apis.py`** — uma classe por endpoint, herdando de `API`. Define apenas o `path` e parâmetros. Usa builder pattern para configurar a request antes de chamar `.call()`. Não trata erros.
+
+```python
+class DeliveriesAPI(API):
+    @property
+    def path(self) -> str: return "/orders/deliveries"
+
+    def for_date(self, date: str) -> "DeliveriesAPI":
+        self.parameters.params = {"date": date}
+        return self
+```
+
+**`mapper.py`** — funções puras via `@staticmethod` que convertem `HTTPResponse → domain model`. Uma classe mapper por endpoint. Mais `ErrorMapper`, que converte `HTTPResponseError → ErrorModel` lendo o JSON do backend.
+
+```python
+class ErrorMapper:
+    @staticmethod
+    def from_response(e: HTTPResponseError) -> ErrorModel:
+        # lê code/user_message/dev_message do JSON da resposta do backend
+        ...
+
+class DeliveriesMapper:
+    @staticmethod
+    def from_response(response: HTTPResponse) -> DeliveriesSummary:
+        ...
+```
+
+**`repository.py`** — orquestra API + Mapper. Captura `HTTPResponseError`, delega para `ErrorMapper`, e relança como `ErrorModel` (que é um `Exception`). Retorna domain models diretamente. É o único lugar da camada de dados que conhece os tipos do domínio como retorno.
+
+```python
+class OrdersRepository:
+    def get_deliveries(self, date: str) -> DeliveriesSummary:
+        try:
+            response = DeliveriesAPI().for_date(date).call()
+        except HTTPResponseError as e:
+            raise ErrorMapper.from_response(e)
+        return DeliveriesMapper.from_response(response)
+```
+
+### Presentation
+
+Responsável por UI, estado visual e orquestração Qt. Não conhece APIs, mappers ou o backend diretamente.
+
+**`view.py`** — só UI. Expõe `pyqtSignal` com nome de domínio (não com nome de widget). Não chama nada diretamente — emite signals que o controller vai conectar. Métodos públicos definem a interface que o controller usa:
+
+- `get_date() -> str` — lê o valor do date picker
+- `update_data(data: DeliveryViewData)` — atualiza a view com dados novos e re-habilita botões
+- `prepare_to_fetch()` — desabilita o botão principal durante a consulta
+
+Gerenciar estado dos botões é responsabilidade da view (`_update_buttons_state`). A view não sabe quando é certo ou errado habilitar — o controller/viewmodel decide e chama os métodos públicos.
+
+**`viewmodel.py`** — executa o UseCase em background thread (`ThreadPoolExecutor`) para não travar a UI. Constrói o `DeliveryViewData` a partir do `DeliveryModel` (é a única classe que conhece como montar o report e o `chart_data`). Emite resultado ou erro via signals do domínio.
+
+```python
+def _fetch(self, date: str):
+    try:
+        result = self.use_case.get_orders(date)
+        signals.report_generated.emit(self._build_view_data(result, date))
+    except ErrorModel as e:
+        signals.error.emit(e)
+    except Exception as e:
+        signals.error.emit(unexpected_error(e))
+```
+
+**`controller.py`** — cola tudo. Instancia View e ViewModel. Conecta signals da view às ações do ViewModel. Conecta signals do domínio às respostas que atualizam a view. Não tem lógica de negócio — só orquestra e loga via observabilidade.
+
+### Fluxo de erro
+
+O erro nasce no backend e chega ao usuário como popup, passando por camadas sem que nenhuma delas conheça detalhes da camada acima:
+
+```
+Backend levanta DataSourceError
+    → Flask errorhandler traduz para BackendError (adiciona http_status)
+    → Retorna JSON: { code, user_message, dev_message, http_status }
+    → LocalClient recebe status != 2xx → levanta HTTPResponseError
+
+Repository captura HTTPResponseError
+    → ErrorMapper.from_response() lê o JSON
+    → Relança como ErrorModel (code, user_message, dev_message)
+
+ViewModel._fetch() captura ErrorModel
+    → signals.error.emit(error)
+
+Controller.handle_error() recebe o signal
+    → view.popup.show(error.to_popup())
+```
+
+Para erros inesperados (bugs, exceções não mapeadas), `ViewModel._fetch()` captura `Exception` genérica e chama `unexpected_error(e)`, que gera um `ErrorModel` padrão — o fluxo continua igual a partir daí.
 
 ## Camada de network (`core/network/`)
 
@@ -84,7 +240,7 @@ from maria_cacau.core.network import API, HTTPMethod, configure, LocalClient
 **Setup no `__main__.py`** (uma vez):
 ```python
 from maria_cacau.core.network import configure, LocalClient
-configure(LocalClient(backend=Backend()))
+configure(LocalClient(backend=BackendServer()))
 ```
 
 **Criar um endpoint** — herdar de `API`, implementar `path`, ajustar `self.parameters` se necessário:
@@ -109,7 +265,7 @@ class CriarPedidoAPI(API):
 
 | Cenário | Como configurar |
 |---|---|
-| Backend local (agora) | `configure(LocalClient(backend=Backend()))` |
+| Backend local (agora) | `configure(LocalClient(backend=BackendServer()))` |
 | API HTTP real (futuro) | `configure(HTTPClient(base_url="https://..."))` — `HTTPClient` ainda não implementado |
 
 **Override para testes:**
@@ -202,7 +358,7 @@ Módulo `maria_cacau/core/charts.py` — widget reutilizável baseado em `matplo
 
 **Uso nas views**:
 - `products_resume_view.py`: `ChartWidget(ChartType.BAR)` com `QComboBox` para alternar para pizza
-- `orders_pendent_view.py`: `ChartWidget(ChartType.PIE)` fixo (modalidades de entrega)
+- `delivery/presentation/view.py`: `ChartWidget(ChartType.PIE)` fixo (modalidades de entrega)
 
 ## Assets (`asset()`)
 Qualquer path de asset deve ser resolvido via `asset('images/foo.png')` de `maria_cacau/__init__.py`.

@@ -30,3 +30,12 @@ def translate(e: DataSourceError) -> BackendError:
     backend.dev_message  = e.dev_message
     backend.http_status  = _HTTP_STATUS.get(type(e), 500)
     return backend
+
+
+def generic_mapper(e: Exception) -> BackendError:
+    backend = BackendError(str(e))
+    backend.code         = "SERVER_ERROR"
+    backend.user_message = "Erro interno do servidor."
+    backend.dev_message  = f"{type(e).__name__}: {e}"
+    backend.http_status  = 500
+    return backend

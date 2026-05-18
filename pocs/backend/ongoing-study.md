@@ -28,13 +28,31 @@ O problema que motivou o backend: as features conhecem `SheetColumns`, `pandas.D
 | Criar `shared/models.py` (dataclasses do domínio) | Concluído |
 | Criar `shared/mapper.py` (`OrderMapper`) | Concluído |
 | Criar `subfeatures/deliveries/` (repo + service + route) | Concluído |
-| Criar `subfeatures/payments/` (repo + service) | Concluído (service pendente de testes reais) |
+| Criar `subfeatures/payments/` (repo + service) | Concluído |
 | Criar `subfeatures/payments/route.py` | Concluído |
 | Criar `subfeatures/summary/` (repo + service + route) | Pendente (service não implementado) |
 | Definir contrato de erros (`backend/errors/`) | Concluído |
+| Adicionar `generic_mapper` em `backend/errors/_mapper.py` | Concluído |
 | Criar `routes/auth.py` | Pendente |
 | Criar `routes/source.py` | Pendente |
-| Migrar `orders_pendent` para usar o backend | Pendente |
+| Migrar `delivery` — estrutura `data/`, `domain/`, `presentation/` | Concluído |
+| Migrar `delivery` — implementar `domain/use_case.py` | Concluído |
+| Migrar `delivery` — `DeliveryViewData` com `report` + `chart_data` (ViewModel constrói) | Concluído |
+| Migrar `delivery` — tratamento de erro (ErrorMapper → Repository → ViewModel → Controller) | Concluído |
+| Migrar `delivery` — habilitar botões após dados carregarem + travar botão durante fetch | Concluído |
+| Migrar `delivery` — remover `view-old.py` | Concluído |
+| Migrar `delivery` — botões funcionais (copiar relatório + copiar/salvar gráfico) | Concluído |
+| Migrar `delivery` — renomear `orders_pendent` → `delivery` + classes `Orders*` → `Delivery*` | Concluído |
+| Migrar `delivery` — `__init__` chain para export limpo (`sub_features → delivery → presentation`) | Concluído |
+| Criar `core/error/` (`ErrorModel` + `errors.py`) | Concluído |
+| Adicionar `unexpected_error` e `http_error` em `core/error/errors.py` | Concluído |
+| Atualizar `home_view.py` para usar `DeliveryController` via `sub_features` | Concluído |
+| Configurar `LocalClient(BackendServer())` no `__main__.py` | Concluído |
+| Bridge temporária: restaurar credenciais do cache no startup (sem `routes/auth`) | Concluído |
+| `threading.Lock` no `GoogleSheetsDataSource` (serializar acesso à planilha) | Concluído |
+| Normalizar headers em `data_source/_utils.to_dicts` | Concluído |
+| Corrigir divergências em `sheet_mapper.py` (AMOUNT_PENDENT, LABEL_THEME, BOX_ART, PaymentCols) | Concluído |
+| Documentar divergências de headers em `pocs/sheets-analysis/column-mismatches.md` | Concluído |
 
 ---
 
@@ -260,12 +278,18 @@ Vive em `data_source/_google_sheets.py`. Singleton exposto como `data_source: Fi
 
 ## Próximos Passos (ordem sugerida)
 
-1. Implementar `subfeatures/summary/service.py` — resumo de pedidos por período
-2. Criar `routes/auth.py` — `POST /auth` + `DELETE /auth`
-3. Criar `routes/source.py` — CRUD de planilhas
-4. Criar `routes/status.py` — `GET /status`
-5. Registrar rotas de infra (`auth`, `source`, `status`) no `_server.py`
-6. Migrar `orders_pendent` — limpar `use_case`, reescrever `repository`
+### Bloco 1 — Bridge temporária de autenticação (próximo)
+
+1. No startup do `BackendServer`, ler credenciais e `sheet_id` salvos em `core/storage` via `_helper.py` e repassar ao `data_source` (`set_credentials` + `set_sheet`) — sem precisar das rotas `auth`/`source` ainda
+2. Objetivo: validar a feature `orders_pendent` end-to-end com dados reais antes de implementar as rotas de infra
+
+### Bloco 2 — Backend (após validação da bridge)
+
+3. Implementar `subfeatures/summary/service.py` — resumo de pedidos por período
+4. Criar `routes/auth.py` — `POST /auth` + `DELETE /auth`
+5. Criar `routes/source.py` — CRUD de planilhas
+6. Criar `routes/status.py` — `GET /status`
+10. Registrar rotas de infra (`auth`, `source`, `status`) no `_server.py`
 
 ---
 

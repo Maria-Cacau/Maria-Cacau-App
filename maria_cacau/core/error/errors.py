@@ -2,6 +2,8 @@
 
 from typing import NamedTuple
 
+from .models import ErrorModel
+
 
 class AppError(NamedTuple):
     """Estrutura de uma mensagem de erro/info para exibição no PopUp."""
@@ -123,6 +125,24 @@ def planilha_conectada(nome: str) -> AppError:
         titulo="Concluído",
         subtitulo="Planilha selecionada",
         detalhe=f'"{nome}" foi selecionada com sucesso.',
+    )
+
+
+def unexpected_error(cause: Exception) -> ErrorModel:
+    """Erro genérico para exceções não tratadas."""
+    return ErrorModel(
+        code="E001",
+        user_message="Um erro inesperado aconteceu. Contate o suporte técnico.",
+        dev_message=f"{type(cause).__name__}: {cause}",
+    )
+
+
+def http_error(status_code: int) -> ErrorModel:
+    """Erro HTTP sem body JSON — resposta de erro não estruturada do servidor."""
+    return ErrorModel(
+        code=f"HTTP{status_code}",
+        user_message="Erro ao buscar os dados. Tente novamente.",
+        dev_message=f"HTTP {status_code} — body não é JSON",
     )
 
 

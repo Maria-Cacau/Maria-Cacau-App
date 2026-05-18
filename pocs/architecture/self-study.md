@@ -13,17 +13,82 @@ Estudar e definir a arquitetura ideal para o projeto Maria Cacau (PyQt6 + Python
 
 ## Status atual
 
-**Fase:** estudo e definição concluídos — pronto para iniciar aplicação.
+**Fase:** refatoração arquitetural em andamento — branch `feat/arch-MVC`.
 
 | Etapa | Status |
 |---|---|
 | Definir arquitetura geral | Concluído — ver `overview.md` |
 | Estudar padrões Python (ABC, Protocol, dataclass, enum) | Concluído — ver `CBL.md` |
 | Estudar modularização e Design System | Concluído — ver `overview.md` |
-| Ajustar arquitetura atual do projeto | Em andamento (branch separada) |
+| Criar `core/network/` (LocalClient + API) | Concluído |
+| Criar `backend/` com DataSource e serviços | Concluído — ver `pocs/backend/ongoing-study.md` |
+| Migrar `orders_pendent` — camada `data/` | Concluído |
+| Migrar `orders_pendent` — camada `domain/` | Concluído |
+| Migrar `orders_pendent` — camada `presentation/` | Concluído |
+| Criar `core/error/` com `ErrorModel` | Concluído |
+| Atualizar `home_view.py` para usar `OrdersController` | Concluído |
+| Configurar `LocalClient` no `__main__.py` | Concluído |
+| Remover dependência de `core` dentro do Design System | Concluído (PR #39) |
+| Validar `orders_pendent` end-to-end com dados reais | Concluído |
+| Implementar botões funcionais de `orders_pendent` (copiar/download) | Pendente |
 | Construir o Design System | Pendente |
 | Atualizar app para novas telas (protótipo aprovado) | Pendente |
 | Adicionar feature de novo pedido | Pendente |
+
+---
+
+## Estado atual da migração MVC
+
+A refatoração segue o fluxo de fora pra dentro: primeiro a infraestrutura, depois as features.
+
+**O que foi feito:**
+1. **DataSource** (`backend/data_source/`) — comunicação com o Google Sheets isolada numa camada própria. Retorna `list[dict]` neutro, sem acoplamento ao domínio
+2. **Backend** (`backend/`) — Flask in-process com dois serviços operacionais: `GET /orders/deliveries` e `GET /orders/payments-pendent`
+3. **Feature `orders_pendent` — camada `data/`** — `apis.py`, `repository.py`, `mapper.py` conectando à API do backend via `LocalClient`
+4. **Feature `orders_pendent` — camada `domain/`** — `models.py`, `use_case.py` (chamadas paralelas), `signals.py`, `events.py`
+
+**Concluído nas últimas sessões:**
+- `core/error/` — `ErrorModel` (duck typing + `to_popup()`) + `errors.py` com `unexpected_error` e `http_error`
+- `orders_pendent` — camada `presentation/` completa: `OrdersViewData`, report no ViewModel, tratamento de erro via `ErrorMapper → Repository → ViewModel → Controller`
+- `home_view.py` — usa `OrdersController`, sem referências ao fluxo legado
+- `__main__.py` — bridge temporária restaura credenciais e `sheet_id` do cache local no startup
+- `GoogleSheetsDataSource` — `threading.Lock` para serializar acesso concorrente à planilha
+- `core/network/api.py` — `API.call()` lança `HTTPResponseError` para respostas não-2xx
+- `backend/errors/_mapper.py` — `generic_mapper` para exceções não tratadas
+- `data_source/_utils.to_dicts` — normalização de headers (whitespace colapsado)
+- `sheet_mapper.py` — corrigidas divergências de `AMOUNT_PENDENT`, `LABEL_THEME`, `BOX_ART`, `PaymentCols`
+- Feature `orders_pendent` validada end-to-end com dados reais da planilha
+
+**Próximo:**
+- Implementar botões funcionais de `orders_pendent`: copiar relatório, download relatório, copiar gráfico, download gráfico
+
+**Bloqueio resolvido (PR #39):**
+O Design System tinha uma dependência de `core` — o que impedia `core` de importar do Design System para o `ErrorModel`. Essa dependência foi removida. A direção `core → design_system` agora é válida.
+
+---
+
+## ErrorModel (`core/errors.py`)
+
+### Motivação
+Os erros do backend (`BackendError`) e do data source (`DataSourceError`) seguem o mesmo contrato:
+```
+code: str          # ex: "DS01", "BE04"
+user_message: str  # mensagem amigável para o usuário
+dev_message: str   # detalhe técnico para debug
+```
+A camada de `presentation/` precisa converter esse erro em um popup do Design System — sem conhecer de onde veio o erro.
+
+### Solução: duck typing
+`ErrorModel` em `core/errors.py` aceita qualquer objeto que tenha `code`, `user_message`, `dev_message` (não precisa herdar nada). Expõe um método para criar o `PopupModel` do Design System a partir desses dados.
+
+### Regras de dependência
+
+| Módulo | Pode importar de |
+|---|---|
+| `design_system/` | `assets/` apenas — zero dependência de `core` ou `features` |
+| `core/` | `design_system/` (permitido após PR #39) |
+| `features/` | `core/`, `design_system/`, `assets/` |
+| `backend/` | `core/storage` apenas (isolamento total) |
 
 ---
 
@@ -69,9 +134,10 @@ Registradas em `overview.md`. Não reabrir sem motivo claro.
 
 ## Próximos passos para retomar
 
-1. Continuar o refactor arquitetural na branch em andamento
-2. Definir quais features refatorar primeiro (começar pelas mais simples)
-3. Estruturar a pasta `design_system/` com a nova organização
+1. Bridge temporária de autenticação — restaurar credenciais do cache no startup do `BackendServer` para validar `orders_pendent` end-to-end
+2. Implementar `subfeatures/summary/service.py` no backend
+3. Criar rotas de infra do backend (`auth`, `source`, `status`)
+4. Estruturar a pasta `design_system/` com a nova organização (fase posterior)
 
 ---
 
