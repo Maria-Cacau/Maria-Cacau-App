@@ -29,6 +29,8 @@ Estudar e definir a arquitetura ideal para o projeto Maria Cacau (PyQt6 + Python
 | Atualizar `home_view.py` para usar `OrdersController` | Concluído |
 | Configurar `LocalClient` no `__main__.py` | Concluído |
 | Remover dependência de `core` dentro do Design System | Concluído (PR #39) |
+| Validar `orders_pendent` end-to-end com dados reais | Concluído |
+| Implementar botões funcionais de `orders_pendent` (copiar/download) | Pendente |
 | Construir o Design System | Pendente |
 | Atualizar app para novas telas (protótipo aprovado) | Pendente |
 | Adicionar feature de novo pedido | Pendente |
@@ -45,14 +47,20 @@ A refatoração segue o fluxo de fora pra dentro: primeiro a infraestrutura, dep
 3. **Feature `orders_pendent` — camada `data/`** — `apis.py`, `repository.py`, `mapper.py` conectando à API do backend via `LocalClient`
 4. **Feature `orders_pendent` — camada `domain/`** — `models.py`, `use_case.py` (chamadas paralelas), `signals.py`, `events.py`
 
-**Concluído nesta sessão:**
-- `core/error/` — `ErrorModel` (duck typing + `to_popup()`) + `errors.py` movido
+**Concluído nas últimas sessões:**
+- `core/error/` — `ErrorModel` (duck typing + `to_popup()`) + `errors.py` com `unexpected_error` e `http_error`
 - `orders_pendent` — camada `presentation/` completa: `OrdersViewData`, report no ViewModel, tratamento de erro via `ErrorMapper → Repository → ViewModel → Controller`
 - `home_view.py` — usa `OrdersController`, sem referências ao fluxo legado
-- `__main__.py` — `configure(LocalClient(BackendServer()))` adicionado
+- `__main__.py` — bridge temporária restaura credenciais e `sheet_id` do cache local no startup
+- `GoogleSheetsDataSource` — `threading.Lock` para serializar acesso concorrente à planilha
+- `core/network/api.py` — `API.call()` lança `HTTPResponseError` para respostas não-2xx
+- `backend/errors/_mapper.py` — `generic_mapper` para exceções não tratadas
+- `data_source/_utils.to_dicts` — normalização de headers (whitespace colapsado)
+- `sheet_mapper.py` — corrigidas divergências de `AMOUNT_PENDENT`, `LABEL_THEME`, `BOX_ART`, `PaymentCols`
+- Feature `orders_pendent` validada end-to-end com dados reais da planilha
 
 **Próximo:**
-- Bridge temporária: restaurar credenciais do cache local no startup para validar a feature end-to-end (ver `pocs/backend/ongoing-study.md`)
+- Implementar botões funcionais de `orders_pendent`: copiar relatório, download relatório, copiar gráfico, download gráfico
 
 **Bloqueio resolvido (PR #39):**
 O Design System tinha uma dependência de `core` — o que impedia `core` de importar do Design System para o `ErrorModel`. Essa dependência foi removida. A direção `core → design_system` agora é válida.

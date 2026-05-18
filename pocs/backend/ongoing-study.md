@@ -28,10 +28,11 @@ O problema que motivou o backend: as features conhecem `SheetColumns`, `pandas.D
 | Criar `shared/models.py` (dataclasses do domínio) | Concluído |
 | Criar `shared/mapper.py` (`OrderMapper`) | Concluído |
 | Criar `subfeatures/deliveries/` (repo + service + route) | Concluído |
-| Criar `subfeatures/payments/` (repo + service) | Concluído (service pendente de testes reais) |
+| Criar `subfeatures/payments/` (repo + service) | Concluído |
 | Criar `subfeatures/payments/route.py` | Concluído |
 | Criar `subfeatures/summary/` (repo + service + route) | Pendente (service não implementado) |
 | Definir contrato de erros (`backend/errors/`) | Concluído |
+| Adicionar `generic_mapper` em `backend/errors/_mapper.py` | Concluído |
 | Criar `routes/auth.py` | Pendente |
 | Criar `routes/source.py` | Pendente |
 | Migrar `orders_pendent` — estrutura `data/`, `domain/`, `presentation/` | Concluído |
@@ -40,10 +41,16 @@ O problema que motivou o backend: as features conhecem `SheetColumns`, `pandas.D
 | Migrar `orders_pendent` — tratamento de erro (ErrorMapper → Repository → ViewModel → Controller) | Concluído |
 | Migrar `orders_pendent` — habilitar botões após dados carregarem | Concluído |
 | Migrar `orders_pendent` — remover `view-old.py` | Concluído |
+| Migrar `orders_pendent` — botões funcionais (copiar/download relatório e gráfico) | Pendente |
 | Criar `core/error/` (`ErrorModel` + `errors.py`) | Concluído |
+| Adicionar `unexpected_error` e `http_error` em `core/error/errors.py` | Concluído |
 | Atualizar `home_view.py` para usar `OrdersController` | Concluído |
 | Configurar `LocalClient(BackendServer())` no `__main__.py` | Concluído |
-| Bridge temporária: restaurar credenciais do cache no startup (sem `routes/auth`) | Pendente |
+| Bridge temporária: restaurar credenciais do cache no startup (sem `routes/auth`) | Concluído |
+| `threading.Lock` no `GoogleSheetsDataSource` (serializar acesso à planilha) | Concluído |
+| Normalizar headers em `data_source/_utils.to_dicts` | Concluído |
+| Corrigir divergências em `sheet_mapper.py` (AMOUNT_PENDENT, LABEL_THEME, BOX_ART, PaymentCols) | Concluído |
+| Documentar divergências de headers em `pocs/sheets-analysis/column-mismatches.md` | Concluído |
 
 ---
 
