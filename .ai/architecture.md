@@ -190,6 +190,14 @@ Responsável por UI, estado visual e orquestração Qt. Não conhece APIs, mappe
 
 Gerenciar estado dos botões é responsabilidade da view (`_update_buttons_state`). A view não sabe quando é certo ou errado habilitar — o controller/viewmodel decide e chama os métodos públicos.
 
+Toda view deve expor uma `@property view_title -> str` com o título da feature. Essa property é usada internamente pela view (ex: `self.group_box(self.view_title)`) e pode ser consumida por qualquer outro componente que precise do título — evita hardcode espalhado.
+
+```python
+@property
+def view_title(self) -> str:
+    return "Nome da Feature"
+```
+
 **`viewmodel.py`** — executa o UseCase em background thread (`ThreadPoolExecutor`) para não travar a UI. Constrói o `DeliveryViewData` a partir do `DeliveryModel` (é a única classe que conhece como montar o report e o `chart_data`). Emite resultado ou erro via signals do domínio.
 
 ```python
