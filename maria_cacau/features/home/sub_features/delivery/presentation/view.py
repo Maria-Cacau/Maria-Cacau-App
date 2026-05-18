@@ -1,7 +1,8 @@
 """View da feature Delivery: resumo diário de entregas e pagamentos pendentes."""
 
 from PyQt6.QtCore import QDate, Qt, pyqtSignal
-from PyQt6.QtWidgets import QDateEdit, QHBoxLayout, QSizePolicy, QVBoxLayout, QWidget
+from PyQt6.QtWidgets import (QDateEdit, QHBoxLayout, QSizePolicy, QVBoxLayout,
+                             QWidget)
 
 from maria_cacau.assets import strings
 from maria_cacau.core.charts import ChartType, ChartWidget
