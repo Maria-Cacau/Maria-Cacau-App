@@ -19,9 +19,8 @@ from maria_cacau.core.sheets.service import service
 from maria_cacau.core.storage.cache import CacheStorage
 from maria_cacau.features.home.sub_features import (CpfValidationController,
                                                     DeliveryController,
-                                                    NotaFiscalController)
-from maria_cacau.features.home.sub_features.freight_query.freight_query_view import \
-    GuiConsFrete
+                                                    NotaFiscalController,
+                                                    ShippingRateController)
 from maria_cacau.features.home.sub_features.products_resume.products_resume_view import \
     GuiProdutos
 from maria_cacau.features.home.sub_features.status_bar.status_bar_view import \
@@ -121,7 +120,7 @@ class GuiMain(QMainWindow):
         self.deliveriesFeature = DeliveryController()
         self.notaFiscal = NotaFiscalController()
         self.cpfFeature = CpfValidationController()
-        self.gConsCep = GuiConsFrete()
+        self.shippingRate = ShippingRateController()
 
         self.statusBar = GuiStatusBar()
         self.setStatusBar(self.statusBar)
@@ -133,7 +132,7 @@ class GuiMain(QMainWindow):
         self.datas: dict = {}
         self.dtEnt: str = ''
 
-        del tamTela, self.gConsCep
+        del tamTela, self.shippingRate
 
     def closeEvent(self, event) -> None:
         observability.log(AppEvent.APP_CLOSE)
@@ -194,7 +193,7 @@ class GuiMain(QMainWindow):
 
         farRightLayout = QVBoxLayout()
         farRightLayout.addWidget(self.cpfFeature.view.root)
-        farRightLayout.addWidget(self.gConsCep.root)
+        farRightLayout.addWidget(self.shippingRate.view.root)
         bottomLayout.addLayout(farRightLayout, stretch=3)
 
         rightLayout.addLayout(bottomLayout, stretch=4)
