@@ -34,7 +34,10 @@ Maria-Cacau-Contagem/
 │   │   │   ├── security.py               # SecurityStorage — arquivo protegido em ~/.mariacacau/
 │   │   │   └── cache.py                  # CacheStorage — JSON em ~/.mariacacau/
 │   │   ├── observability.py              # AppEvent enum + singleton `observability` → logs.log
-│   │   └── errors.py                     # códigos de erro com docstrings
+│   │   └── error/
+│   │       ├── errors.py                 # AppError + constantes A001–E001, C001–C005
+│   │       ├── models.py                 # ErrorModel — duck typing (code/user_message/dev_message) → to_popup() → PopupModel
+│   │       └── __init__.py               # exports: AppError, constantes, ErrorModel
 │   ├── design_system/
 │   │   ├── aux_widgets.py        # factory de widgets reutilizáveis
 │   │   ├── aux_frames.py         # frame composto (label + input + botão)
@@ -252,5 +255,5 @@ Rotas de infra (`auth`, `source`, `status`) serão registradas diretamente no `_
 - **Versão, ano e empresa** → `pyproject.toml` (`[project]` e `[tool.maria-cacau]`)
 - **Metadados do app** (nome exibido, copyright, ícones) → `maria_cacau/__init__.py` (lê do pyproject.toml)
 - **Textos de UI** → `maria_cacau/assets/strings.py`
-- **Erros** → `maria_cacau/core/errors.py`
+- **Erros** → `maria_cacau/core/error/` (`errors.py` = AppError e constantes; `models.py` = ErrorModel)
 - **Paths de assets** → `asset()` em `maria_cacau/__init__.py`
