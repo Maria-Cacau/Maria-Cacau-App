@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 from typing import Type, TypeVar, final
 
 from ._config import get_client
+from ._errors import HTTPResponseError
 from ._request import HTTPRequest
 from ._response import HTTPResponse
 
@@ -23,7 +24,10 @@ class API(ABC):
     @final
     def call(self) -> HTTPResponse:
         """Realiza a request"""
-        return get_client().execute(self.parameters)
+        response = get_client().execute(self.parameters)
+        if not response.is_success:
+            raise HTTPResponseError(response.status_code, response)
+        return response
 
     @final
     def entity(self, cls: Type[EntityT]) -> EntityT:
