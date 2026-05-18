@@ -68,7 +68,7 @@ feature/
 |---|---|---|
 | `GET` | `/orders/deliveries` | ✅ Implementado |
 | `GET` | `/orders/payments-pendent` | ✅ Implementado |
-| `GET` | `/orders` | ⏳ Pendente (`summary/service.py` não implementado) |
+| `GET` | `/orders` | ✅ Implementado |
 | `POST/DELETE` | `/auth` | ⏳ Pendente |
 | `POST/GET/PUT/DELETE` | `/source` | ⏳ Pendente |
 | `GET` | `/status` | ⏳ Pendente |
