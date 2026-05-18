@@ -6,6 +6,7 @@ import gspread
 from google.oauth2.service_account import Credentials
 
 from . import _utils as utils
+from ._normalizer import SheetNormalizer
 from ._viewmodel import _SheetsViewModel
 from .errors._handler import _guard
 
@@ -43,14 +44,16 @@ class GoogleSheetsDataSource:
     def fetch_orders_by_date(self, date: str) -> list[dict]:
         _guard.validate_date(date)
         with self._lock:
-            return self._vm.fetch({date})
+            result = self._vm.fetch({date})
+            return SheetNormalizer.normalize(result)
 
     def fetch_orders_by_period(self, start: str, end: str) -> list[dict]:
         _guard.validate_date(start)
         _guard.validate_date(end)
         _guard.validate_date_range(start, end)
         with self._lock:
-            return self._vm.fetch(utils.date_range(start, end))
+            result = self._vm.fetch(utils.date_range(start, end))
+            return SheetNormalizer.normalize(result)
 
     ### Interno
 
