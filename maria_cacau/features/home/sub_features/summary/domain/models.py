@@ -26,7 +26,7 @@ class DaySummary:
 
 
 @dataclass
-class ProductsResumeSummary:
+class ProductsSummary:
     start: str
     end: str
     total_orders: int

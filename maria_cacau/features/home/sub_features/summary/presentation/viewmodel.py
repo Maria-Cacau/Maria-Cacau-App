@@ -4,16 +4,16 @@ from concurrent.futures import ThreadPoolExecutor
 
 from maria_cacau.core.error import ErrorModel, unexpected_error
 
-from ..domain.models import ProductCount, ProductsResumeSummary, ProductsViewData
+from ..domain.models import ProductCount, ProductsSummary, ProductsViewData
 from ..domain.signals import signals
-from ..domain.use_case import ProductsResumeUseCase
+from ..domain.use_case import SummaryUseCase
 
 _DIVIDER = "\n\n" + "-" * 55
 
 
-class ProductsResumeViewModel:
+class SummaryViewModel:
     def __init__(self) -> None:
-        self.use_case = ProductsResumeUseCase()
+        self.use_case = SummaryUseCase()
         self.executor = ThreadPoolExecutor(max_workers=1)
 
     def on_generate(self, start: str, end: str) -> None:
@@ -29,13 +29,13 @@ class ProductsResumeViewModel:
         except Exception as e:
             signals.error.emit(unexpected_error(e))
 
-    def _build_view_data(self, summary: ProductsResumeSummary) -> ProductsViewData:
+    def _build_view_data(self, summary: ProductsSummary) -> ProductsViewData:
         return ProductsViewData(
             report=self._build_report(summary),
             chart_data={p.name: p.quantity for p in summary.products},
         )
 
-    def _build_report(self, summary: ProductsResumeSummary) -> str:
+    def _build_report(self, summary: ProductsSummary) -> str:
         header = (
             f"Entre {summary.start} e {summary.end} há {summary.total_orders} pedido(s)\n"
             + _products_lines(summary.products)

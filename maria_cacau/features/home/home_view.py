@@ -94,7 +94,7 @@ class GuiMain(QMainWindow):
         root = _BackgroundWidget('maria_cacau/assets/images/background.png')
         self.setCentralWidget(root)
 
-        self.productsResume = ProductsResumeController()
+        self.summaryFeature = SummaryController()
         self.deliveriesFeature = DeliveryController()
         self.notaFiscal = NotaFiscalController()
         self.cpfFeature = CpfValidationController()
@@ -158,7 +158,7 @@ class GuiMain(QMainWindow):
     ## ------------------------------------------------------------------------------------------------
     ## Layout principal:
         mainLayout = QHBoxLayout(root)
-        mainLayout.addWidget(self.productsResume.view.root, stretch=3)
+        mainLayout.addWidget(self.summaryFeature.view.root, stretch=3)
 
         rightLayout = QVBoxLayout()
         rightLayout.addWidget(self.deliveriesFeature.view.root, stretch=8)

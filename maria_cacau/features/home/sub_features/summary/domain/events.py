@@ -10,4 +10,4 @@ class FeatureEvents(Enum):
     DOWNLOAD_GRAPH_ACTION    = 'Download graph triggered'
     CHANGE_CHART_TYPE_ACTION = 'Change chart type triggered'
 
-    QUERY = 'QUERY  feature=products_resume'
+    QUERY = 'QUERY  feature=summary'

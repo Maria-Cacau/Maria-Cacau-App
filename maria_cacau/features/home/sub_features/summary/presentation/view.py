@@ -12,7 +12,7 @@ from maria_cacau.design_system.gui_popup import GuiPopup
 from ..domain.models import ProductsViewData
 
 
-class ProductsResumeView(QWidget, AuxWidgets):
+class SummaryView(QWidget, AuxWidgets):
     generate_report   = pyqtSignal()
     copy_report       = pyqtSignal()
     copy_graph        = pyqtSignal()

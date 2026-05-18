@@ -8,14 +8,14 @@ from maria_cacau.core.observability import observability
 from ..domain.events import FeatureEvents as ObsEv
 from ..domain.models import ProductsViewData
 from ..domain.signals import signals
-from .view import ProductsResumeView
-from .viewmodel import ProductsResumeViewModel
+from .view import SummaryView
+from .viewmodel import SummaryViewModel
 
 
-class ProductsResumeController:
+class SummaryController:
     def __init__(self) -> None:
-        self.view = ProductsResumeView()
-        self.viewmodel = ProductsResumeViewModel()
+        self.view = SummaryView()
+        self.viewmodel = SummaryViewModel()
         self._setup_actions()
 
     def _setup_actions(self) -> None:

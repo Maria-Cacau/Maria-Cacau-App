@@ -5,9 +5,9 @@ from typing import Final
 from PyQt6.QtCore import QObject, pyqtSignal
 
 
-class ProductsResumeSignals(QObject):
+class SummarySignals(QObject):
     report_generated = pyqtSignal(object)
     error = pyqtSignal(object)
 
 
-signals: Final = ProductsResumeSignals()
+signals: Final = SummarySignals()

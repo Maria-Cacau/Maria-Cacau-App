@@ -2,22 +2,22 @@
 
 from collections import defaultdict
 
-from ..data.repository import ProductsResumeRepository
+from ..data.repository import SummaryRepository
 from .models import (DaySummary, OrderDetail, ProductCount,
-                     ProductsResumeSummary)
+                     ProductsSummary)
 
 
-class ProductsResumeUseCase:
+class SummaryUseCase:
     def __init__(self) -> None:
-        self._repo = ProductsResumeRepository()
+        self._repo = SummaryRepository()
 
-    def get_summary(self, start: str, end: str) -> ProductsResumeSummary:
+    def get_summary(self, start: str, end: str) -> ProductsSummary:
         orders = self._repo.get_by_period(start, end)
         return self._build_summary(orders, start, end)
 
     def _build_summary(
         self, orders: list[OrderDetail], start: str, end: str
-    ) -> ProductsResumeSummary:
+    ) -> ProductsSummary:
         by_day: dict[str, list[OrderDetail]] = defaultdict(list)
         for order in orders:
             by_day[order.delivery_date].append(order)
@@ -40,7 +40,7 @@ class ProductsResumeUseCase:
                 products=_to_sorted_counts(day_totals),
             ))
 
-        return ProductsResumeSummary(
+        return ProductsSummary(
             start=start,
             end=end,
             total_orders=len(orders),

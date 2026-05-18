@@ -7,7 +7,7 @@ from .apis import OrdersSummaryAPI
 from .mapper import ErrorMapper, OrdersSummaryMapper
 
 
-class ProductsResumeRepository:
+class SummaryRepository:
     def get_by_period(self, start: str, end: str) -> list[OrderDetail]:
         """Busca pedidos do período; converte HTTPResponseError em ErrorModel antes de relançar."""
         try:
