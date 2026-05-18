@@ -3,8 +3,7 @@
 from collections import defaultdict
 
 from ..data.repository import SummaryRepository
-from .models import (DaySummary, OrderDetail, ProductCount,
-                     ProductsSummary)
+from .models import DaySummary, OrderDetail, ProductCount, ProductsSummary
 
 
 class SummaryUseCase:
