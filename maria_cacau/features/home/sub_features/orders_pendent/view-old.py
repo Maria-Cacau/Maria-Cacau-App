@@ -6,10 +6,8 @@ from PyQt6.QtCore import QDate, Qt
 from PyQt6.QtWidgets import QDateEdit, QHBoxLayout, QSizePolicy, QVBoxLayout
 
 from maria_cacau.assets import strings
-from maria_cacau.core import errors
 from maria_cacau.core.charts import ChartType, ChartWidget
 from maria_cacau.design_system.aux_widgets import AuxWidgets
-from maria_cacau.design_system.gui_popup import GuiPopup
 
 
 class GuiEntregas(AuxWidgets):
@@ -21,8 +19,6 @@ class GuiEntregas(AuxWidgets):
 
         self.resumos: dict = {}
         self.res: str = ''
-
-        self.popup: GuiPopup = GuiPopup()
 
         self.setup_ui()
 
@@ -118,4 +114,4 @@ class GuiEntregas(AuxWidgets):
             self.btSalvarGrafico.setEnabled(True)
 
         except Exception:
-            self.popup.show_popup(errors.E001)
+            pass

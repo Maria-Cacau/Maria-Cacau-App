@@ -13,12 +13,10 @@ from PyQt6.QtWidgets import (QApplication, QDialog, QDialogButtonBox,
                              QMenuBar, QMessageBox, QVBoxLayout, QWidget)
 
 from maria_cacau.assets import strings
-from maria_cacau.core import errors
 from maria_cacau.core.observability import AppEvent, observability
 from maria_cacau.core.sheets.manager import manager
 from maria_cacau.core.sheets.service import service
 from maria_cacau.core.storage.cache import CacheStorage
-from maria_cacau.design_system.gui_popup import GuiPopup
 from maria_cacau.features.home.sub_features.cpf_validation.cpf_validation_view import \
     GuiValiCpf
 from maria_cacau.features.home.sub_features.freight_query.freight_query_view import \
@@ -263,14 +261,12 @@ class GuiMain(QMainWindow):
             self._worker.error.connect(lambda exc: (
                 observability.log(AppEvent.ERROR, msg=str(exc)),
                 self.statusBar.set_ready(),
-                GuiPopup().show_popup(errors.E001),
             ))
         self._thread.start()
 
     ## Método: Ação do botão "OK" da área de Produtos
     def on_ok_produtos(self) -> None:
         if not service.is_connected():
-            GuiPopup().show_popup(errors.C004)
             return
 
         _start = time.time()
@@ -292,7 +288,6 @@ class GuiMain(QMainWindow):
             self._set_busy(False)
             self.statusBar.set_ready()
             observability.log(AppEvent.ERROR, msg=str(exc), where='produtos', duration_s=round(time.time() - _start, 1))
-            GuiPopup().show_popup(errors.E001)
 
         self._run_async(manager.load_cadastro, _on_done, _on_error)
 
@@ -335,7 +330,6 @@ class GuiMain(QMainWindow):
     def on_ok_entregas(self) -> None:
         if not service.is_connected():
             observability.log(AppEvent.ERROR, msg='consulta sem conexão', where='on_ok_entregas')
-            GuiPopup().show_popup(errors.C004)
             return
         dt: str = self.gEntregas.get_date()
         if self.dtEnt == dt:
@@ -366,7 +360,6 @@ class GuiMain(QMainWindow):
             self._set_busy(False)
             self.statusBar.set_ready()
             observability.log(AppEvent.ERROR, msg=str(exc), where='entregas', duration_s=round(time.time() - _start, 1))
-            GuiPopup().show_popup(errors.E001)
 
         self._run_async(lambda: manager.get_entregas_for_date(dt), _on_done, _on_error)
 
@@ -379,14 +372,12 @@ class GuiMain(QMainWindow):
         sheet_id = _extract_sheet_id(dlg.link)
         if not sheet_id:
             observability.log(AppEvent.ERROR, msg='URL de planilha inválida', where='on_conectar_planilha')
-            GuiPopup().show_popup(errors.C005)
             return
 
         try:
             manager.connect(sheet_id)
         except PermissionError as exc:
             observability.log(AppEvent.ERROR, msg=str(exc), where='on_conectar_planilha')
-            GuiPopup().show_popup(errors.C004)
             return
 
         nome = self._resolve_nome(dlg.nome, sheet_id)
@@ -401,8 +392,6 @@ class GuiMain(QMainWindow):
             self._sheet_actions[sheet_id].setText(nome)
 
         self._update_planilha_check(sheet_id)
-        GuiPopup().show_popup(errors.planilha_conectada(nome), "I")
-
         self.statusBar.set_sheet(nome, sheet_id)
         self.statusBar.set_credentials(True)
 
@@ -425,13 +414,10 @@ class GuiMain(QMainWindow):
             manager.connect(sheet_id)
         except PermissionError as exc:
             observability.log(AppEvent.ERROR, msg=str(exc), where='on_selecionar_planilha')
-            GuiPopup().show_popup(errors.C004)
             return
         self._update_planilha_check(sheet_id)
         nome = self._sheet_actions[sheet_id].text()
         observability.log(AppEvent.SHEET_SELECT, name=nome, sheet_id=sheet_id)
-        GuiPopup().show_popup(errors.planilha_conectada(nome), "I")
-
         self.statusBar.set_sheet(nome, sheet_id)
 
     ## Método: Resolve o nome da planilha — detecta duplicata e oferece renomear.
@@ -458,16 +444,13 @@ class GuiMain(QMainWindow):
     def on_configurar_certificado(self) -> None:
         path, _ = QFileDialog.getOpenFileName(self, strings.DLG_CERT_TITULO, "", strings.DLG_CERT_FILTRO)
         if not path:
-            GuiPopup().show_popup(errors.C001)
             return
         try:
             service.load_credentials_from_file(path)
             observability.log(AppEvent.CERT_SET)
             self._auto_connect()
-            GuiPopup().show_popup(errors.certificado_ok(), "I")
         except Exception as exc:
             observability.log(AppEvent.ERROR, msg=str(exc), where='on_configurar_certificado')
-            GuiPopup().show_popup(errors.C002)
 
     ## Método: Ação do menu "Limpar certificado"
     def on_limpar_certificado(self) -> None:
@@ -481,9 +464,6 @@ class GuiMain(QMainWindow):
         if service.clear_credentials():
             observability.log(AppEvent.CERT_CLEAR)
             self.statusBar.set_credentials(False)
-            GuiPopup().show_popup(errors.certificado_limpo(), "I")
-        else:
-            GuiPopup().show_popup(errors.C003)
 
     ## Método: Ação do menu "Limpar cache"
     def on_limpar_cache(self) -> None:
