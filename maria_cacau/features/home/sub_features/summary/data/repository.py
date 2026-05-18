@@ -1,4 +1,4 @@
-"""Repository da feature Products Resume: chama a API e converte erros HTTP em ErrorModel."""
+"""Repository da feature Summary: chama a API e converte erros HTTP em ErrorModel."""
 
 from maria_cacau.core.network import HTTPResponseError
 

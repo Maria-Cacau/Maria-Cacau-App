@@ -1,4 +1,4 @@
-"""Controller da feature Products Resume: conecta signals da view ao ViewModel e trata respostas."""
+"""Controller da feature Summary: conecta signals da view ao ViewModel e trata respostas."""
 
 import time
 

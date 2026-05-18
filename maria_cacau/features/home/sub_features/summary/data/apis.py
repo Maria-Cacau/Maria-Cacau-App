@@ -1,4 +1,4 @@
-"""Definição do endpoint do backend consumido pela feature Products Resume."""
+"""Definição do endpoint do backend consumido pela feature Summary."""
 
 from maria_cacau.core.network.api import API
 

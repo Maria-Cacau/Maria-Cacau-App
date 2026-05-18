@@ -1,4 +1,4 @@
-"""View da feature Products Resume: resumo de produtos por período."""
+"""View da feature Summary: resumo de produtos por período."""
 
 from PyQt6.QtCore import QDate, pyqtSignal
 from PyQt6.QtWidgets import (QDateEdit, QHBoxLayout, QSizePolicy, QVBoxLayout,

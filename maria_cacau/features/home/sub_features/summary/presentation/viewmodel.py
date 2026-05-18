@@ -1,4 +1,4 @@
-"""ViewModel da feature Products Resume: executa o UseCase em background e emite resultados via signals."""
+"""ViewModel da feature Summary: executa o UseCase em background e emite resultados via signals."""
 
 from concurrent.futures import ThreadPoolExecutor
 
