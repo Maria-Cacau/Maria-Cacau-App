@@ -22,7 +22,6 @@ class OrdersController():
     def _setupActions(self) -> None:
         self.view.generate_report.connect(self.on_generate_report)
         self.view.copy_report.connect(self.on_copy_report)
-        self.view.download_report.connect(self.on_download_report)
         self.view.copy_graph.connect(self.on_copy_graph)
         self.view.download_graph.connect(self.on_download_graph)
 
@@ -40,9 +39,6 @@ class OrdersController():
 
     def on_copy_report(self) -> None:
         observability.log(ObsEv.COPY_REPORT_ACTION)
-
-    def on_download_report(self) -> None:
-        observability.log(ObsEv.DOWNLOAD_REPORT_ACTION)
 
     def on_copy_graph(self) -> None:
         observability.log(ObsEv.COPY_GRAPH_ACTION)

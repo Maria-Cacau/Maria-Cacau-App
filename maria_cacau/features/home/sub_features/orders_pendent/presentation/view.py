@@ -14,7 +14,6 @@ from ..domain.models import OrdersViewData
 class OrdersView(QWidget, AuxWidgets):
     generate_report = pyqtSignal()
     copy_report = pyqtSignal()
-    download_report = pyqtSignal()
     copy_graph = pyqtSignal()
     download_graph = pyqtSignal()
 
@@ -47,7 +46,6 @@ class OrdersView(QWidget, AuxWidgets):
         btnLayout.addWidget(self.dateSelector)
         btnLayout.addWidget(self.butGenerate)
         btnLayout.addWidget(self.butCopyData)
-        btnLayout.addWidget(self.butDownloadData)
         btnLayout.addStretch()
         btnLayout.addWidget(self.butCopyGraph)
         btnLayout.addWidget(self.butSaveGraph)
@@ -74,9 +72,6 @@ class OrdersView(QWidget, AuxWidgets):
         self.butCopyData.clicked.connect(lambda: self.on_copy(self.textView))
         self.butCopyData.clicked.connect(self.copy_report)
 
-        self.butDownloadData = self.bts(strings.BTN_DOWNLOAD)
-        self.butDownloadData.clicked.connect(self.download_report)
-
         self.butCopyGraph = self.bts(strings.BTN_COPIAR)
         self.butCopyGraph.clicked.connect(self.chart.copy_to_clipboard)
         self.butCopyGraph.clicked.connect(self.copy_graph)
@@ -88,7 +83,6 @@ class OrdersView(QWidget, AuxWidgets):
     ## MARK: - Others
     def _update_buttons_state(self, enabled: bool) -> None:
         self.butCopyData.setEnabled(enabled)
-        self.butDownloadData.setEnabled(enabled)
         self.butCopyGraph.setEnabled(enabled)
         self.butSaveGraph.setEnabled(enabled)
 
