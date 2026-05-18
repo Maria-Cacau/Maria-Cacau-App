@@ -100,6 +100,8 @@ feature/
 
 Features ainda não migradas usam a estrutura flat legada (`view.py`, `viewmodel.py`, etc. na raiz da pasta).
 
+Cada feature migrada deve ter um `README.md` na raiz da sua pasta documentando: o que a feature faz, diagrama de arquitetura (Mermaid flowchart), tabela de responsabilidade das classes, e diagramas de sequência do fluxo principal e do fluxo de erro. Ver `delivery/README.md` como template.
+
 ### Domain
 
 É o único lugar de onde qualquer outra camada pode importar. Contém:
