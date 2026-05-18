@@ -1,0 +1,16 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Payments Pendent Response",
+    "type": "object",
+    "required": ["total", "orders"],
+    "properties": {
+        "total": {
+            "type": "integer",
+            "description": "Total de pedidos com pagamento pendente"
+        },
+        "orders": {
+            "type": "array",
+            "items": { "$ref": "./order.schema.json" }
+        }
+    }
+}

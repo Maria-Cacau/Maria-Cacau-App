@@ -1,0 +1,123 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$defs": {
+        "Address": {
+            "description": "Endereço de entrega do pedido. Demais campos podem ser preenchidos via API pública a partir do zip.",
+            "type": "object",
+            "required": ["zip"],
+            "properties": {
+                "street":       { "type": "string" },
+                "number":       { "type": "string" },
+                "complement":   { "type": "string" },
+                "neighborhood": { "type": "string" },
+                "city":         { "type": "string" },
+                "state":        { "type": "string", "minLength": 2, "maxLength": 2 },
+                "zip":          { "type": "string" },
+                "latitude":     { "type": "number" },
+                "longitude":    { "type": "number" }
+            }
+        },
+
+        "Event": {
+            "description": "Evento associado ao presenteado (ex: aniversário, batizado).",
+            "type": "object",
+            "required": ["type", "date"],
+            "properties": {
+                "type": { "type": "string", "description": "ex: Aniversário, Batizado, Chá de Bebê" },
+                "date": { "type": "string", "description": "formato DD/MM/YY" }
+            }
+        },
+
+        "Customer": {
+            "description": "Quem comprou o pedido.",
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+                "name":         { "type": "string" },
+                "relationship": { "type": "string", "description": "Parentesco com o presenteado (ex: Mãe, Pai, Amigo(a))" },
+                "phone":        { "type": "string" },
+                "cpf":          { "type": "string" },
+                "email":        { "type": "string" }
+            }
+        },
+
+        "Receiver": {
+            "description": "Quem vai receber o presente.",
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+                "name":   { "type": "string" },
+                "gender": { "type": "string", "description": "ex: Masculino, Feminino, Gêmeos" },
+                "event":  { "$ref": "#/$defs/Event" }
+            }
+        },
+
+        "Customization": {
+            "description": "Dados de personalização da arte e embalagem do pedido.",
+            "type": "object",
+            "properties": {
+                "label_name":  { "type": "string" },
+                "label_theme": { "type": "string" },
+                "box_name":    { "type": "string" },
+                "box_art":     { "type": "string" }
+            }
+        },
+
+        "ProductItem": {
+            "description": "Um item de produto dentro do pedido.",
+            "type": "object",
+            "required": ["name", "quantity", "price", "total"],
+            "properties": {
+                "name":       { "type": "string" },
+                "quantity":   { "type": "integer", "minimum": 1 },
+                "price":      { "type": "number", "minimum": 0, "description": "Preço unitário do produto" },
+                "total":      { "type": "number", "minimum": 0 }
+            }
+        },
+
+        "PaymentItem": {
+            "description": "Uma parcela de pagamento do pedido.",
+            "type": "object",
+            "required": ["installment", "date", "amount", "type", "confirmed"],
+            "properties": {
+                "installment": { "type": "integer", "minimum": 1 },
+                "date":        { "type": "string", "description": "formato DD/MM/YY" },
+                "amount":      { "type": "number", "minimum": 0 },
+                "type":        { "type": "string", "description": "ex: Pix, Boleto, Créd 1x" },
+                "confirmed":   { "type": "boolean" }
+            }
+        },
+
+        "Financial": {
+            "description": "Dados financeiros do pedido, incluindo totais e parcelas de pagamento.",
+            "type": "object",
+            "required": ["subtotal", "total"],
+            "properties": {
+                "subtotal":       { "type": "number", "description": "Soma dos produtos antes de desconto e frete" },
+                "discount":       { "type": "number" },
+                "shipping":       { "type": "number", "minimum": 0 },
+                "total":          { "type": "number", "description": "Valor final do pedido" },
+                "amount_pendent": { "type": "number", "description": "negativo = ainda deve" },
+                "pay_on_pickup":  { "type": "boolean" },
+                "payments": {
+                    "type": "array",
+                    "items": { "$ref": "#/$defs/PaymentItem" }
+                }
+            }
+        },
+
+        "Delivery": {
+            "description": "Dados de entrega do pedido: data, modalidade e endereço.",
+            "type": "object",
+            "required": ["date", "type", "receiver_name"],
+            "properties": {
+                "date":           { "type": "string", "description": "formato DD/MM/YY" },
+                "type":           { "type": "string", "description": "ex: MOTOBOY, SEDEX 10, ENTREGA, CANCELADO" },
+                "receiver_name":  { "type": "string" },
+                "address":        { "$ref": "#/$defs/Address" },
+                "factory_notes":  { "type": "string" },
+                "motoboy_info":   { "type": "string" }
+            }
+        }
+    }
+}
