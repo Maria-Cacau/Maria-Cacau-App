@@ -1,8 +1,8 @@
 """Rota de pagamentos — GET /orders/payments-pendent."""
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, jsonify, request
 
-from .service import PaymentsService, PaymentsMapper
+from .service import PaymentsMapper, PaymentsService
 
 payments_bp = Blueprint("payments", __name__)
 _service = PaymentsService()

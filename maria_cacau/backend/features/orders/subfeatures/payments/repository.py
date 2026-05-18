@@ -3,7 +3,8 @@
 import pandas as pd
 from pandas import DataFrame
 
-from .....data_source import data_source, SheetCols, ProductCols, PaymentCols, PAYMENT_SLOTS, PRODUCT_SLOTS
+from .....data_source import (PAYMENT_SLOTS, PRODUCT_SLOTS, PaymentCols,
+                              ProductCols, SheetCols, data_source)
 from .....utils import normalize_decimal
 
 

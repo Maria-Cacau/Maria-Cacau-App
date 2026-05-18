@@ -6,6 +6,7 @@ from datetime import datetime
 import pandas as pd
 from pandas import DataFrame
 
+
 class CadastroAnalyseHandler:
     def __init__(self, raw_rows: list, show_popup: bool = True) -> None:
         self.arqUsados: dict = {}

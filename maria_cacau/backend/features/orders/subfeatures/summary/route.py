@@ -1,8 +1,8 @@
 """Rota de pedidos — GET /orders."""
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, jsonify, request
 
-from .service import OrdersService, OrdersMapper
+from .service import OrdersMapper, OrdersService
 
 summary_bp = Blueprint("summary", __name__)
 _service = OrdersService()

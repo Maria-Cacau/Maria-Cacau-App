@@ -1,7 +1,7 @@
 from concurrent.futures import ThreadPoolExecutor
 
-from .models import OrdersModel
 from ..data import OrdersRepository
+from .models import OrdersModel
 
 
 class OrdersUseCase:

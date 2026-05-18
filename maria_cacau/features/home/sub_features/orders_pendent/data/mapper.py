@@ -1,7 +1,7 @@
 from maria_cacau.core.error import ErrorModel
 from maria_cacau.core.network import HTTPResponse, HTTPResponseError
 
-from ..domain.models import DeliveryCount, DeliveriesSummary, PendentOrder
+from ..domain.models import DeliveriesSummary, DeliveryCount, PendentOrder
 
 
 class ErrorMapper:

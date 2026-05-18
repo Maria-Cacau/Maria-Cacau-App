@@ -2,9 +2,8 @@
 
 import time
 
-from maria_cacau.core.observability import observability
-
 from maria_cacau.core.error import ErrorModel
+from maria_cacau.core.observability import observability
 
 from ..domain.events import FeatureEvents as ObsEv
 from ..domain.models import OrdersViewData

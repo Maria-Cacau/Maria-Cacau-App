@@ -1,9 +1,9 @@
 import gspread
 
 from . import _utils as utils
-from .sheet_mapper import SheetCols, SheetTabs
-from .errors._handler import handle_api
 from .errors._errors import UnexpectedSheetStructureError
+from .errors._handler import handle_api
+from .sheet_mapper import SheetCols, SheetTabs
 
 
 class _SheetsViewModel:

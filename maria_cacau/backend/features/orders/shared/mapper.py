@@ -2,11 +2,10 @@
 
 from pandas import Series
 
-from ....data_source import SheetCols, ProductCols, PaymentCols, PAYMENT_SLOTS, PRODUCT_SLOTS
-from .models import (
-    Address, Customer, Customization, Delivery, Event,
-    Financial, Order, PaymentItem, ProductItem, Receiver,
-)
+from ....data_source import (PAYMENT_SLOTS, PRODUCT_SLOTS, PaymentCols,
+                             ProductCols, SheetCols)
+from .models import (Address, Customer, Customization, Delivery, Event,
+                     Financial, Order, PaymentItem, ProductItem, Receiver)
 
 
 class OrderMapper:
