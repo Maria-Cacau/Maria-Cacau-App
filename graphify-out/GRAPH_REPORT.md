@@ -1,12 +1,12 @@
 # Graph Report - Maria-Cacau-Contagem  (2026-05-18)
 
 ## Corpus Check
-- 100 files · ~605,887 words
+- 100 files · ~606,399 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 700 nodes · 1429 edges · 47 communities detected
-- Extraction: 54% EXTRACTED · 46% INFERRED · 0% AMBIGUOUS · INFERRED: 657 edges (avg confidence: 0.61)
+- 711 nodes · 1480 edges · 47 communities detected
+- Extraction: 53% EXTRACTED · 47% INFERRED · 0% AMBIGUOUS · INFERRED: 698 edges (avg confidence: 0.6)
 - Token cost: 0 input · 0 output
 
 ## Community Hubs (Navigation)
@@ -68,7 +68,7 @@
 7. `HTTPResponse` - 26 edges
 8. `GuiProdutos` - 26 edges
 9. `GuiStatusBar` - 22 edges
-10. `DataSourceError` - 21 edges
+10. `DeliveryView` - 21 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `Processa os dados da aba Cadastro da planilha Google Sheets.` --uses--> `GuiPopup`  [INFERRED]
@@ -85,60 +85,60 @@
 ## Communities
 
 ### Community 0 - "Community 0"
-Cohesion: 0.05
-Nodes (35): AuxWidgets, GuiValiCpf, _is_valid_cpf(), Área de validação de CPF: interface gráfica e lógica de verificação., Autentica com o JSON bruto da service account e guarda o client em memória., Define a planilha ativa e dispara prewarm em background., main(), main() (+27 more)
+Cohesion: 0.04
+Nodes (40): AuxWidgets, GuiValiCpf, _is_valid_cpf(), Área de validação de CPF: interface gráfica e lógica de verificação., Autentica com o JSON bruto da service account e guarda o client em memória., Define a planilha ativa e dispara prewarm em background., main(), main() (+32 more)
 
 ### Community 1 - "Community 1"
 Cohesion: 0.04
 Nodes (51): GoogleSheetsDataSource, Implementação de DataSourceProtocol para Google Sheets via gspread., PaymentCols, ProductCols, Mapeamento de colunas e tabs da planílha., Colunas fixas da aba Cadastro, agrupadas por domínio., Colunas dos slots de produto (1–7). Usar com .slot(n)., Colunas das parcelas de pagamento (1–6). Usar com .slot(n). (+43 more)
 
 ### Community 2 - "Community 2"
-Cohesion: 0.05
-Nodes (29): ChartType, ChartWidget, Widget de gráfico reutilizável (barras ou pizza) usando seaborn + matplotlib., Retorna (w, h) para o canvas.         h = altura do viewport (sem desperdício/ov, _short_label(), AuxFrame, Frame composto reutilizável com label, entrada de texto e botão de cópia., AuxWidgets (+21 more)
+Cohesion: 0.06
+Nodes (49): BackendServer, handle_data_source_error(), handle_unexpected_error(), BackendError, generic_mapper(), translate(), Exception, API (+41 more)
 
 ### Community 3 - "Community 3"
-Cohesion: 0.07
-Nodes (43): BackendServer, API, call(), entity(), Comunicação alto nivel para chamadas de api, O tipo precisa aceitar **kwargs (dataclass ou similar)., O tipo precisa aceitar **kwargs (dataclass ou similar)., O tipo precisa aceitar **kwargs (dataclass ou similar). (+35 more)
+Cohesion: 0.06
+Nodes (27): ChartType, ChartWidget, Widget de gráfico reutilizável (barras ou pizza) usando seaborn + matplotlib., Retorna (w, h) para o canvas.         h = altura do viewport (sem desperdício/ov, _short_label(), AuxFrame, Frame composto reutilizável com label, entrada de texto e botão de cópia., AuxWidgets (+19 more)
 
 ### Community 4 - "Community 4"
-Cohesion: 0.06
-Nodes (35): AppEvent, delete_credentials(), read_credentials(), read_sheets(), write_credentials(), write_sheets(), GoogleSheetsService, Autenticação e acesso ao Google Sheets. (+27 more)
+Cohesion: 0.1
+Nodes (34): API, DeliveriesAPI, PaymentsPendentAPI, Definição dos endpoints do backend consumidos pela feature Delivery., DeliveriesMapper, ErrorMapper, from_response(), PaymentsMapper (+26 more)
 
 ### Community 5 - "Community 5"
 Cohesion: 0.07
-Nodes (20): _Observability, Observabilidade centralizada do app., PopupIcon, Janela de popup para exibição de erros e informações ao usuário., FeatureEvents, Eventos relacionados às entregas pendentes., DeliveryModel, OrdersSignals (+12 more)
+Nodes (30): AppEvent, GoogleSheetsService, Autenticação e acesso ao Google Sheets., Retorna True se uma planilha foi vinculada., Define qual planilha vai ser lida pelo ID ou URL do Google Sheets., Define qual planilha vai ser lida pelo ID ou URL do Google Sheets., Retorna as linhas brutas da planilha (lista de listas de strings)., Retorna as linhas brutas da planilha (lista de listas de strings). (+22 more)
 
 ### Community 6 - "Community 6"
-Cohesion: 0.1
-Nodes (25): API, DeliveriesAPI, PaymentsPendentAPI, DeliveriesMapper, ErrorMapper, from_response(), PaymentsMapper, OrdersRepository (+17 more)
+Cohesion: 0.08
+Nodes (18): FeatureEvents, Eventos relacionados às entregas pendentes., DeliveryModel, DeliveryViewData, DeliverySignals, Sinais compartilhados dentro do módulo, DeliveryUseCase, Caso de uso: busca e consolida entregas e pagamentos pendentes para uma data. (+10 more)
 
 ### Community 7 - "Community 7"
-Cohesion: 0.09
-Nodes (22): PopupModel, _date_field(), DateRangePicker, POC — date picker moderno com QDateEdit + QSS., AppError, certificado_limpo(), certificado_ok(), http_error() (+14 more)
+Cohesion: 0.11
+Nodes (21): _date_field(), DateRangePicker, POC — date picker moderno com QDateEdit + QSS., AppError, certificado_limpo(), certificado_ok(), http_error(), planilha_conectada() (+13 more)
 
 ### Community 8 - "Community 8"
+Cohesion: 0.09
+Nodes (18): DataSourceProtocol, Retorna pedidos da data informada (DD/MM/YYYY)., Retorna pedidos no intervalo de datas informado (DD/MM/YYYY)., Contrato agnóstico de fonte de dados para pedidos., Retorna True se credentials e sheet estão configurados em memória., Protocol, OrdersRepository, Repositório de pedidos — busca por período para o OrdersService. (+10 more)
+
+### Community 9 - "Community 9"
 Cohesion: 0.27
 Nodes (24): _customer(), _customization(), _delivery(), _financial(), OrderMapper, _payments(), _products(), Mapeamento de uma linha do DataFrame para o model Order. (+16 more)
 
-### Community 9 - "Community 9"
-Cohesion: 0.11
-Nodes (18): Retorna pedidos da data informada (DD/MM/YYYY)., Retorna todos os pedidos de uma data como DataFrame bruto., get_deliveries(), to_response(), _cast_numeric(), PaymentsRepository, Repositório de pagamentos — busca e prepara dados da planilha para o PaymentsSer, Acessa o data source e entrega um DataFrame tipado para o PaymentsService. (+10 more)
-
 ### Community 10 - "Community 10"
-Cohesion: 0.1
-Nodes (17): DataSourceProtocol, Retorna pedidos no intervalo de datas informado (DD/MM/YYYY)., Contrato agnóstico de fonte de dados para pedidos., Retorna True se credentials e sheet estão configurados em memória., Protocol, OrdersRepository, Repositório de pedidos — busca por período para o OrdersService., Acessa o data source e entrega um DataFrame para o OrdersService. (+9 more)
-
-### Community 11 - "Community 11"
 Cohesion: 0.12
 Nodes (12): CadastroAnalyseHandler, _normalize_headers(), Processa os dados da aba Cadastro da planilha Google Sheets., Orquestra a autenticação e o acesso às abas da planilha., Autentica e aponta para a planilha. Não lê dados ainda., Lê e processa as 20 datas mais recentes da aba Cadastro (chamado uma vez, no Ati, Lê e processa as 20 datas mais recentes da aba Cadastro (chamado uma vez, no Ati, Lê entregas de uma data específica direto da planilha (sem cache global). (+4 more)
 
+### Community 11 - "Community 11"
+Cohesion: 0.15
+Nodes (14): _cast_numeric(), PaymentsRepository, Repositório de pagamentos — busca e prepara dados da planilha para o PaymentsSer, Acessa o data source e entrega um DataFrame tipado para o PaymentsService., Retorna todos os pedidos de uma data com colunas numéricas convertidas para floa, _to_dataframe(), get_payments_pendent(), Rota de pagamentos — GET /orders/payments-pendent. (+6 more)
+
 ### Community 12 - "Community 12"
-Cohesion: 0.18
-Nodes (5): ABC, Backend de cache em arquivo JSON no diretório do usuário., Contrato base para todos os backends de armazenamento., StorageHandler, Backend de armazenamento seguro via arquivo protegido no diretório do usuário.
+Cohesion: 0.15
+Nodes (10): _Observability, Observabilidade centralizada do app., PopupIcon, PopupModel, Janela de popup para exibição de erros e informações ao usuário., Enum, Lógica de negócio para obter as deliveries e pagamentos pendentes., Colunas usadas da planilha (+2 more)
 
 ### Community 13 - "Community 13"
-Cohesion: 0.31
-Nodes (6): handle_data_source_error(), handle_unexpected_error(), BackendError, generic_mapper(), translate(), Exception
+Cohesion: 0.18
+Nodes (5): ABC, Backend de cache em arquivo JSON no diretório do usuário., Contrato base para todos os backends de armazenamento., StorageHandler, Backend de armazenamento seguro via arquivo protegido no diretório do usuário.
 
 ### Community 14 - "Community 14"
 Cohesion: 0.4
@@ -343,11 +343,11 @@ Nodes (1): r"""Indica se a resposta foi bem sucedida (status code 2xx).
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `AppEvent` connect `Community 4` to `Community 0`, `Community 5`?**
-  _High betweenness centrality (0.132) - this node is a cross-community bridge._
-- **Why does `GuiMain` connect `Community 0` to `Community 2`, `Community 4`?**
-  _High betweenness centrality (0.109) - this node is a cross-community bridge._
-- **Why does `GuiPopup` connect `Community 2` to `Community 0`, `Community 11`, `Community 5`, `Community 7`?**
+- **Why does `AppEvent` connect `Community 5` to `Community 0`, `Community 12`?**
+  _High betweenness centrality (0.129) - this node is a cross-community bridge._
+- **Why does `GuiMain` connect `Community 0` to `Community 3`, `Community 5`?**
+  _High betweenness centrality (0.106) - this node is a cross-community bridge._
+- **Why does `GuiPopup` connect `Community 3` to `Community 0`, `Community 10`, `Community 12`, `Community 6`?**
   _High betweenness centrality (0.095) - this node is a cross-community bridge._
 - **Are the 29 inferred relationships involving `SecurityStorage` (e.g. with `GoogleSheetsService` and `Autenticação e acesso ao Google Sheets.`) actually correct?**
   _`SecurityStorage` has 29 INFERRED edges - model-reasoned connections that need verification._
