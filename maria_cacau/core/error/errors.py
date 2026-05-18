@@ -137,6 +137,15 @@ def unexpected_error(cause: Exception) -> ErrorModel:
     )
 
 
+def http_error(status_code: int) -> ErrorModel:
+    """Erro HTTP sem body JSON — resposta de erro não estruturada do servidor."""
+    return ErrorModel(
+        code=f"HTTP{status_code}",
+        user_message="Erro ao buscar os dados. Tente novamente.",
+        dev_message=f"HTTP {status_code} — body não é JSON",
+    )
+
+
 def planilha_ok(linhas: int) -> AppError:
     """Confirmação de leitura bem-sucedida da planilha."""
     return AppError(

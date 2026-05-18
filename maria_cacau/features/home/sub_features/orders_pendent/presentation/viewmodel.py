@@ -2,7 +2,7 @@
 
 from concurrent.futures import ThreadPoolExecutor
 
-from maria_cacau.core.error import ErrorModel
+from maria_cacau.core.error import ErrorModel, unexpected_error
 
 from ..domain.models import OrdersModel, OrdersViewData
 from ..domain.signals import signals
@@ -20,10 +20,12 @@ class OrdersViewModel():
     def _fetch(self, date: str):
         try:
             result = self.use_case.get_orders(date)
-            report = self._build_report(result, date)
-            signals.report_generated.emit(report)
+            view_data = self._build_view_data(result, date)
+            signals.report_generated.emit(view_data)
         except ErrorModel as e:
             signals.error.emit(e)
+        except Exception as e:
+            signals.error.emit(unexpected_error(e))
 
     def _build_view_data(self, model: OrdersModel, date: str) -> OrdersViewData:
         return OrdersViewData(
