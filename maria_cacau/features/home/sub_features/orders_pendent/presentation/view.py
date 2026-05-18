@@ -97,3 +97,8 @@ class OrdersView(QWidget, AuxWidgets):
         self.chart.update_data(data.chart_data, title=self.view_title)
 
         self._update_buttons_state(True)
+        self.butGenerate.setEnabled(True)
+    
+    def prepare_to_fetch(self) -> None:
+        r'''Prepara a view para uma nova consulta'''
+        self.butGenerate.setEnabled(False)

@@ -33,6 +33,7 @@ class OrdersController():
     def on_generate_report(self) -> None:
         self.last_date_selected = self.view.get_date()
         self.viewmodel.on_generate(self.last_date_selected)
+        self.view.prepare_to_fetch()
 
         self._start = time.time()
         observability.log(ObsEv.GENERATE_REPORT_ACTION)
