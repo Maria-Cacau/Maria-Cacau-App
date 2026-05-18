@@ -18,11 +18,10 @@ from maria_cacau.core.sheets.manager import manager
 from maria_cacau.core.sheets.service import service
 from maria_cacau.core.storage.cache import CacheStorage
 from maria_cacau.features.home.sub_features import (CpfValidationController,
-                                                    DeliveryController)
+                                                    DeliveryController,
+                                                    NotaFiscalController)
 from maria_cacau.features.home.sub_features.freight_query.freight_query_view import \
     GuiConsFrete
-from maria_cacau.features.home.sub_features.nota_fiscal.nota_fiscal_view import \
-    GuiDados
 from maria_cacau.features.home.sub_features.products_resume.products_resume_view import \
     GuiProdutos
 from maria_cacau.features.home.sub_features.status_bar.status_bar_view import \
@@ -120,7 +119,7 @@ class GuiMain(QMainWindow):
 
         self.gProdutos = GuiProdutos()
         self.deliveriesFeature = DeliveryController()
-        self.gDados = GuiDados()
+        self.notaFiscal = NotaFiscalController()
         self.cpfFeature = CpfValidationController()
         self.gConsCep = GuiConsFrete()
 
@@ -191,7 +190,7 @@ class GuiMain(QMainWindow):
         rightLayout.addWidget(self.deliveriesFeature.view.root, stretch=8)
 
         bottomLayout = QHBoxLayout()
-        bottomLayout.addWidget(self.gDados.root, stretch=4)
+        bottomLayout.addWidget(self.notaFiscal.view.root, stretch=4)
 
         farRightLayout = QVBoxLayout()
         farRightLayout.addWidget(self.cpfFeature.view.root)
