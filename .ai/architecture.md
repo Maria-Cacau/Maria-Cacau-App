@@ -38,7 +38,7 @@ Maria-Cacau-Contagem/
 │   ├── design_system/
 │   │   ├── aux_widgets.py        # factory de widgets reutilizáveis
 │   │   ├── aux_frames.py         # frame composto (label + input + botão)
-│   │   └── gui_popup.py          # janela de popup (erro/info)
+│   │   └── gui_popup.py          # GuiPopup + PopupModel (dataclass) + PopupIcon (enum) — sem dependência de core
 │   ├── assets/
 │   │   ├── strings.py            # textos de UI centralizados
 │   │   └── images/               # ícones e imagens
