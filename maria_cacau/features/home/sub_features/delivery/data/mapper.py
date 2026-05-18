@@ -1,3 +1,5 @@
+"""Mappers de HTTPResponse para domain models e de HTTPResponseError para ErrorModel."""
+
 from maria_cacau.core.error import ErrorModel, http_error
 from maria_cacau.core.network import HTTPResponse, HTTPResponseError
 
@@ -7,6 +9,7 @@ from ..domain.models import DeliveriesSummary, DeliveryCount, PendentOrder
 class ErrorMapper:
     @staticmethod
     def from_response(e: HTTPResponseError) -> ErrorModel:
+        """Lê o JSON do backend; cai em http_error genérico se o corpo não for JSON válido."""
         try:
             data = e.response.json()
         except Exception:

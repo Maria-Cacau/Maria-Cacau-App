@@ -1,3 +1,5 @@
+"""Definição dos endpoints do backend consumidos pela feature Delivery."""
+
 from maria_cacau.core.network.api import API
 
 

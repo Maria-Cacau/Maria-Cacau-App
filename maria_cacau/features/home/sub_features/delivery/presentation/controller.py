@@ -1,4 +1,4 @@
-"""Área de entregas pendentes: controller da view."""
+"""Controller da feature Delivery: conecta signals da view ao ViewModel e trata respostas."""
 
 import time
 
@@ -31,6 +31,7 @@ class DeliveryController():
 
     ## Ações de Botões
     def on_generate_report(self) -> None:
+        """Inicia a consulta: trava a view, dispara o ViewModel e registra o timestamp para duração."""
         self.last_date_selected = self.view.get_date()
         self.viewmodel.on_generate(self.last_date_selected)
         self.view.prepare_to_fetch()
@@ -53,6 +54,7 @@ class DeliveryController():
         self.view.popup.show(error.to_popup())
 
     def handle_report_generated(self, data: DeliveryViewData) -> None:
+        """Recebe o resultado do ViewModel, atualiza a view e loga a duração da consulta."""
         self.view.update_data(data)
 
         duration_s = round(time.time() - self._start, 1)

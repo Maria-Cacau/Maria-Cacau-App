@@ -1,4 +1,4 @@
-"""Regra de negócios das entregas"""
+"""ViewModel da feature Delivery: executa o UseCase em background e emite resultados via signals."""
 
 from concurrent.futures import ThreadPoolExecutor
 
@@ -18,6 +18,7 @@ class DeliveryViewModel():
         self.executor.submit(lambda: self._fetch(date))
 
     def _fetch(self, date: str):
+        """Roda o UseCase, monta o ViewData e emite sucesso ou erro — sempre via signal para cruzar threads."""
         try:
             result = self.use_case.get_orders(date)
             view_data = self._build_view_data(result, date)
