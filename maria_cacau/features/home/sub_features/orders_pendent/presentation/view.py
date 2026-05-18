@@ -1,7 +1,7 @@
 """Área de entregas pendentes: resumo diário com inadimplências."""
 
 from PyQt6.QtCore import QDate, Qt, pyqtSignal
-from PyQt6.QtWidgets import QDateEdit, QHBoxLayout, QSizePolicy, QVBoxLayout
+from PyQt6.QtWidgets import QDateEdit, QHBoxLayout, QSizePolicy, QVBoxLayout, QWidget
 
 from maria_cacau.assets import strings
 from maria_cacau.core.charts import ChartType, ChartWidget
@@ -11,7 +11,7 @@ from maria_cacau.design_system.gui_popup import GuiPopup
 from ..domain.models import OrdersViewData
 
 
-class OrdersView(AuxWidgets):
+class OrdersView(QWidget, AuxWidgets):
     generate_report = pyqtSignal()
     copy_report = pyqtSignal()
     download_report = pyqtSignal()
