@@ -205,6 +205,49 @@ Módulo `maria_cacau/core/charts.py` — widget reutilizável baseado em `matplo
 Qualquer path de asset deve ser resolvido via `asset('images/foo.png')` de `maria_cacau/__init__.py`.
 Internamente usa `Path(__file__).parent / 'assets' / relative_path`, garantindo resolução correta tanto em dev quanto no `.exe` compilado pelo Nuitka.
 
+## Módulo Backend (`maria_cacau/backend/`)
+
+Backend local in-process baseado em Flask `test_client()`. Serve como camada de serviços entre as features da UI e o Google Sheets. Em desenvolvimento na branch `feat/backend`.
+
+**Fluxo:** `Feature → LocalClient → BackendServer → Route → Service → Repository → DataSource`
+
+### Organização interna
+
+```
+backend/
+├── _server.py              # BackendServer — Flask app + blueprint + errorhandler + execute()
+├── data_source/            # GoogleSheetsDataSource, protocol, enums de colunas, erros DS01–DS18
+├── errors/                 # BackendError (contrato HTTP) + translate() (DataSourceError → BackendError)
+├── utils/                  # Utilitários compartilhados (ex: normalize_decimal)
+└── features/
+    └── orders/             # Domínio de pedidos — blueprint pai com before_request
+        ├── shared/         # models.py (dataclasses) + mapper.py (OrderMapper)
+        ├── schemas/        # shared.schema.json — tipos JSON Schema compartilhados
+        └── subfeatures/
+            ├── deliveries/ # GET /orders/deliveries
+            ├── payments/   # GET /orders/payments-pendent
+            └── summary/    # GET /orders (service pendente)
+```
+
+Cada subfeature tem `repository.py`, `service.py`, `route.py` e `response/` (schema + example).
+Rotas de infra (`auth`, `source`, `status`) serão registradas diretamente no `_server.py` — fora do blueprint pai de `orders/`, não herdam o `check_connection`.
+
+### Padrões do backend
+
+| Padrão | Descrição |
+|---|---|
+| **Repository por subfeature** | Cada repo faz cast numérico apenas das colunas do seu domínio |
+| **OrderMapper** | `shared/mapper.py` converte `Series → Order` — reutilizado por qualquer subfeature |
+| **Blueprint pai em `orders/`** | `orders/__init__.py` cria o pai com `before_request`; sub-blueprints herdam automaticamente |
+| **`response/` por subfeature** | `schema.json` + `example.json` junto ao código da feature |
+| **Slots como constante** | `PAYMENT_SLOTS = 6` e `PRODUCT_SLOTS = 7` em `sheet_mapper.py` — fonte única de verdade |
+| **normalize_decimal** | `utils/numbers.py` — converte formato BR → EN para cast numérico |
+| **Contrato de erros** | `DataSourceError` carrega `code/user_message/dev_message`; `backend/errors/` adiciona `http_status` via tabela de tradução; `@app.errorhandler` no servidor captura tudo |
+
+> Documentação detalhada: `pocs/backend/ongoing-study.md`
+
+---
+
 ## Fonte única de verdade
 - **Versão, ano e empresa** → `pyproject.toml` (`[project]` e `[tool.maria-cacau]`)
 - **Metadados do app** (nome exibido, copyright, ícones) → `maria_cacau/__init__.py` (lê do pyproject.toml)
