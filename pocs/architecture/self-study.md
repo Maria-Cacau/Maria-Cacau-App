@@ -30,6 +30,7 @@ Estudar e definir a arquitetura ideal para o projeto Maria Cacau (PyQt6 + Python
 | Configurar `LocalClient` no `__main__.py` | Concluído |
 | Remover dependência de `core` dentro do Design System | Concluído (PR #39) |
 | Validar `orders_pendent` end-to-end com dados reais | Concluído |
+| Migrar `cpf_validation` — estrutura `domain/` + `presentation/` | Concluído |
 | Implementar botões funcionais de `orders_pendent` (copiar/download) | Pendente |
 | Construir o Design System | Pendente |
 | Atualizar app para novas telas (protótipo aprovado) | Pendente |
