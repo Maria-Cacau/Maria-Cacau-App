@@ -49,7 +49,7 @@ Maria-Cacau-Contagem/
 │               ├── cpf_validation/        # validação matemática de CPF com feedback visual
 │               ├── nota_fiscal/           # placeholder "Em breve" (v5.0)
 │               ├── products_resume/
-│               ├── orders_pendent/
+│               ├── orders_pendent/        # ✅ migrada — data/ + domain/ + presentation/
 │               ├── freight_query/
 │               └── status_bar/        # barra de status global (credenciais, planilha, loading)
 ├── pyproject.toml                # fonte única de verdade para deps e metadados
@@ -57,8 +57,17 @@ Maria-Cacau-Contagem/
 ```
 
 ## Padrão de arquitetura
-**Feature-first**: cada funcionalidade vive numa pasta isolada com sua própria view.
-Futuramente cada feature pode ter `view.py` + `view_model.py` (Clean Architecture).
+**Feature-first + Clean Arch + MVC**: cada funcionalidade vive numa pasta isolada com camadas bem definidas.
+
+Estrutura padrão de uma feature migrada:
+```
+feature/
+├── data/           # repository.py, apis.py, mapper.py — acesso a dados via LocalClient
+├── domain/         # models.py, use_case.py, signals.py, events.py — regras e contratos
+└── presentation/   # view.py, viewmodel.py, controller.py — UI e orquestração Qt
+```
+
+Features ainda não migradas usam a estrutura flat legada (`view.py`, `viewmodel.py`, etc. na raiz da pasta).
 
 ## Camada de network (`core/network/`)
 
