@@ -52,7 +52,7 @@ Maria-Cacau-Contagem/
 │               ├── cpf_validation/        # ✅ migrada — domain/ + presentation/
 │               ├── nota_fiscal/           # ✅ migrada — placeholder "Em breve" (futuro: API Tiny/OList)
 │               ├── shipping_rate/         # ✅ migrada — placeholder "Em breve" (futuro: API Melhor Envio)
-│               ├── products_resume/       # ⏳ pendente — vai usar backend (/orders)
+│               ├── summary/               # ✅ migrada — data/ + domain/ + presentation/
 │               ├── delivery/              # ✅ migrada — data/ + domain/ + presentation/
 │               └── status_bar/            # barra de status global (credenciais, planilha, loading)
 ├── pyproject.toml                # fonte única de verdade para deps e metadados
@@ -365,7 +365,7 @@ Módulo `maria_cacau/core/charts.py` — widget reutilizável baseado em `matplo
 **Paleta**: barras usam `YlOrBr` invertido (marrom escuro nas maiores quantidades); pizza usa `Set2`. Labels de pizza com >10 fatias são movidos para legenda lateral.
 
 **Uso nas views**:
-- `products_resume_view.py`: `ChartWidget(ChartType.BAR)` com `QComboBox` para alternar para pizza
+- `summary/presentation/view.py`: `ChartWidget(ChartType.BAR)` com `QComboBox` para alternar para pizza
 - `delivery/presentation/view.py`: `ChartWidget(ChartType.PIE)` fixo (modalidades de entrega)
 
 ## Assets (`asset()`)

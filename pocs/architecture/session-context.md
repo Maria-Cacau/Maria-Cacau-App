@@ -87,7 +87,7 @@ As rotas de infra (`auth`, `source`, `status`) serão implementadas conforme as 
 | `cpf_validation` | ✅ Migrada | Só `domain/` + `presentation/` — validação local, sem backend |
 | `nota_fiscal` | ✅ Migrada | Só `presentation/` — placeholder "Em breve"; futuro: API Tiny/OList |
 | `shipping_rate` (frete) | ✅ Migrada | Só `presentation/` — placeholder "Em breve"; futuro: API Melhor Envio |
-| `products_resume` | ⏳ Pendente | Resumo por período — vai usar backend (endpoint `/orders` pendente) |
+| `summary` | ✅ Migrada | Resumo de produtos por período — usa backend (`GET /orders`) |
 | `home_view` (auth) | ⏳ Pendente | Credenciais e cadastro de planilhas — vai usar rotas `/auth` e `/source` |
 
 ---
@@ -95,7 +95,7 @@ As rotas de infra (`auth`, `source`, `status`) serão implementadas conforme as 
 ## Ordem de prioridade definida
 
 1. ~~**`nota_fiscal` + `freight_query` (CEP)`**~~ ✅ Concluído — migradas para `nota_fiscal/` e `shipping_rate/`
-2. **`products_resume`** — resumo de produtos por período; vai exigir implementar `summary/service.py` no backend
+2. ~~**`summary`**~~ ✅ Concluído — migrada para `summary/`; usa backend (`GET /orders`)
 3. **Auth feature** — credenciais + cadastro de planilhas; vai exigir implementar as rotas `/auth` e `/source` no backend
 
 ---
