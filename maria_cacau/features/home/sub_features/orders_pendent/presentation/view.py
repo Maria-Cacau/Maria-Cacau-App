@@ -8,7 +8,7 @@ from maria_cacau.core.charts import ChartType, ChartWidget
 from maria_cacau.design_system.aux_widgets import AuxWidgets
 from maria_cacau.design_system.gui_popup import GuiPopup
 
-from ..domain.models import OrdersModel
+from ..domain.models import OrdersViewData
 
 
 class OrdersView(AuxWidgets):
@@ -27,9 +27,11 @@ class OrdersView(AuxWidgets):
     def view_title(self) -> str:
         return "Entregas"
 
+    ## MARK: - Life Cycle
     def _setup_ui(self) -> None:
         self._setup_components()
         self._setup_layout()
+        self._update_buttons_state(False)
 
     def _setup_layout(self) -> None:
         self.root = self.group_box(self.view_title)
@@ -68,28 +70,31 @@ class OrdersView(AuxWidgets):
         self.dateSelector.setFixedHeight(self.butGenerate.sizeHint().height())
 
         self.butCopyData = self.bts(strings.BTN_COPIAR)
-        self.butCopyData.setEnabled(False)
         self.butCopyData.clicked.connect(lambda: self.on_copy(self.textView))
 
         self.butDownloadData = self.bts(strings.BTN_DOWNLOAD)
-        self.butDownloadData.setEnabled(False)
 
         self.butCopyGraph = self.bts(strings.BTN_COPIAR)
-        self.butCopyGraph.setEnabled(False)
         self.butCopyGraph.clicked.connect(self.chart.copy_to_clipboard)
 
         self.butSaveGraph = self.bts(strings.BTN_SALVAR)
-        self.butSaveGraph.setEnabled(False)
         self.butSaveGraph.clicked.connect(self.chart.save_to_file)
+    
+    ## MARK: - Others
+    def _update_buttons_state(self, enabled: bool) -> None:
+        self.butCopyData.setEnabled(enabled)
+        self.butDownloadData.setEnabled(enabled)
+        self.butCopyGraph.setEnabled(enabled)
+        self.butSaveGraph.setEnabled(enabled)
 
     ## MARK: - Public methods
     def get_date(self) -> str:
         r'''Retorna a data selecionada no formato DD/MM/YY'''
         return self.dateSelector.date().toString('dd/MM/yy')
 
-    def update_data(self, data: OrdersModel) -> None:
+    def update_data(self, data: OrdersViewData) -> None:
         r'''Atualiza os dados da view'''
         self.textView.setText(data.report)
-        self.chart.update_data(dict(data.chartData), title=self.view_title)
-        self.butCopyGraph.setEnabled(True)
-        self.butSaveGraph.setEnabled(True)
+        self.chart.update_data(data.chart_data, title=self.view_title)
+
+        self._update_buttons_state(True)

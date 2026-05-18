@@ -4,8 +4,10 @@ import time
 
 from maria_cacau.core.observability import observability
 
+from maria_cacau.core.error import ErrorModel
+
 from ..domain.events import FeatureEvents as ObsEv
-from ..domain.models import OrdersModel
+from ..domain.models import OrdersViewData
 from ..domain.signals import signals
 from .view import OrdersView
 from .viewmodel import OrdersViewModel
@@ -26,6 +28,7 @@ class OrdersController():
         self.view.download_graph.connect(self.on_download_graph)
 
         signals.report_generated.connect(self.handle_report_generated)
+        signals.error.connect(self.handle_error)
 
 
     ## Ações de Botões
@@ -50,7 +53,10 @@ class OrdersController():
 
 
     ## Respostas
-    def handle_report_generated(self, data: OrdersModel) -> None:
+    def handle_error(self, error: ErrorModel) -> None:
+        self.view.popup.show(error.to_popup())
+
+    def handle_report_generated(self, data: OrdersViewData) -> None:
         self.view.update_data(data)
 
         duration_s = round(time.time() - self._start, 1)

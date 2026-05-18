@@ -1,6 +1,18 @@
-from maria_cacau.core.network import HTTPResponse
+from maria_cacau.core.error import ErrorModel
+from maria_cacau.core.network import HTTPResponse, HTTPResponseError
 
 from ..domain.models import DeliveryCount, DeliveriesSummary, PendentOrder
+
+
+class ErrorMapper:
+    @staticmethod
+    def from_response(e: HTTPResponseError) -> ErrorModel:
+        data = e.response.json()
+        return ErrorModel(
+            code=data.get("code", "NET"),
+            user_message=data.get("user_message", "Erro inesperado."),
+            dev_message=data.get("dev_message", str(e)),
+        )
 
 
 class DeliveriesMapper:

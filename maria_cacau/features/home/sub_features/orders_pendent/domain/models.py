@@ -29,3 +29,9 @@ class PendentOrder:
 class OrdersModel:
     deliveries: DeliveriesSummary
     pendent_orders: list[PendentOrder]
+
+
+@dataclass
+class OrdersViewData:
+    report: str
+    chart_data: dict
