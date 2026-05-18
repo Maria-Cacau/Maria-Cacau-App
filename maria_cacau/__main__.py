@@ -7,10 +7,14 @@ from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QApplication
 
 from maria_cacau import __app_name__, __icon_mac__, __icon_win__
+from maria_cacau.backend._server import BackendServer
+from maria_cacau.core.network import LocalClient, configure
 from maria_cacau.features.home.home_view import GuiMain
 
 
 def main():
+    configure(LocalClient(backend=BackendServer()))
+
     if sys.platform == 'win32':
         import ctypes
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID('com.mariacacau.app')
