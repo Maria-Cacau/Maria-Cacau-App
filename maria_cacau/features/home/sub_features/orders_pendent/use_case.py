@@ -3,7 +3,6 @@ from dataclasses import dataclass
 
 from pandas.core.series import Series
 
-from maria_cacau.core import errors
 from maria_cacau.core.sheets.sheet_columns import SheetColumns as SColumns
 from maria_cacau.core.sheets.sheet_columns import SheetData as SData
 
@@ -33,8 +32,8 @@ class OrdersUseCase():
             return OrdersModel(report=report, chartData=delivery.deliveries_count)
 
         except Exception:
-            self.popup.show_popup(errors.E001)
-    
+            pass
+
     def get_deliveries_count(self, data: Series) -> DeliveryModel:
         try:
             deliveries_count: Series = data[SColumns.DELIVERY_TYPE.value].value_counts()
@@ -47,8 +46,8 @@ class OrdersUseCase():
             return DeliveryModel(deliveries=deliveries, deliveries_count=deliveries_count)
 
         except Exception:
-            self.popup.show_popup(errors.E001)
-    
+            pass
+
     def get_pendet_payments(self, data: Series) -> str:
         payments: Series = data[SColumns.PAYMENT_PENDENT.value]
 

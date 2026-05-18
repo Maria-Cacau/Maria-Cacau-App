@@ -1,10 +1,26 @@
 """Janela de popup para exibição de erros e informações ao usuário."""
 
+from dataclasses import dataclass
+from enum import Enum
+
 from PyQt6.QtGui import QFont, QIcon
 from PyQt6.QtWidgets import QMessageBox
 
 from maria_cacau import asset
-from maria_cacau.core.errors import AppError
+
+
+class PopupIcon(Enum):
+    CRITICAL = QMessageBox.Icon.Critical
+    WARNING  = QMessageBox.Icon.Warning
+    INFO     = QMessageBox.Icon.Information
+
+
+@dataclass
+class PopupModel:
+    title:   str
+    message: str
+    icon:    PopupIcon = PopupIcon.CRITICAL
+    detail:  str | None = None
 
 
 class GuiPopup(QMessageBox):
@@ -25,10 +41,9 @@ class GuiPopup(QMessageBox):
         self.btEsq.setFont(QFont('Arial', 10))                                          # Definindo a fonte dos botões
         self.btEsq.setText("OK")                                                        # Definindo o texto
 
-    ## Método: Mostra a janela.
-    def show_popup(self, msg_:AppError, icon_:str = "C") -> int:
-        self.setWindowTitle(msg_.titulo)
-        self.setText(msg_.subtitulo)
-        self.setInformativeText(msg_.detalhe)
-        if icon_ == "I": self.setIcon(QMessageBox.Icon.Information)
+    def show(self, model: PopupModel) -> int:
+        self.setWindowTitle(model.title)
+        self.setText(model.message)
+        self.setInformativeText(model.detail or "")
+        self.setIcon(model.icon.value)
         return self.exec()

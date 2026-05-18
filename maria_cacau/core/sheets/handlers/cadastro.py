@@ -6,13 +6,8 @@ from datetime import datetime
 import pandas as pd
 from pandas import DataFrame
 
-from maria_cacau.core import errors
-from maria_cacau.design_system.gui_popup import GuiPopup
-
-
 class CadastroAnalyseHandler:
     def __init__(self, raw_rows: list, show_popup: bool = True) -> None:
-        self._popup = GuiPopup()
         self.arqUsados: dict = {}
         self.dtsPed: dict = {}
 
@@ -51,8 +46,6 @@ class CadastroAnalyseHandler:
         qDts = self.arq['data'].value_counts()
         self.dtsPed = {str(d)[:10]: int(c) for d, c in qDts.items()}
 
-        if show_popup:
-            self._popup.show_popup(errors.planilha_ok(len(self.arq.index)), "I")
 
     ## Método especial: Pega as colunas já filtradas
     def get_col(self, k_: str) -> list:
