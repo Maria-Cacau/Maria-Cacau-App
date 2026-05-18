@@ -1,11 +1,9 @@
 """Janela principal da aplicação e orquestração das sub-features."""
 
 import re
-import time
-from datetime import datetime
 from pathlib import Path
 
-from PyQt6.QtCore import QObject, QThread, QUrl, pyqtSignal
+from PyQt6.QtCore import QUrl
 from PyQt6.QtGui import QAction, QDesktopServices, QPainter, QPixmap
 from PyQt6.QtWidgets import (QApplication, QDialog, QDialogButtonBox,
                              QFileDialog, QFormLayout, QHBoxLayout,
@@ -17,32 +15,12 @@ from maria_cacau.core.observability import AppEvent, observability
 from maria_cacau.core.sheets.manager import manager
 from maria_cacau.core.sheets.service import service
 from maria_cacau.core.storage.cache import CacheStorage
-from maria_cacau.features.home.sub_features import (CpfValidationController,
-                                                    DeliveryController,
-                                                    NotaFiscalController,
-                                                    ShippingRateController)
-from maria_cacau.features.home.sub_features.products_resume.products_resume_view import \
-    GuiProdutos
+from maria_cacau.features.home.sub_features import *
 from maria_cacau.features.home.sub_features.status_bar.status_bar_view import \
     GuiStatusBar
 
 _SHEETS_KEY   = 'sheets'
 _sheets_cache = CacheStorage(Path.home() / '.mariacacau')
-
-
-class _Worker(QObject):
-    finished = pyqtSignal(object)
-    error    = pyqtSignal(Exception)
-
-    def __init__(self, fn) -> None:
-        super().__init__()
-        self._fn = fn
-
-    def run(self) -> None:
-        try:
-            self.finished.emit(self._fn())
-        except Exception as e:
-            self.error.emit(e)
 
 
 def _extract_sheet_id(url: str) -> str | None:
@@ -116,7 +94,7 @@ class GuiMain(QMainWindow):
         root = _BackgroundWidget('maria_cacau/assets/images/background.png')
         self.setCentralWidget(root)
 
-        self.gProdutos = GuiProdutos()
+        self.summaryFeature = SummaryController()
         self.deliveriesFeature = DeliveryController()
         self.notaFiscal = NotaFiscalController()
         self.cpfFeature = CpfValidationController()
@@ -128,9 +106,6 @@ class GuiMain(QMainWindow):
         self.setup_ui(root)
         self._auto_connect()
         observability.log(AppEvent.APP_START)
-
-        self.datas: dict = {}
-        self.dtEnt: str = ''
 
         del tamTela, self.shippingRate
 
@@ -183,7 +158,7 @@ class GuiMain(QMainWindow):
     ## ------------------------------------------------------------------------------------------------
     ## Layout principal:
         mainLayout = QHBoxLayout(root)
-        mainLayout.addWidget(self.gProdutos.root, stretch=3)
+        mainLayout.addWidget(self.summaryFeature.view.root, stretch=3)
 
         rightLayout = QVBoxLayout()
         rightLayout.addWidget(self.deliveriesFeature.view.root, stretch=8)
@@ -198,12 +173,6 @@ class GuiMain(QMainWindow):
 
         rightLayout.addLayout(bottomLayout, stretch=4)
         mainLayout.addLayout(rightLayout, stretch=7)
-
-    ## ------------------------------------------------------------------------------------------------
-    ## Ações de botão:
-        self.gProdutos.btOk.clicked.connect(self.on_ok_produtos)
-        self.gProdutos.btCopiarTxt.clicked.connect(lambda: observability.log(AppEvent.BTN_COPY, feature='produtos'))
-
 
     ## Método: Tenta conectar automaticamente à planilha mais recente ao iniciar
     def _auto_connect(self) -> None:
@@ -221,93 +190,6 @@ class GuiMain(QMainWindow):
             service.prewarm_async()
         except PermissionError:
             pass
-
-    ## Método: Garante que self.datas está populado (chamado após load_cadastro)
-    def _ensure_datas(self) -> None:
-        if not self.datas:
-            self.datas = manager.cadastro.get_dates()
-
-    ## Método: executa fn em background; chama on_done(result) ou on_error(exc) na main thread
-    def _run_async(self, fn, on_done, on_error=None) -> None:
-        def _fn_ready():
-            service.wait_ready()
-            return fn()
-
-        self._thread = QThread()
-        self._worker = _Worker(_fn_ready)
-        self._worker.moveToThread(self._thread)
-        self._thread.started.connect(self._worker.run)
-        self._worker.finished.connect(on_done)
-        self._worker.finished.connect(self._thread.quit)
-        self._worker.finished.connect(self._worker.deleteLater)
-        self._thread.finished.connect(self._thread.deleteLater)
-        if on_error:
-            self._worker.error.connect(on_error)
-        else:
-            self._worker.error.connect(lambda exc: (
-                observability.log(AppEvent.ERROR, msg=str(exc)),
-                self.statusBar.set_ready(),
-            ))
-        self._thread.start()
-
-    ## Método: Ação do botão "OK" da área de Produtos
-    def on_ok_produtos(self) -> None:
-        if not service.is_connected():
-            return
-
-        _start = time.time()
-
-        if manager.cadastro is not None:
-            self._ensure_datas()
-            self._show_produtos(_start)
-            return
-
-        self.statusBar.set_loading()
-
-        def _on_done(_):
-            self._ensure_datas()
-            self._show_produtos(_start)
-
-        def _on_error(exc):
-            self.statusBar.set_ready()
-            observability.log(AppEvent.ERROR, msg=str(exc), where='produtos', duration_s=round(time.time() - _start, 1))
-
-        self._run_async(manager.load_cadastro, _on_done, _on_error)
-
-    ## Método: filtra e exibe o resumo de produtos (sempre na main thread)
-    def _show_produtos(self, _start: float = 0.0) -> None:
-        start_str, end_str = self.gProdutos.get_date_range()
-
-        def _parse(s: str) -> datetime:
-            for fmt in ('%d/%m/%y', '%d/%m/%Y'):
-                try:
-                    return datetime.strptime(s, fmt)
-                except ValueError:
-                    continue
-            return datetime.min
-
-        start_dt, end_dt = _parse(start_str), _parse(end_str)
-        filtered = {d: c for d, c in self.datas.items() if start_dt <= _parse(d) <= end_dt}
-
-        if not filtered:
-            self.gProdutos.set_text(f'Sem pedidos entre {start_str} e {end_str}.')
-            self.statusBar.set_ready()
-            return
-
-        self.gProdutos.res = ''
-        self.gProdutos.pedGeral = {}
-
-        dia: str = ''
-        for d in sorted(filtered, key=_parse):
-            dia += f"\n\nDia {self.gProdutos.fix_date(d[:10])} - {filtered[d]} pedido(s)\n"
-            dia += self.gProdutos.resumo_dia(d, filtered[d], manager.cadastro.get_data(manager.cadastro.get_col("produtos"), d))
-            self.gProdutos.pedDia = {}
-
-        self.gProdutos.set_resumo(start_str, end_str, sum(filtered.values()), dia)
-        self.gProdutos.btCopiarTxt.setEnabled(True)
-        observability.log(AppEvent.QUERY_PRODUTOS, start=start_str, end=end_str, duration_s=round(time.time() - _start, 1))
-        self.statusBar.set_success()
-        del dia, d
 
     ## Método: Ação do menu "Conectar com planilha"
     def on_conectar_planilha(self) -> None:
@@ -414,8 +296,6 @@ class GuiMain(QMainWindow):
     ## Método: Ação do menu "Limpar cache"
     def on_limpar_cache(self) -> None:
         manager.clear_cache()
-        self.datas = {}
-        self.dtEnt = ''
         observability.log(AppEvent.CACHE_CLEAR)
 
     ## Método: Carrega planilhas salvas do cache local

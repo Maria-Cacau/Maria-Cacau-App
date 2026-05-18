@@ -37,7 +37,8 @@ class SheetNormalizer:
         """
         keys = list(rows[0].keys())
         try:
-            target_pos = keys.index(ProductCols.NAME.slot(3)) + 1
+            # +4 pula $unit3, valor3, q4 — o header real de prod4 na planilha é '-'
+            target_pos = keys.index(ProductCols.NAME.slot(3)) + 4
         except ValueError:
             return rows
 
