@@ -34,15 +34,15 @@ class SheetCols(StrEnum):
 
     # Personalização
     LABEL_NAME  = "nome da etiqueta"
-    LABEL_THEME = "etiqueta / tema"
+    LABEL_THEME = "etiqueta /tema"
     BOX_NAME    = "nome na caixa"
-    BOX_ART     = "arte / tecido da caixa"
+    BOX_ART     = "arte/tecido da caixa"
 
     # Financeiro
     DISCOUNT       = "desconto"
     SHIPPING       = "$frete"
     TOTAL          = "total"
-    AMOUNT_PENDENT = "quanto\nfalta\npagar?"
+    AMOUNT_PENDENT = "quanto falta pagar?"
     PAY_ON_PICKUP  = "vai pagar retira"
     PRODUCTS_NOTE  = "outro espec."
 
@@ -74,10 +74,10 @@ class ProductCols(StrEnum):
 class PaymentCols(StrEnum):
     """Colunas das parcelas de pagamento (1–6). Usar com .slot(n)."""
 
-    DATE      = "data {}ºpgto"
-    AMOUNT    = "valor {}ºpgto"
-    TYPE      = "forma {}ºpgto"
-    CONFIRMED = "confirmado {}ºpgto"
+    DATE      = "data {}ªpgto"
+    AMOUNT    = "valor pg{}"
+    TYPE      = "forma {}º pgto"
+    CONFIRMED = "pagou?{} 0-não 1-sim"
 
     def slot(self, n: int) -> str:
         return self.value.format(n)

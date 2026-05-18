@@ -1,3 +1,4 @@
+import re
 from datetime import datetime, timedelta
 
 
@@ -12,8 +13,8 @@ def normalize_date(val: str) -> str | None:
 
 
 def to_dicts(header: list[str], rows: list[list]) -> list[dict]:
-    """Converte linhas da planilha em lista de dicts usando o cabeçalho como chaves (lowercase)."""
-    keys = [h.lower() for h in header]
+    """Converte linhas da planilha em lista de dicts usando o cabeçalho como chaves (lowercase, whitespace normalizado)."""
+    keys = [re.sub(r'\s+', ' ', h).strip().lower() for h in header]
     return [dict(zip(keys, row)) for row in rows]
 
 
