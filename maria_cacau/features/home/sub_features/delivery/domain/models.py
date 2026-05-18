@@ -26,12 +26,12 @@ class PendentOrder:
 
 
 @dataclass
-class OrdersModel:
+class DeliveryModel:
     deliveries: DeliveriesSummary
     pendent_orders: list[PendentOrder]
 
 
 @dataclass
-class OrdersViewData:
+class DeliveryViewData:
     report: str
     chart_data: dict

@@ -8,10 +8,10 @@ from maria_cacau.core.charts import ChartType, ChartWidget
 from maria_cacau.design_system.aux_widgets import AuxWidgets
 from maria_cacau.design_system.gui_popup import GuiPopup
 
-from ..domain.models import OrdersViewData
+from ..domain.models import DeliveryViewData
 
 
-class OrdersView(QWidget, AuxWidgets):
+class DeliveryView(QWidget, AuxWidgets):
     generate_report = pyqtSignal()
     copy_report = pyqtSignal()
     copy_graph = pyqtSignal()
@@ -91,7 +91,7 @@ class OrdersView(QWidget, AuxWidgets):
         r'''Retorna a data selecionada no formato DD/MM/YY'''
         return self.dateSelector.date().toString('dd/MM/yy')
 
-    def update_data(self, data: OrdersViewData) -> None:
+    def update_data(self, data: DeliveryViewData) -> None:
         r'''Atualiza os dados da view'''
         self.textView.setText(data.report)
         self.chart.update_data(data.chart_data, title=self.view_title)

@@ -23,8 +23,8 @@ from maria_cacau.features.home.sub_features.freight_query.freight_query_view imp
     GuiConsFrete
 from maria_cacau.features.home.sub_features.nota_fiscal.nota_fiscal_view import \
     GuiDados
-from maria_cacau.features.home.sub_features.orders_pendent.presentation.controller import \
-    OrdersController
+from maria_cacau.features.home.sub_features.delivery.presentation.controller import \
+    DeliveryController
 from maria_cacau.features.home.sub_features.products_resume.products_resume_view import \
     GuiProdutos
 from maria_cacau.features.home.sub_features.status_bar.status_bar_view import \
@@ -121,7 +121,7 @@ class GuiMain(QMainWindow):
         self.setCentralWidget(root)
 
         self.gProdutos = GuiProdutos()
-        self.deliveriesFeature = OrdersController()
+        self.deliveriesFeature = DeliveryController()
         self.gDados = GuiDados()
         self.gVeriCpf = GuiValiCpf()
         self.gConsCep = GuiConsFrete()

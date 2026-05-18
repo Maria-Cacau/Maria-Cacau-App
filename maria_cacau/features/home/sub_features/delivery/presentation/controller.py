@@ -6,16 +6,16 @@ from maria_cacau.core.error import ErrorModel
 from maria_cacau.core.observability import observability
 
 from ..domain.events import FeatureEvents as ObsEv
-from ..domain.models import OrdersViewData
+from ..domain.models import DeliveryViewData
 from ..domain.signals import signals
-from .view import OrdersView
-from .viewmodel import OrdersViewModel
+from .view import DeliveryView
+from .viewmodel import DeliveryViewModel
 
 
-class OrdersController():
+class DeliveryController():
     def __init__(self) -> None:
-        self.view = OrdersView()
-        self.viewmodel = OrdersViewModel()
+        self.view = DeliveryView()
+        self.viewmodel = DeliveryViewModel()
 
         self._setupActions()
 
@@ -52,7 +52,7 @@ class OrdersController():
     def handle_error(self, error: ErrorModel) -> None:
         self.view.popup.show(error.to_popup())
 
-    def handle_report_generated(self, data: OrdersViewData) -> None:
+    def handle_report_generated(self, data: DeliveryViewData) -> None:
         self.view.update_data(data)
 
         duration_s = round(time.time() - self._start, 1)

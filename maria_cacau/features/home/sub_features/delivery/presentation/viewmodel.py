@@ -4,14 +4,14 @@ from concurrent.futures import ThreadPoolExecutor
 
 from maria_cacau.core.error import ErrorModel, unexpected_error
 
-from ..domain.models import OrdersModel, OrdersViewData
+from ..domain.models import DeliveryModel, DeliveryViewData
 from ..domain.signals import signals
-from ..domain.use_case import OrdersUseCase
+from ..domain.use_case import DeliveryUseCase
 
 
-class OrdersViewModel():
+class DeliveryViewModel():
     def __init__(self) -> None:
-        self.use_case = OrdersUseCase()
+        self.use_case = DeliveryUseCase()
         self.executor = ThreadPoolExecutor(max_workers=1)
 
     def on_generate(self, date: str) -> None:
@@ -27,13 +27,13 @@ class OrdersViewModel():
         except Exception as e:
             signals.error.emit(unexpected_error(e))
 
-    def _build_view_data(self, model: OrdersModel, date: str) -> OrdersViewData:
-        return OrdersViewData(
+    def _build_view_data(self, model: DeliveryModel, date: str) -> DeliveryViewData:
+        return DeliveryViewData(
             report=self._build_report(model, date),
             chart_data={d.type: d.count for d in model.deliveries.deliveries},
         )
 
-    def _build_report(self, model: OrdersModel, date: str) -> str:
+    def _build_report(self, model: DeliveryModel, date: str) -> str:
         deliveries_lines = "\n".join(
             f"{d.type} = {d.count}" for d in model.deliveries.deliveries
         )
