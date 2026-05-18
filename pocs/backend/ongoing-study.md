@@ -35,16 +35,18 @@ O problema que motivou o backend: as features conhecem `SheetColumns`, `pandas.D
 | Adicionar `generic_mapper` em `backend/errors/_mapper.py` | Concluído |
 | Criar `routes/auth.py` | Pendente |
 | Criar `routes/source.py` | Pendente |
-| Migrar `orders_pendent` — estrutura `data/`, `domain/`, `presentation/` | Concluído |
-| Migrar `orders_pendent` — implementar `domain/use_case.py` | Concluído |
-| Migrar `orders_pendent` — `OrdersViewData` com `report` + `chart_data` (ViewModel constrói) | Concluído |
-| Migrar `orders_pendent` — tratamento de erro (ErrorMapper → Repository → ViewModel → Controller) | Concluído |
-| Migrar `orders_pendent` — habilitar botões após dados carregarem | Concluído |
-| Migrar `orders_pendent` — remover `view-old.py` | Concluído |
-| Migrar `orders_pendent` — botões funcionais (copiar/download relatório e gráfico) | Pendente |
+| Migrar `delivery` — estrutura `data/`, `domain/`, `presentation/` | Concluído |
+| Migrar `delivery` — implementar `domain/use_case.py` | Concluído |
+| Migrar `delivery` — `DeliveryViewData` com `report` + `chart_data` (ViewModel constrói) | Concluído |
+| Migrar `delivery` — tratamento de erro (ErrorMapper → Repository → ViewModel → Controller) | Concluído |
+| Migrar `delivery` — habilitar botões após dados carregarem + travar botão durante fetch | Concluído |
+| Migrar `delivery` — remover `view-old.py` | Concluído |
+| Migrar `delivery` — botões funcionais (copiar relatório + copiar/salvar gráfico) | Concluído |
+| Migrar `delivery` — renomear `orders_pendent` → `delivery` + classes `Orders*` → `Delivery*` | Concluído |
+| Migrar `delivery` — `__init__` chain para export limpo (`sub_features → delivery → presentation`) | Concluído |
 | Criar `core/error/` (`ErrorModel` + `errors.py`) | Concluído |
 | Adicionar `unexpected_error` e `http_error` em `core/error/errors.py` | Concluído |
-| Atualizar `home_view.py` para usar `OrdersController` | Concluído |
+| Atualizar `home_view.py` para usar `DeliveryController` via `sub_features` | Concluído |
 | Configurar `LocalClient(BackendServer())` no `__main__.py` | Concluído |
 | Bridge temporária: restaurar credenciais do cache no startup (sem `routes/auth`) | Concluído |
 | `threading.Lock` no `GoogleSheetsDataSource` (serializar acesso à planilha) | Concluído |

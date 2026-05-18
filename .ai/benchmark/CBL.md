@@ -712,6 +712,22 @@ A ideia tem nome no DDD: *shared kernel* — um pacote que carrega os tipos que 
 
 ---
 
+## Sessão — Mai/2026 (Finalização: delivery feature)
+
+---
+
+**P: Faz sentido manter ações de copiar/salvar gráfico dentro do `ChartWidget` mesmo sendo Design System?**
+
+Sim. O argumento central é encapsulamento: o `ChartWidget` é o único que conhece o `_fig` interno (matplotlib `Figure`). Extrair essas ações para a view ou controller exigiria expor o `_fig` publicamente ou retornar bytes PNG fora do componente — complexidade sem benefício. Além disso, `copy_to_clipboard` e `save_to_file` são *capabilities do widget*, não regras de domínio: assim como `QTextBrowser` sabe copiar o próprio texto, `ChartWidget` sabe exportar o próprio gráfico. Qualquer feature que reusar o componente ganha o export de graça.
+
+---
+
+**P: Singular ou plural para o nome de uma pasta de feature? (`delivery` vs `deliveries`)**
+
+Para módulos de feature a convenção é singular — representa *o que a tela é*, não *o que ela lista*. Plural faz sentido no backend porque o endpoint *retorna uma coleção*. No frontend, olhando o próprio projeto (`home`, `products_resume`), o padrão é singular. `delivery` foi adotado também pela consistência com o blueprint do backend (`deliveries_bp`) — que usa plural por retornar dados — sem contaminar a nomenclatura da feature de UI.
+
+---
+
 ## Sessão — Mai/2026 (Migração: orders_pendent para o backend)
 
 ---
