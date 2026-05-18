@@ -60,6 +60,10 @@ A refatoração segue o fluxo de fora pra dentro: primeiro a infraestrutura, dep
 - `sheet_mapper.py` — corrigidas divergências de `AMOUNT_PENDENT`, `LABEL_THEME`, `BOX_ART`, `PaymentCols`
 - Feature `orders_pendent` validada end-to-end com dados reais da planilha
 
+**Concluído nas últimas sessões:**
+- `nota_fiscal` — migrada para `presentation/` (controller + view), placeholder "Em breve", futuro: API Tiny/OList
+- `shipping_rate` (ex-`freight_query`) — migrada para `presentation/` (controller + view), placeholder "Em breve", futuro: API Melhor Envio
+
 **Próximo:**
 - Implementar botões funcionais de `orders_pendent`: copiar relatório, download relatório, copiar gráfico, download gráfico
 
