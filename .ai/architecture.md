@@ -49,12 +49,12 @@ Maria-Cacau-Contagem/
 │       └── home/
 │           ├── home_view.py      # janela principal + orquestração
 │           └── sub_features/
-│               ├── cpf_validation/        # validação matemática de CPF com feedback visual
-│               ├── nota_fiscal/           # placeholder "Em breve" (v5.0)
-│               ├── products_resume/
+│               ├── cpf_validation/        # ✅ migrada — domain/ + presentation/
+│               ├── nota_fiscal/           # ✅ migrada — placeholder "Em breve" (futuro: API Tiny/OList)
+│               ├── shipping_rate/         # ✅ migrada — placeholder "Em breve" (futuro: API Melhor Envio)
+│               ├── products_resume/       # ⏳ pendente — vai usar backend (/orders)
 │               ├── delivery/              # ✅ migrada — data/ + domain/ + presentation/
-│               ├── freight_query/
-│               └── status_bar/        # barra de status global (credenciais, planilha, loading)
+│               └── status_bar/            # barra de status global (credenciais, planilha, loading)
 ├── pyproject.toml                # fonte única de verdade para deps e metadados
 └── ...
 ```
