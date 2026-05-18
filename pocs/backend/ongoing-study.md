@@ -30,7 +30,8 @@ O problema que motivou o backend: as features conhecem `SheetColumns`, `pandas.D
 | Criar `subfeatures/deliveries/` (repo + service + route) | Concluído |
 | Criar `subfeatures/payments/` (repo + service) | Concluído |
 | Criar `subfeatures/payments/route.py` | Concluído |
-| Criar `subfeatures/summary/` (repo + service + route) | Pendente (service não implementado) |
+| Criar `subfeatures/summary/` (repo + service + route) | Concluído |
+| Criar `data_source/_normalizer.py` (`SheetNormalizer`) | Concluído |
 | Definir contrato de erros (`backend/errors/`) | Concluído |
 | Adicionar `generic_mapper` em `backend/errors/_mapper.py` | Concluído |
 | Criar `routes/auth.py` | Pendente |
@@ -100,7 +101,8 @@ maria_cacau/backend/
 ├── _server.py                      # BackendServer — Flask app + blueprints + execute()
 ├── data_source/
 │   ├── __init__.py                 # exporta data_source, DataSourceProtocol, SheetCols, ProductCols, PaymentCols, SheetTabs, PAYMENT_SLOTS, PRODUCT_SLOTS
-│   ├── _google_sheets.py           # GoogleSheetsDataSource — stateless, sem acesso a disco
+│   ├── _google_sheets.py           # GoogleSheetsDataSource — stateless, sem acesso a disco; aplica SheetNormalizer antes de retornar
+│   ├── _normalizer.py              # SheetNormalizer — corrige headers inconsistentes da planilha (PaymentCols + prod4 posicional)
 │   ├── _viewmodel.py               # _SheetsViewModel — schema cacheado, prewarm, fetch com dois passes
 │   ├── _protocol.py                # DataSourceProtocol — contrato agnóstico de fonte de dados
 │   ├── _utils.py                   # funções puras: normalize_date, to_dicts, to_ranges, date_range
@@ -147,8 +149,8 @@ maria_cacau/backend/
 │           │       └── example.json
 │           └── summary/
 │               ├── __init__.py
-│               ├── repository.py   # OrdersRepository — fetch por período
-│               ├── service.py      # OrdersService + OrdersMapper (service pendente)
+│               ├── repository.py   # OrdersSummaryRepository — fetch por período, cast numérico completo
+│               ├── service.py      # OrdersService + OrdersMapper
 │               ├── route.py        # summary_bp — GET /orders
 │               └── response/
 │                   ├── schema.json
@@ -169,7 +171,7 @@ maria_cacau/backend/
 | `DELETE` | `/source/{sheet_id}` | — | Pendente | Remove planilha da lista salva |
 | `GET` | `/orders/payments-pendent` | `payments_bp` | Implementado | Pedidos com pagamento pendente (`amount_pendent > 0`) para uma data |
 | `GET` | `/orders/deliveries` | `deliveries_bp` | Implementado | Contagem de pedidos agrupada por tipo de entrega para uma data |
-| `GET` | `/orders` | `orders_bp` | Pendente | Resumo completo dos pedidos em um período (range de datas) |
+| `GET` | `/orders` | `summary_bp` | Implementado | Lista completa de pedidos de um período (`?start=DD/MM/YY&end=DD/MM/YY`) |
 
 ---
 
@@ -251,8 +253,8 @@ Vive em `data_source/_google_sheets.py`. Singleton exposto como `data_source: Fi
 | `is_ready() -> bool` | True quando `_vm` está instanciado (credenciais + sheet setados) |
 | `set_credentials(raw_json)` | Autentica com JSON bruto da service account; cria `_vm` se sheet já setado |
 | `set_sheet(sheet_id)` | Guarda sheet em memória e dispara prewarm; cria `_vm` se client já setado |
-| `fetch_orders_by_date(date)` | Delega para `_vm.fetch({date})` |
-| `fetch_orders_by_period(start, end)` | Delega para `_vm.fetch(date_range)` |
+| `fetch_orders_by_date(date)` | Delega para `_vm.fetch({date})` + aplica `SheetNormalizer.normalize()` |
+| `fetch_orders_by_period(start, end)` | Delega para `_vm.fetch(date_range)` + aplica `SheetNormalizer.normalize()` |
 
 ---
 
@@ -285,7 +287,7 @@ Vive em `data_source/_google_sheets.py`. Singleton exposto como `data_source: Fi
 
 ### Bloco 2 — Backend (após validação da bridge)
 
-3. Implementar `subfeatures/summary/service.py` — resumo de pedidos por período
+3. ~~Implementar `subfeatures/summary/service.py`~~ ✅ Concluído
 4. Criar `routes/auth.py` — `POST /auth` + `DELETE /auth`
 5. Criar `routes/source.py` — CRUD de planilhas
 6. Criar `routes/status.py` — `GET /status`
