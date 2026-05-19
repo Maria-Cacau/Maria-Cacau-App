@@ -56,4 +56,14 @@ class SheetsViewModel:
         except Exception as e:
             signals.error.emit(unexpected_error(e))
 
+    def remove(self, sheet_id: str) -> None:
+        self.executor.submit(lambda: self._remove(sheet_id))
+
+    def _remove(self, sheet_id: str) -> None:
+        try:
+            sheet = self.use_case.remove(sheet_id)
+            bus.sheet_removed.emit(sheet)
+        except Exception as e:
+            signals.error.emit(unexpected_error(e))
+
 

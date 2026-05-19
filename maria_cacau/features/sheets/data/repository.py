@@ -5,7 +5,7 @@ from maria_cacau.core import session
 from maria_cacau.core.storage import CacheStorage
 
 from ..domain.models import SheetModel
-from .apis import SelectSheetAPI
+from .apis import RemoveSheetAPI, SelectSheetAPI
 
 _SHEETS_KEY = "sheets"
 
@@ -54,6 +54,16 @@ class SheetsRepository:
 
     def load_all(self) -> list[SheetModel]:
         return [SheetModel(name=s["nome"], sheet_id=s["sheet_id"]) for s in self._load_raw()]
+
+    def remove(self, sheet_id: str) -> SheetModel:
+        sheets = self._load_raw()
+        raw    = next((s for s in sheets if s["sheet_id"] == sheet_id), None)
+        _cache.save([s for s in sheets if s["sheet_id"] != sheet_id], _SHEETS_KEY)
+
+        if session.active_sheet_id == sheet_id:
+            RemoveSheetAPI().call()
+
+        return SheetModel(name=raw["nome"] if raw else sheet_id, sheet_id=sheet_id)
 
     def update_name(self, sheet_id: str, new_name: str) -> SheetModel:
         sheets = self._load_raw()

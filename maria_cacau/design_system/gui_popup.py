@@ -4,9 +4,10 @@ from dataclasses import dataclass
 from enum import Enum
 
 from PyQt6.QtGui import QFont, QIcon
-from PyQt6.QtWidgets import QMessageBox
+from PyQt6.QtWidgets import QMessageBox, QSizePolicy, QSpacerItem
 
 from maria_cacau import asset
+from maria_cacau.design_system.constants import DIALOG_MIN_WIDTH
 
 
 class PopupIcon(Enum):
@@ -46,4 +47,10 @@ class GuiPopup(QMessageBox):
         self.setText(model.message)
         self.setInformativeText(model.detail or "")
         self.setIcon(model.icon.value)
+        self._apply_min_width()
         return self.exec()
+
+    def _apply_min_width(self) -> None:
+        grid = self.layout()
+        spacer = QSpacerItem(DIALOG_MIN_WIDTH, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+        grid.addItem(spacer, grid.rowCount(), 0, 1, grid.columnCount())
