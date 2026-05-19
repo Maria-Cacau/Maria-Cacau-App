@@ -1,7 +1,7 @@
 # Ongoing Study — Módulo Backend
 
-> Documento de continuidade. Qualquer sessão futura começa aqui.
-> Objetivo: criar o módulo `backend/` — backend local (in-process) que serve como camada de serviços entre as features e a fonte de dados (hoje: Google Sheets).
+> Referência técnica do módulo `backend/`: arquitetura, padrões, decisões e estrutura de arquivos.
+> O backend está **completo**. Para o estado atual do projeto e próximos passos, ver `pocs/architecture/session-context.md`.
 
 ---
 
@@ -279,19 +279,6 @@ Vive em `data_source/_google_sheets.py`. Singleton exposto como `data_source: Fi
 - **Contrato de erros em duas camadas:** `DataSourceError` carrega `code`, `user_message`, `dev_message` (agnóstico de transporte). `BackendError` em `backend/errors/` adiciona `http_status`. `_mapper.py` faz a tradução via tabela `{DataSourceError type → http_status}`. `@app.errorhandler(DataSourceError)` no `_server.py` captura tudo automaticamente.
 - **Códigos de erro `DS01–DS18`:** prefixo `DS` para DataSource, numerados na ordem de declaração em `_errors.py`. Quando o MySQL substituir o Google Sheets, novos erros entram com prefixo diferente (ex: `MY01`).
 - **`summary_bp` em vez de `orders_bp` no summary:** evita conflito de nome com o blueprint pai `orders_bp`. O path `/orders` não é afetado — o nome do blueprint é só identificador interno.
-
----
-
-## Próximos Passos (ordem sugerida)
-
-### Backend — concluído
-
-- ~~Bridge temporária de autenticação~~ ✅ Concluído
-- ~~Implementar `subfeatures/summary/service.py`~~ ✅ Concluído
-- ~~Criar `features/auth/` — `POST /auth` + `DELETE /auth`~~ ✅ Concluído
-- ~~Criar `features/sheet/` — `PUT /sheet/<sheet_id>` + `DELETE /sheet`~~ ✅ Concluído
-
-**Próximo:** migrar a feature `home_view` (auth) na camada de aplicação — vai consumir `/auth` e `/sheet`.
 
 ---
 

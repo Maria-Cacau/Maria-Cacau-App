@@ -13,7 +13,7 @@ App desktop PyQt6 + Python para a loja Maria Cacau. Lê dados de uma planilha Go
 
 ## O que estamos fazendo agora
 
-**Infraestrutura do app concluída.** `GuiMain` foi decomposta, a pasta `app/` centraliza a casca do app com `AppCoordinator`, `core/session` centraliza o estado global, `core/bus` disponibiliza o event bus e `AppInitUseCase` orquestra a inicialização com uma única chamada HTTP. Próximas etapas: status bar via eventos de sessão e limpeza de cache.
+**Refinamentos pós-refatoração.** Toda a infraestrutura e as features estão migradas. O foco agora é finalizar os detalhes que ficaram pendentes: conectar a status bar via bus, usar as variáveis de `core/session` para validar requests, aumentar a cobertura de observabilidade e ajustar o tamanho mínimo dos dialogs.
 
 ---
 
@@ -98,48 +98,32 @@ O backend está completo.
 | `shipping_rate` | `home/sub_features/shipping_rate/` | ✅ Migrada | Só `presentation/` — placeholder; futuro: API Melhor Envio |
 | `summary` | `home/sub_features/summary/` | ✅ Migrada | `data/` + `domain/` + `presentation/` — usa backend (`GET /orders`) |
 | `auth` | `features/auth/` | ✅ Migrada | `data/` + `domain/` + `presentation/` — usa `/auth`; menu "Segurança" é um `QMenu` |
-| `sheets` | `features/sheets/` | ✅ Migrada | `data/` + `domain/` + `presentation/view/` — usa `PUT /sheet`; menu "Arquivo" é um `QMenu`; `core/sheets/` deletado |
-
----
-
-## Ordem de prioridade — concluída
-
-1. ~~**`nota_fiscal` + `freight_query` (CEP)**~~ ✅
-2. ~~**`summary`**~~ ✅
-3. ~~**`auth`**~~ ✅
-4. ~~**`sheets`**~~ ✅ — `features/sheets/`; menu "Arquivo" como `QMenu`; `core/sheets/` removido
+| `sheets` | `features/sheets/` | ✅ Migrada | `data/` + `domain/` + `presentation/view/` — usa `PUT /sheet`; menu "Arquivo" é um `QMenu` |
 
 ---
 
 ## Próximas sessões
 
-### ~~1. Refatoração da home e MainWindow~~ ✅
-
-`GuiMain` decomposta em:
-- `features/main/window.py` → `MainWindow` (QMainWindow, menubar, status bar, central widget)
-- `features/main/handler.py` → `MenuHandler` (instancia `AuthController` + `SheetsController`, monta os QMenus)
-- `features/home/source/view.py` → `HomeView` (background + layout das sub-features)
-- `features/home/source/controller.py` → `HomeController` (instancia as 5 sub-features, chama `setup_view`)
-- `features/home/source/models.py` → `HomeFeaturesModel` (DTO com os `view.root` de cada sub-feature)
-
-### 2. Criação das ações de pre-load do app
-
-Orquestrar as chamadas de inicialização que hoje estão dispersas:
-- `auth.auto_connect()` precisa completar antes de `sheets.auto_connect()` chamar o backend
-- Definir ordem e dependências de inicialização de forma explícita
-
-### 3. `core/session` — dados compartilhados do app
-
-Centralizar estado global compartilhado entre features (ex: planilha ativa, status de autenticação).
-Hoje esse estado fica implícito no backend (`data_source`). A ideia é ter um objeto de sessão acessível às features sem acoplar ao backend.
-
-### 4. Feature: status bar
-
-A barra de status existe (`features/home/sub_features/status_bar/`) mas ainda recebe dados diretamente de `home_view.py`. Após a separação home/main, ela precisa ser conectada via eventos/signals da sessão — não via chamadas diretas.
+1. **Status bar** — conectar via `bus` após sinal de sessão; hoje ainda recebe dados direto do `home_view.py`
+2. **Usar variáveis de `core/session` nas requests** — validar/bloquear request quando `is_authenticated` ou `active_sheet_id` não estiver pronto
+3. **Aumentar observabilidade** — cobertura de log com lacunas (ex: parâmetros no cache hit, duração de requests)
+4. **Popup de dialog com dimensão mínima aumentada** — `SheetCreateView` e outros dialogs abrem pequenos demais
 
 ---
 
-## Decisões e padrões estabelecidos nessa fase
+## Histórico — fases concluídas
+
+| Fase | O que foi feito |
+|---|---|
+| Migração das features | Todas as 7 features migradas para Clean Arch MVC (domain/data/presentation) |
+| Backend completo | 5 rotas implementadas; `DataSource` isolado com `DataSourceProtocol` |
+| Refatoração home/main | `GuiMain` decomposta em `MainWindow` + `MenuHandler` (`app/`) e `HomeController/HomeView` (`features/home/source/`) |
+| Infraestrutura de sessão | `AppCoordinator`, `AppInitUseCase`, `AppSession` (`core/session`), `_EventBus` (`core/bus`) |
+| Cache em memória | `OrdersRepository` e `SummaryRepository` com cache por params; limpeza via `bus.cache_cleared` → menu "Arquivo → Limpar cache" |
+
+---
+
+## Decisões e padrões estabelecidos
 
 | Decisão | Detalhe |
 |---|---|
