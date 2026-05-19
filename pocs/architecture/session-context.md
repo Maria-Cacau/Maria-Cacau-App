@@ -11,8 +11,6 @@ App desktop PyQt6 + Python para a loja Maria Cacau. Lê dados de uma planilha Go
 
 ---
 
----
-
 ## Os três mundos (isolamento total)
 
 ```
@@ -88,19 +86,82 @@ O backend está completo.
 
 | Feature | Localização | Status | Observação |
 |---|---|---|---|
-| `delivery` | `home/sub_features/delivery/` | ✅ Migrada | `data/` + `domain/` + `presentation/` — usa backend |
-| `cpf_validation` | `home/sub_features/cpf_validation/` | ✅ Migrada | Só `domain/` + `presentation/` — validação local |
-| `nota_fiscal` | `home/sub_features/nota_fiscal/` | ✅ Migrada | Só `presentation/` — placeholder; futuro: API Tiny/OList |
-| `shipping_rate` | `home/sub_features/shipping_rate/` | ✅ Migrada | Só `presentation/` — placeholder; futuro: API Melhor Envio |
-| `summary` | `home/sub_features/summary/` | ✅ Migrada | `data/` + `domain/` + `presentation/` — usa backend (`GET /orders`) |
-| `auth` | `features/auth/` | ✅ Migrada | `data/` + `domain/` + `presentation/` — usa `/auth`; menu "Segurança" é um `QMenu` |
-| `sheets` | `features/sheets/` | ✅ Migrada | `data/` + `domain/` + `presentation/view/` — usa `PUT /sheet`; menu "Arquivo" é um `QMenu` |
+| `delivery` | `home/sub_features/delivery/` | ✅ | `data/` + `domain/` + `presentation/` — usa backend |
+| `summary` | `home/sub_features/summary/` | ✅ | `data/` + `domain/` + `presentation/` — usa backend (`GET /orders`) |
+| `cpf_validation` | `features/cpf_validation/` | ✅ | Só `domain/` + `presentation/` — validação local; abre via menu Funcionalidades |
+| `funcionalidades` | `features/funcionalidades/` | ✅ | Só `presentation/` — `QMenu` que agrega ferramentas auxiliares |
+| `auth` | `features/auth/` | ✅ | `data/` + `domain/` + `presentation/` — usa `/auth`; menu "Segurança" é um `QMenu` |
+| `sheets` | `features/sheets/` | ✅ | `data/` + `domain/` + `presentation/view/` — usa `PUT /sheet`; menu "Arquivo" é um `QMenu` |
 
 ---
 
 ## Próximas sessões
 
-3. **Aumentar observabilidade** — cobertura de log com lacunas (ex: parâmetros no cache hit, duração de requests)
+### Fase 3 — Design System: eliminar AuxWidgets
+
+**Objetivo:** Eliminar `AuxWidgets` como herança nas views. Todos os componentes de UI passam a ser instanciados diretamente do Design System, igual ao `DSButton`. Views não herdam mais de nada além de `QWidget`/`QDialog`/`QMenu`.
+
+---
+
+**Inventário atual — o que ainda usa `AuxWidgets`:**
+
+| Método | Componente criado | Usado em |
+|---|---|---|
+| `group_box(title)` | `QGroupBox` estilizado (borda marrom) | `DeliveryView`, `SummaryView` |
+| `text_view()` | `QTextBrowser` (fonte Consolas 10) | `DeliveryView`, `SummaryView` |
+| `on_copy(widget)` | helper de cópia de `QTextBrowser` | `DeliveryView`, `SummaryView` |
+| `combo_box()` | `QComboBox` (fonte Arial 10) | `SummaryView` |
+| `lbl(text, size)` | `QLabel` (fonte Arial, alinhamento esquerdo) | `SummaryView` |
+
+**O que já usa PyQt direto (sem DS) e deve continuar assim:**
+- `QDateEdit` — não justifica wrapper por ora
+- `QLineEdit` — idem
+
+---
+
+**Componentes a criar em `design_system/components/`:**
+
+| Componente DS | Substitui | Arquivo sugerido |
+|---|---|---|
+| `DSGroupBox` | `group_box()` | `components/group_box.py` |
+| `DSTextView` | `text_view()` + `on_copy()` | `components/text_view.py` |
+| `DSLabel` | `lbl()` | `components/label.py` |
+| `DSComboBox` | `combo_box()` | `components/combo_box.py` |
+
+Cada componente deve seguir o padrão do `DSButton`: classe própria, arquivo próprio, exportado pelo `design_system/components/__init__.py`.
+
+**Migração do `ChartWidget`:**
+- `core/charts.py` → `design_system/components/chart_widget.py` (ou subpasta `charts/`)
+- Atualizar imports em `DeliveryView` e `SummaryView`
+
+---
+
+**Abordagem sugerida — componente por componente:**
+
+1. **`DSGroupBox`** — criar + migrar `DeliveryView` e `SummaryView`
+2. **`DSTextView`** — criar (inclui `copy_to_clipboard()` como método próprio) + migrar as duas views
+3. **`DSLabel`** — criar + migrar `SummaryView`
+4. **`DSComboBox`** — criar + migrar `SummaryView`
+5. **`ChartWidget`** — mover de `core/` para `design_system/components/` + atualizar imports
+6. **Deletar `AuxWidgets`** — arquivo vazio/inutilizado após todos os passos acima
+
+Ao finalizar cada componente: remover `AuxWidgets` da herança da view correspondente assim que **todos** os seus métodos estiverem migrados nela.
+
+---
+
+**Estado final esperado:**
+
+```python
+# antes
+class DeliveryView(QWidget, AuxWidgets): ...
+
+# depois
+class DeliveryView(QWidget): ...
+# componentes instanciados diretamente:
+self.textView  = DSTextView()
+self.root      = DSGroupBox(self.view_title)
+self.cbType    = DSComboBox()  # só summary
+```
 
 ---
 
@@ -115,6 +176,7 @@ O backend está completo.
 | Cache em memória | `OrdersRepository` e `SummaryRepository` com cache por params; limpeza via `bus.cache_cleared` → menu "Arquivo → Limpar cache" |
 | Refinamentos pós-refatoração | Status bar via bus, `core/session` em requests, dialogs com `DIALOG_MIN_WIDTH = 500`, remoção de planilha (DELETE /sheet) com sub-menu + confirmação + atualização de session/status bar |
 | Report + Design System | Cache removido dos repositories; tela limpa ao gerar novo relatório (`clear_content()`); `DSButton` com `DSButtonState` (DEFAULT/DISABLED/LOADING) + `DSLoadingHandler` mixin em `design_system/components/` e `design_system/handlers/`; `bts()` e `aux_frames.py` removidos |
+| Redesign + Fase 2 | Removidas features `nota_fiscal` e `shipping_rate`; `delivery` e `summary` lado a lado na home; `cpf_validation` migrada para `features/` como feature independente e virou `QDialog`; criado menu "Funcionalidades" (`features/funcionalidades/`) com sub-item "Validador de CPF" que abre o dialog via `show()` |
 
 ---
 
