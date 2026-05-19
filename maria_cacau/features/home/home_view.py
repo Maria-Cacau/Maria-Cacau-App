@@ -6,15 +6,15 @@ from pathlib import Path
 from PyQt6.QtCore import QUrl
 from PyQt6.QtGui import QAction, QDesktopServices, QPainter, QPixmap
 from PyQt6.QtWidgets import (QApplication, QDialog, QDialogButtonBox,
-                             QFileDialog, QFormLayout, QHBoxLayout,
+                             QFormLayout, QHBoxLayout,
                              QInputDialog, QLineEdit, QMainWindow, QMenu,
                              QMenuBar, QMessageBox, QVBoxLayout, QWidget)
 
 from maria_cacau.assets import strings
 from maria_cacau.core.observability import AppEvent, observability
 from maria_cacau.core.sheets.manager import manager
-from maria_cacau.core.sheets.service import service
 from maria_cacau.core.storage.cache import CacheStorage
+from maria_cacau.features.auth import AuthController
 from maria_cacau.features.home.sub_features import *
 from maria_cacau.features.home.sub_features.status_bar.status_bar_view import \
     GuiStatusBar
@@ -103,8 +103,11 @@ class GuiMain(QMainWindow):
         self.statusBar = GuiStatusBar()
         self.setStatusBar(self.statusBar)
 
+        self.authFeature = AuthController()
+
         self.setup_ui(root)
         self._auto_connect()
+        self.authFeature.auto_connect()
         observability.log(AppEvent.APP_START)
 
         del tamTela, self.shippingRate
@@ -135,18 +138,7 @@ class GuiMain(QMainWindow):
         self.mnConfig.addAction(self.actLimparCache)
         self.actLimparCache.triggered.connect(self.on_limpar_cache)
 
-        self.mnSeguranca = QMenu(strings.MNU_SEGURANCA, self.menubar)
-        self.menubar.addAction(self.mnSeguranca.menuAction())
-
-        self.actCertificado = QAction(strings.ACT_CONFIGURAR_CERT, self)
-        self.actCertificado.setMenuRole(QAction.MenuRole.NoRole)
-        self.mnSeguranca.addAction(self.actCertificado)
-        self.actCertificado.triggered.connect(self.on_configurar_certificado)
-
-        self.actLimparCertificado = QAction(strings.ACT_LIMPAR_CERT, self)
-        self.actLimparCertificado.setMenuRole(QAction.MenuRole.NoRole)
-        self.mnSeguranca.addAction(self.actLimparCertificado)
-        self.actLimparCertificado.triggered.connect(self.on_limpar_certificado)
+        self.menubar.addMenu(self.authFeature.view)
 
         self.mnAjuda = QMenu(strings.MNU_AJUDA, self.menubar)
         self.menubar.addAction(self.mnAjuda.menuAction())
@@ -178,16 +170,12 @@ class GuiMain(QMainWindow):
     def _auto_connect(self) -> None:
         sheets = self._load_sheets()
         if not sheets:
-            if service.is_authenticated():
-                self.statusBar.set_credentials(True)
             return
         latest = sheets[-1]
         try:
             manager.connect(latest['sheet_id'])
             self._update_planilha_check(latest['sheet_id'])
-            self.statusBar.set_credentials(True)
             self.statusBar.set_sheet(latest['nome'], latest['sheet_id'])
-            service.prewarm_async()
         except PermissionError:
             pass
 
@@ -267,31 +255,6 @@ class GuiMain(QMainWindow):
             )
             return novo.strip() if ok and novo.strip() else existing['nome']
         return nome_digitado or sheet_id
-
-    ## Método: Ação do menu "Configurar certificado"
-    def on_configurar_certificado(self) -> None:
-        path, _ = QFileDialog.getOpenFileName(self, strings.DLG_CERT_TITULO, "", strings.DLG_CERT_FILTRO)
-        if not path:
-            return
-        try:
-            service.load_credentials_from_file(path)
-            observability.log(AppEvent.CERT_SET)
-            self._auto_connect()
-        except Exception as exc:
-            observability.log(AppEvent.ERROR, msg=str(exc), where='on_configurar_certificado')
-
-    ## Método: Ação do menu "Limpar certificado"
-    def on_limpar_certificado(self) -> None:
-        confirm = QMessageBox.question(
-            self, strings.DLG_LIMPAR_CERT_TITULO,
-            strings.DLG_LIMPAR_CERT_MSG,
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-        )
-        if confirm != QMessageBox.StandardButton.Yes:
-            return
-        if service.clear_credentials():
-            observability.log(AppEvent.CERT_CLEAR)
-            self.statusBar.set_credentials(False)
 
     ## Método: Ação do menu "Limpar cache"
     def on_limpar_cache(self) -> None:
