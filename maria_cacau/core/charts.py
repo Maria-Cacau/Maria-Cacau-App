@@ -70,6 +70,13 @@ class ChartWidget(QWidget):
         self._title = title
         self._render()
 
+    def clear(self) -> None:
+        self._data  = {}
+        self._title = ''
+        self._fig.clear()
+        ax = self._fig.add_subplot(111)
+        self._empty(ax)
+
     def set_type(self, chart_type: ChartType) -> None:
         self._type = chart_type
         if self._data:

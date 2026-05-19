@@ -7,6 +7,7 @@ from PyQt6.QtWidgets import (QDateEdit, QHBoxLayout, QSizePolicy, QVBoxLayout,
 from maria_cacau.assets import strings
 from maria_cacau.core.charts import ChartType, ChartWidget
 from maria_cacau.design_system.aux_widgets import AuxWidgets
+from maria_cacau.design_system.components import DSButton, DSButtonState
 from maria_cacau.design_system.gui_popup import GuiPopup
 
 from ..domain.models import DeliveryViewData
@@ -60,7 +61,7 @@ class DeliveryView(QWidget, AuxWidgets):
 
         self.chart = ChartWidget(ChartType.PIE)
 
-        self.butGenerate = self.bts(strings.BTN_OK)
+        self.butGenerate = DSButton(strings.BTN_OK)
         self.butGenerate.clicked.connect(self.generate_report)
 
         self.dateSelector = QDateEdit(QDate.currentDate())
@@ -69,15 +70,15 @@ class DeliveryView(QWidget, AuxWidgets):
         self.dateSelector.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
         self.dateSelector.setFixedHeight(self.butGenerate.sizeHint().height())
 
-        self.butCopyData = self.bts(strings.BTN_COPIAR)
+        self.butCopyData = DSButton(strings.BTN_COPIAR)
         self.butCopyData.clicked.connect(lambda: self.on_copy(self.textView))
         self.butCopyData.clicked.connect(self.copy_report)
 
-        self.butCopyGraph = self.bts(strings.BTN_COPIAR)
+        self.butCopyGraph = DSButton(strings.BTN_COPIAR)
         self.butCopyGraph.clicked.connect(self.chart.copy_to_clipboard)
         self.butCopyGraph.clicked.connect(self.copy_graph)
 
-        self.butSaveGraph = self.bts(strings.BTN_SALVAR)
+        self.butSaveGraph = DSButton(strings.BTN_SALVAR)
         self.butSaveGraph.clicked.connect(self.chart.save_to_file)
         self.butSaveGraph.clicked.connect(self.download_graph)
     
@@ -96,13 +97,19 @@ class DeliveryView(QWidget, AuxWidgets):
         r'''Atualiza os dados da view'''
         self.textView.setText(data.report)
         self.chart.update_data(data.chart_data, title=self.view_title)
-
         self._update_buttons_state(True)
         self.activate_button_state()
-    
+
     def activate_button_state(self) -> None:
-        self.butGenerate.setEnabled(True)
-    
+        self.butGenerate.update_state(DSButtonState.DEFAULT)
+
+    def clear_content(self) -> None:
+        r'''Reseta o conteúdo da view para o estado inicial'''
+        self.textView.setText(strings.TXT_OK_INSTRUCAO_ENTREGAS)
+        self.chart.clear()
+        self._update_buttons_state(False)
+
     def prepare_to_fetch(self) -> None:
         r'''Prepara a view para uma nova consulta'''
-        self.butGenerate.setEnabled(False)
+        self.clear_content()
+        self.butGenerate.update_state(DSButtonState.LOADING)

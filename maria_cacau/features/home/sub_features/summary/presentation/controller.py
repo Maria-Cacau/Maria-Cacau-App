@@ -53,7 +53,7 @@ class SummaryController:
 
     def handle_error(self, error: ErrorModel) -> None:
         self.view.popup.show(error.to_popup())
-        self.view.butGenerate.setEnabled(True)
+        self.view.activate_button_state()
 
     def handle_report_generated(self, data: ProductsViewData) -> None:
         self.view.update_data(data)

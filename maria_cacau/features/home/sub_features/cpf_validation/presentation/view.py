@@ -5,6 +5,7 @@ from PyQt6.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget
 
 from maria_cacau.assets import strings
 from maria_cacau.design_system.aux_widgets import AuxWidgets
+from maria_cacau.design_system.components import DSButton
 
 from ..domain.models import CpfValidationResult
 
@@ -31,7 +32,7 @@ class CpfValidationView(QWidget, AuxWidgets):
         self.txt = self.line_edit(11, readonly_=False)
         self.txt.returnPressed.connect(self.validate_cpf)
 
-        self.butVerify = self.bts(strings.BTN_VERIFICAR)
+        self.butVerify = DSButton(strings.BTN_VERIFICAR)
         self.butVerify.clicked.connect(self.validate_cpf)
 
         self.lblResult = self.lbl(strings.LBL_CPF_INSTRUCAO, 11)
