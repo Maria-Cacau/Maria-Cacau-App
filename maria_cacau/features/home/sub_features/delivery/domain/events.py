@@ -9,4 +9,5 @@ class FeatureEvents(Enum):
     COPY_GRAPH_ACTION = 'Copy graph triggered'
     DOWNLOAD_GRAPH_ACTION = 'Download graph triggered'
 
-    QUERY = 'QUERY  feature=produtos'
+    QUERY     = 'QUERY  feature=entregas'
+    CACHE_HIT = 'CACHE_HIT  feature=entregas'

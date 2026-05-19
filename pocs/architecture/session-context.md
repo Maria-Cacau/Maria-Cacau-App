@@ -145,8 +145,8 @@ A barra de status existe (`features/home/sub_features/status_bar/`) mas ainda re
 |---|---|
 | Sub-views em pasta | Quando feature tem 2+ views → `presentation/view/` com um arquivo por view |
 | `update_name` separado de `connect` | Renomear planilha existente = só cache; nenhuma chamada ao backend |
-| "Limpar cache" no menu Arquivo | Refere-se ao cache **em memória** dos repositories/services — não à pasta `~/.mariacacau/` |
-| `RemoveSheetAPI` (DELETE /sheet) | Criado, não conectado; será usado quando "Limpar cache" for implementado |
+| "Limpar cache" no menu Arquivo | Limpa o cache em memória dos repositories via `bus.cache_cleared` |
+| `RemoveSheetAPI` (DELETE /sheet) | Criado, não conectado; mantido por hora para uso futuro |
 | Sufixo `Model` em domain models | Ex: `SheetModel` — facilita identificação no uso dentro do código |
 
 ---

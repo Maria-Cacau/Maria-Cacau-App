@@ -1,6 +1,7 @@
 from PyQt6.QtWidgets import QDialog, QInputDialog, QMessageBox
 
 from maria_cacau.assets import strings
+from maria_cacau.core.bus import bus
 from maria_cacau.core.error import ErrorModel
 from maria_cacau.core.observability import observability
 from maria_cacau.design_system.gui_popup import GuiPopup
@@ -23,6 +24,7 @@ class SheetsController:
     def _setup_actions(self) -> None:
         self.view.connect_triggered.connect(self._on_connect)
         self.view.sheet_selected.connect(self._on_select)
+        self.view.cache_clear_triggered.connect(self._on_clear_cache)
         signals.sheet_connected.connect(self._on_connected)
         signals.sheet_selected.connect(self._on_selected)
         signals.sheet_renamed.connect(self._on_renamed)
@@ -72,6 +74,10 @@ class SheetsController:
             return
         
         return new_name.strip()
+
+    def _on_clear_cache(self) -> None:
+        bus.cache_cleared.emit()
+        observability.log(ObsEv.CACHE_CLEAR)
 
     def _on_select(self, sheet_id: str) -> None:
         self.viewmodel.select(sheet_id)
