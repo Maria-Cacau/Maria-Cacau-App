@@ -139,10 +139,10 @@ Registradas em `overview.md`. Não reabrir sem motivo claro.
 
 ## Próximos passos para retomar
 
-1. **Refatoração home/main** — separar `GuiMain` em `HomeView/HomeController` (`features/home/source/`) e `MainWindow` (`features/main/`) em nova branch
-2. **Ações de pre-load** — orquestrar inicialização explícita: `auth.auto_connect()` deve completar antes de `sheets.auto_connect()` chamar o backend
-3. **`core/session`** — centralizar estado global compartilhado (planilha ativa, status de autenticação) acessível às features sem acoplar ao backend
-4. **Feature: status bar** — conectar via eventos de sessão após separação home/main
+1. ~~**Refatoração home/main**~~ ✅ — `GuiMain` separada em `MainWindow` + `MenuHandler` (`features/main/`) e `HomeController/HomeView/HomeFeaturesModel` (`features/home/source/`)
+2. **Ações de pre-load** — orquestrar inicialização explícita: `auth.auto_connect()` deve completar antes de `sheets.auto_connect()` chamar o backend; `auto_connect` removidos do `MenuHandler`, serão acionados por um orquestrador dedicado
+3. **`core/session`** — singleton; centralizar estado global (planilha ativa, status de autenticação) acessível às features sem acoplar ao backend
+4. **Feature: status bar** — conectar via eventos de sessão após `core/session` estar definido
 
 ---
 
