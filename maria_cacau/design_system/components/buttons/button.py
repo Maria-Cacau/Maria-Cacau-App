@@ -14,10 +14,11 @@ class DSButton(QPushButton, DSLoadingHandler):
         self._label = text
         self._state = DSButtonState.DEFAULT
         self._setup_loading()
+        self.setFixedWidth(self.sizeHint().width())
 
     # ── API pública ──────────────────────────────────────────────────────────
 
-    def set_state(self, state: DSButtonState) -> None:
+    def update_state(self, state: DSButtonState) -> None:
         self._state = state
 
         if state == DSButtonState.DEFAULT:

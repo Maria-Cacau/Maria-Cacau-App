@@ -7,7 +7,7 @@ from PyQt6.QtWidgets import (QDateEdit, QHBoxLayout, QSizePolicy, QVBoxLayout,
 from maria_cacau.assets import strings
 from maria_cacau.core.charts import ChartType, ChartWidget
 from maria_cacau.design_system.aux_widgets import AuxWidgets
-from maria_cacau.design_system.components import DSButton
+from maria_cacau.design_system.components import DSButton, DSButtonState
 from maria_cacau.design_system.gui_popup import GuiPopup
 
 from ..domain.models import ProductsViewData
@@ -132,7 +132,10 @@ class SummaryView(QWidget, AuxWidgets):
         self.textView.setText(data.report)
         self.chart.update_data(data.chart_data, title=self.view_title)
         self._update_buttons_state(True)
-        self.butGenerate.setEnabled(True)
+        self.activate_button_state()
+
+    def activate_button_state(self) -> None:
+        self.butGenerate.update_state(DSButtonState.DEFAULT)
 
     def clear_content(self) -> None:
         self.textView.setText(strings.TXT_OK_INSTRUCAO_PRODUTOS)
@@ -141,4 +144,4 @@ class SummaryView(QWidget, AuxWidgets):
 
     def prepare_to_fetch(self) -> None:
         self.clear_content()
-        self.butGenerate.setEnabled(False)
+        self.butGenerate.update_state(DSButtonState.LOADING)

@@ -7,7 +7,7 @@ from PyQt6.QtWidgets import (QDateEdit, QHBoxLayout, QSizePolicy, QVBoxLayout,
 from maria_cacau.assets import strings
 from maria_cacau.core.charts import ChartType, ChartWidget
 from maria_cacau.design_system.aux_widgets import AuxWidgets
-from maria_cacau.design_system.components import DSButton
+from maria_cacau.design_system.components import DSButton, DSButtonState
 from maria_cacau.design_system.gui_popup import GuiPopup
 
 from ..domain.models import DeliveryViewData
@@ -101,7 +101,7 @@ class DeliveryView(QWidget, AuxWidgets):
         self.activate_button_state()
 
     def activate_button_state(self) -> None:
-        self.butGenerate.setEnabled(True)
+        self.butGenerate.update_state(DSButtonState.DEFAULT)
 
     def clear_content(self) -> None:
         r'''Reseta o conteúdo da view para o estado inicial'''
@@ -112,4 +112,4 @@ class DeliveryView(QWidget, AuxWidgets):
     def prepare_to_fetch(self) -> None:
         r'''Prepara a view para uma nova consulta'''
         self.clear_content()
-        self.butGenerate.setEnabled(False)
+        self.butGenerate.update_state(DSButtonState.LOADING)
