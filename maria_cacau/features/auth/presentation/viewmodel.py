@@ -13,6 +13,7 @@ class AuthViewModel:
         self.use_case = AuthUseCase()
         self.executor = ThreadPoolExecutor(max_workers=1)
 
+
     def configure(self, path: str) -> None:
         self.executor.submit(lambda: self._configure(path))
 
@@ -23,6 +24,7 @@ class AuthViewModel:
         except Exception as e:
             signals.error.emit(unexpected_error(e))
 
+
     def clear(self) -> None:
         self.executor.submit(self._clear)
 
@@ -32,6 +34,7 @@ class AuthViewModel:
                 signals.credentials_cleared.emit()
         except Exception as e:
             signals.error.emit(unexpected_error(e))
+
 
     def auto_connect(self) -> None:
         self.executor.submit(self._auto_connect)

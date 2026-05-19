@@ -54,9 +54,14 @@ feature/
 - `domain/` é o centro — as outras camadas importam daqui, nunca uma da outra
 - `data/` só existe se a feature faz chamada ao backend; features locais não têm essa camada
 - `view.py` expõe `pyqtSignal` com nome de domínio e uma `@property view_title -> str`
+- `view.py` **não** abre dialogs nem faz decisões — só emite signals puros
+- `controller.py` cola tudo: abre dialogs, conecta signals da view ao viewmodel e signals do domínio de volta à view
 - `viewmodel.py` usa `ThreadPoolExecutor` só se houver I/O (chamada de rede); validação local é síncrona
-- `controller.py` cola tudo: conecta signals da view ao viewmodel e signals do domínio de volta à view
 - `events.py` define `FeatureEvents(Enum)` — os valores de log ficam aqui, não no `AppEvent` global
+
+**Features vs Sub-features:**
+- Features independentes do fluxo de `home/` vivem em `features/<nome>/` (ex: `features/auth/`)
+- Sub-features da janela principal vivem em `features/home/sub_features/<nome>/`
 
 > Detalhes completos em `.ai/architecture.md` — seção "Padrão de arquitetura de feature".
 
@@ -72,7 +77,7 @@ feature/
 | `POST/DELETE` | `/auth` | ✅ Implementado |
 | `PUT/DELETE` | `/sheet` | ✅ Implementado |
 
-O backend está completo. Próximo passo: migrar a feature `home_view` (auth) na camada de aplicação.
+O backend está completo.
 
 > Detalhes em `pocs/backend/ongoing-study.md`.
 
@@ -80,22 +85,39 @@ O backend está completo. Próximo passo: migrar a feature `home_view` (auth) na
 
 ## Status das features
 
-| Feature | Status | Observação |
-|---|---|---|
-| `delivery` | ✅ Migrada | Tem `data/` + `domain/` + `presentation/` — usa backend |
-| `cpf_validation` | ✅ Migrada | Só `domain/` + `presentation/` — validação local, sem backend |
-| `nota_fiscal` | ✅ Migrada | Só `presentation/` — placeholder "Em breve"; futuro: API Tiny/OList |
-| `shipping_rate` (frete) | ✅ Migrada | Só `presentation/` — placeholder "Em breve"; futuro: API Melhor Envio |
-| `summary` | ✅ Migrada | Resumo de produtos por período — usa backend (`GET /orders`) |
-| `home_view` (auth) | ⏳ Pendente | Credenciais e cadastro de planilhas — vai usar rotas `/auth` e `/source` |
+| Feature | Localização | Status | Observação |
+|---|---|---|---|
+| `delivery` | `home/sub_features/delivery/` | ✅ Migrada | `data/` + `domain/` + `presentation/` — usa backend |
+| `cpf_validation` | `home/sub_features/cpf_validation/` | ✅ Migrada | Só `domain/` + `presentation/` — validação local |
+| `nota_fiscal` | `home/sub_features/nota_fiscal/` | ✅ Migrada | Só `presentation/` — placeholder; futuro: API Tiny/OList |
+| `shipping_rate` | `home/sub_features/shipping_rate/` | ✅ Migrada | Só `presentation/` — placeholder; futuro: API Melhor Envio |
+| `summary` | `home/sub_features/summary/` | ✅ Migrada | `data/` + `domain/` + `presentation/` — usa backend (`GET /orders`) |
+| `auth` | `features/auth/` | ✅ Migrada | `data/` + `domain/` + `presentation/` — usa `/auth`; menu "Segurança" é um `QMenu` |
+| `sheets` | — | ⏳ Pendente | Cadastro e seleção de planilhas — vai usar rotas `/sheet`; menu "Arquivo" é um `QMenu` |
 
 ---
 
 ## Ordem de prioridade definida
 
-1. ~~**`nota_fiscal` + `freight_query` (CEP)`**~~ ✅ Concluído — migradas para `nota_fiscal/` e `shipping_rate/`
-2. ~~**`summary`**~~ ✅ Concluído — migrada para `summary/`; usa backend (`GET /orders`)
-3. **Auth feature** — credenciais + cadastro de planilhas; vai exigir implementar as rotas `/auth` e `/source` no backend
+1. ~~**`nota_fiscal` + `freight_query` (CEP)**~~ ✅ Concluído
+2. ~~**`summary`**~~ ✅ Concluído
+3. ~~**`auth`**~~ ✅ Concluído — `features/auth/`; menu "Segurança" como `QMenu`
+4. **`sheets`** — cadastro e seleção de planilhas; usa `PUT /sheet/<id>` e `DELETE /sheet`; mesma estrutura de `auth` (feature independente em `features/sheets/`)
+
+---
+
+## O que a próxima sessão vai fazer: feature `sheets`
+
+A feature `sheets` segue exatamente o mesmo padrão que `auth`. Pontos já decididos:
+
+- **Localização:** `features/sheets/` (feature independente, não sub-feature)
+- **View:** `QMenu` com título "Arquivo" — submenu "Planilhas conectadas" + action "Conectar nova planilha" + separador + "Limpar cache" (TODO futuro)
+- **Backend calls:** `PUT /sheet/<sheet_id>` (selecionar) e `DELETE /sheet` (remover)
+- **Storage:** `CacheStorage` — persiste lista de planilhas `[{nome, sheet_id}]` em `~/.mariacacau/`
+- **Regra de negócio:** ao conectar nova planilha, verifica se já tem credenciais em `SecurityStorage`; se tiver → chama backend; se não tiver → só salva em cache
+- **Diálogos:** todos no controller (mesmo padrão decidido em `auth`)
+- **`home_view.py` depois:** remove todo o código de planilhas (`_DialogConectarPlanilha`, `_extract_sheet_id`, `_auto_connect`, `on_conectar_planilha`, `_add_planilha_menu`, `_update_planilha_check`, `_on_selecionar_planilha`, `_resolve_nome`, `on_limpar_cache`, `_load_sheets`, `_save_sheet`); instancia `SheetsController()` e adiciona `self.sheetsFeature.view` ao menubar
+- **Bridge em `__main__.py`:** remover o bloco `TODO: REMOVER` por completo após sheets migrar
 
 ---
 
