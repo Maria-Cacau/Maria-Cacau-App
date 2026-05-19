@@ -96,13 +96,19 @@ class DeliveryView(QWidget, AuxWidgets):
         r'''Atualiza os dados da view'''
         self.textView.setText(data.report)
         self.chart.update_data(data.chart_data, title=self.view_title)
-
         self._update_buttons_state(True)
         self.activate_button_state()
-    
+
     def activate_button_state(self) -> None:
         self.butGenerate.setEnabled(True)
-    
+
+    def clear_content(self) -> None:
+        r'''Reseta o conteúdo da view para o estado inicial'''
+        self.textView.setText(strings.TXT_OK_INSTRUCAO_ENTREGAS)
+        self.chart.clear()
+        self._update_buttons_state(False)
+
     def prepare_to_fetch(self) -> None:
         r'''Prepara a view para uma nova consulta'''
+        self.clear_content()
         self.butGenerate.setEnabled(False)

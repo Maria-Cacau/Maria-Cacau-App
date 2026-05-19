@@ -133,5 +133,11 @@ class SummaryView(QWidget, AuxWidgets):
         self._update_buttons_state(True)
         self.butGenerate.setEnabled(True)
 
+    def clear_content(self) -> None:
+        self.textView.setText(strings.TXT_OK_INSTRUCAO_PRODUTOS)
+        self.chart.clear()
+        self._update_buttons_state(False)
+
     def prepare_to_fetch(self) -> None:
+        self.clear_content()
         self.butGenerate.setEnabled(False)
