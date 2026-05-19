@@ -13,7 +13,7 @@ App desktop PyQt6 + Python para a loja Maria Cacau. Lê dados de uma planilha Go
 
 ## O que estamos fazendo agora
 
-**Refinamentos pós-refatoração concluídos.** Status bar via bus ✅, `core/session` em requests ✅, largura mínima de dialogs ✅, remoção de planilha (DELETE /sheet) ✅. A infraestrutura e todas as features estão migradas e estabilizadas. Próximo foco: cobertura de observabilidade.
+**Report + Design System.** Cache removido dos repositories (delivery + summary) ✅, tela limpa ao gerar novo relatório ✅, `DSButton` com estados (DEFAULT / DISABLED / LOADING) no design system ✅. Próximo foco: cobertura de observabilidade.
 
 ---
 
@@ -118,12 +118,18 @@ O backend está completo.
 | Infraestrutura de sessão | `AppCoordinator`, `AppInitUseCase`, `AppSession` (`core/session`), `_EventBus` (`core/bus`) |
 | Cache em memória | `OrdersRepository` e `SummaryRepository` com cache por params; limpeza via `bus.cache_cleared` → menu "Arquivo → Limpar cache" |
 | Refinamentos pós-refatoração | Status bar via bus, `core/session` em requests, dialogs com `DIALOG_MIN_WIDTH = 500`, remoção de planilha (DELETE /sheet) com sub-menu + confirmação + atualização de session/status bar |
+| Report + Design System | Cache removido dos repositories; tela limpa ao gerar novo relatório (`clear_content()`); `DSButton` com `DSButtonState` (DEFAULT/DISABLED/LOADING) + `DSLoadingHandler` mixin em `design_system/components/` e `design_system/handlers/`; `bts()` e `aux_frames.py` removidos |
 
 ---
 
 ## Decisões e padrões estabelecidos
 
 | Decisão | Detalhe |
+|---|---|
+| Sem cache nos repositories | Cache removido de `OrdersRepository` e `SummaryRepository` — cada clique sempre vai ao backend; funcionários não precisam saber de cache |
+| `clear_content()` nas views | Método próprio que reseta texto padrão + limpa gráfico + desabilita botões de ação; `prepare_to_fetch()` o chama |
+| `DSButton` como base do DS | `DSButton(QPushButton, DSLoadingHandler)` com `update_state(DSButtonState)` — largura fixada no `__init__` para não encolher durante o loading |
+| `DSLoadingHandler` em `handlers/` | Mixin genérico de spinner; qualquer outro componente futuro herda sem depender de `components/buttons/` |
 |---|---|
 | Sub-views em pasta | Quando feature tem 2+ views → `presentation/view/` com um arquivo por view |
 | `update_name` separado de `connect` | Renomear planilha existente = só cache; nenhuma chamada ao backend |

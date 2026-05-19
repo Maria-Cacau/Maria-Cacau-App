@@ -37,9 +37,14 @@ Maria-Cacau-Contagem/
 │   │       ├── models.py                 # ErrorModel — duck typing (code/user_message/dev_message) → to_popup() → PopupModel
 │   │       └── __init__.py               # exports: AppError, constantes, ErrorModel
 │   ├── design_system/
-│   │   ├── aux_widgets.py        # factory de widgets reutilizáveis
-│   │   ├── aux_frames.py         # frame composto (label + input + botão)
-│   │   └── gui_popup.py          # GuiPopup + PopupModel (dataclass) + PopupIcon (enum) — sem dependência de core
+│   │   ├── aux_widgets.py        # factory de widgets reutilizáveis (lbl, text_view, group_box, combo_box, on_copy)
+│   │   ├── gui_popup.py          # GuiPopup + PopupModel (dataclass) + PopupIcon (enum) — sem dependência de core
+│   │   ├── handlers/
+│   │   │   └── loading_handler.py  # DSLoadingHandler — mixin que adiciona spinner animado a qualquer QObject
+│   │   └── components/
+│   │       └── buttons/
+│   │           ├── button.py     # DSButton(QPushButton, DSLoadingHandler) — botão base do DS com estados
+│   │           └── states.py     # DSButtonState(Enum): DEFAULT, DISABLED, LOADING
 │   ├── assets/
 │   │   ├── strings.py            # textos de UI centralizados
 │   │   └── images/               # ícones e imagens
@@ -167,15 +172,18 @@ class DeliveriesMapper:
         ...
 ```
 
-**`repository.py`** — orquestra API + Mapper. Captura `HTTPResponseError`, delega para `ErrorMapper`, e relança como `ErrorModel` (que é um `Exception`). Retorna domain models diretamente. É o único lugar da camada de dados que conhece os tipos do domínio como retorno.
+**`repository.py`** — orquestra API + Mapper. Emite `bus.request_started` antes da chamada e `bus.request_finished` no `finally`. Captura `HTTPResponseError`, delega para `ErrorMapper`, e relança como `ErrorModel` (que é um `Exception`). Retorna domain models diretamente. Sem cache — cada chamada vai ao backend.
 
 ```python
 class OrdersRepository:
     def get_deliveries(self, date: str) -> DeliveriesSummary:
+        bus.request_started.emit(Services.DELIVERY)
         try:
             response = DeliveriesAPI().for_date(date).call()
         except HTTPResponseError as e:
             raise ErrorMapper.from_response(e)
+        finally:
+            bus.request_finished.emit(Services.DELIVERY)
         return DeliveriesMapper.from_response(response)
 ```
 
@@ -301,12 +309,6 @@ clear_override()
 
 O padrão adotado em todas as features migradas é `ThreadPoolExecutor(max_workers=1)` no `ViewModel`. Operações com I/O (chamadas ao backend) rodam em background; o resultado volta para a main thread via `pyqtSignal`. Operações de cache local (leitura de JSON) são síncronas — sem thread.
 
-### Cache em memória nos repositories
-
-`OrdersRepository` (delivery) e `SummaryRepository` (summary) armazenam os resultados das chamadas ao backend em dicts internos, com a chave sendo os parâmetros da request (`date` ou `(start, end)`). Na segunda consulta com os mesmos parâmetros, o dado é devolvido do cache sem bater na planilha.
-
-O cache é limpo pelo usuário via **Arquivo → Limpar cache**: a view emite `cache_clear_triggered`, o controller chama `bus.cache_cleared.emit()`, e cada repository — que subscreveu esse signal no `__init__` — limpa o seu dict interno.
-
 ### EventBus (`core/bus.py`)
 
 Todos os signals globais do app vivem no singleton `bus`. Viewmodels emitem; controllers e a status bar subscrevem. Errors de feature (ex: `AuthSignals.error`, `SheetsSignals.error`) continuam locais — são específicos de cada feature e não precisam de visibilidade global.
@@ -382,6 +384,7 @@ Módulo `maria_cacau/core/charts.py` — widget reutilizável baseado em `matplo
 | `ChartType` | Enum `BAR` / `PIE` — tipo de visualização |
 | `ChartWidget` | `QWidget` com `FigureCanvasQTAgg` dentro de `QScrollArea` |
 | `update_data(data, title)` | Alimenta o gráfico com dados novos e re-renderiza |
+| `clear()` | Limpa a figura e renderiza estado vazio — chamado em `prepare_to_fetch()` |
 | `set_type(ChartType)` | Troca o tipo sem precisar repassar os dados |
 | `copy_to_clipboard()` | Exporta o gráfico como PNG para a área de transferência (150 dpi) |
 | `save_to_file()` | Salva como PNG ou SVG via diálogo de arquivo |

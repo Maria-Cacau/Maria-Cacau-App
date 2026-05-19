@@ -1,7 +1,7 @@
 """Repository da feature Summary: chama a API e converte erros HTTP em ErrorModel."""
 
-from maria_cacau.core.network import HTTPResponseError
 from maria_cacau.core.bus import bus
+from maria_cacau.core.network import HTTPResponseError
 from maria_cacau.core.services import Services
 
 from ..domain.models import OrderDetail

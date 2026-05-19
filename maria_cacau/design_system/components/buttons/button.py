@@ -2,6 +2,7 @@ from PyQt6.QtGui import QFont
 from PyQt6.QtWidgets import QPushButton
 
 from maria_cacau.design_system.handlers import DSLoadingHandler
+
 from .states import DSButtonState
 
 
