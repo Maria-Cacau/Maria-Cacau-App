@@ -5,10 +5,10 @@ from PyQt6.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget
 
 from maria_cacau.assets import strings
 from maria_cacau.design_system.components import (DSButton, DSButtonState,
-                                                   DSChart, DSChartType,
-                                                   DSComboBox, DSDateInput,
-                                                   DSDialog, DSGroupBox,
-                                                   DSLabel, DSTextView)
+                                                  DSChart, DSChartType,
+                                                  DSComboBox, DSDateInput,
+                                                  DSDialog, DSGroupBox,
+                                                  DSLabel, DSTextView)
 
 from ..domain.models import ProductsViewData
 

@@ -5,9 +5,9 @@ from PyQt6.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget
 
 from maria_cacau.assets import strings
 from maria_cacau.design_system.components import (DSButton, DSButtonState,
-                                                   DSChart, DSChartType,
-                                                   DSDateInput, DSDialog,
-                                                   DSGroupBox, DSTextView)
+                                                  DSChart, DSChartType,
+                                                  DSDateInput, DSDialog,
+                                                  DSGroupBox, DSTextView)
 
 from ..domain.models import DeliveryViewData
 

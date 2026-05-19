@@ -1,7 +1,8 @@
 """View da feature CPF Validation: dialog para validação de CPF."""
 
 from PyQt6.QtCore import Qt, pyqtSignal
-from PyQt6.QtWidgets import QDialog, QFormLayout, QHBoxLayout, QLabel, QVBoxLayout
+from PyQt6.QtWidgets import (QDialog, QFormLayout, QHBoxLayout, QLabel,
+                             QVBoxLayout)
 
 from maria_cacau.assets import strings
 from maria_cacau.design_system.components import DSButton, DSTextInput
