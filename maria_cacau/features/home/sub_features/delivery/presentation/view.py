@@ -7,6 +7,7 @@ from PyQt6.QtWidgets import (QDateEdit, QHBoxLayout, QSizePolicy, QVBoxLayout,
 from maria_cacau.assets import strings
 from maria_cacau.core.charts import ChartType, ChartWidget
 from maria_cacau.design_system.aux_widgets import AuxWidgets
+from maria_cacau.design_system.components import DSButton
 from maria_cacau.design_system.gui_popup import GuiPopup
 
 from ..domain.models import DeliveryViewData
@@ -60,7 +61,7 @@ class DeliveryView(QWidget, AuxWidgets):
 
         self.chart = ChartWidget(ChartType.PIE)
 
-        self.butGenerate = self.bts(strings.BTN_OK)
+        self.butGenerate = DSButton(strings.BTN_OK)
         self.butGenerate.clicked.connect(self.generate_report)
 
         self.dateSelector = QDateEdit(QDate.currentDate())
@@ -69,15 +70,15 @@ class DeliveryView(QWidget, AuxWidgets):
         self.dateSelector.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
         self.dateSelector.setFixedHeight(self.butGenerate.sizeHint().height())
 
-        self.butCopyData = self.bts(strings.BTN_COPIAR)
+        self.butCopyData = DSButton(strings.BTN_COPIAR)
         self.butCopyData.clicked.connect(lambda: self.on_copy(self.textView))
         self.butCopyData.clicked.connect(self.copy_report)
 
-        self.butCopyGraph = self.bts(strings.BTN_COPIAR)
+        self.butCopyGraph = DSButton(strings.BTN_COPIAR)
         self.butCopyGraph.clicked.connect(self.chart.copy_to_clipboard)
         self.butCopyGraph.clicked.connect(self.copy_graph)
 
-        self.butSaveGraph = self.bts(strings.BTN_SALVAR)
+        self.butSaveGraph = DSButton(strings.BTN_SALVAR)
         self.butSaveGraph.clicked.connect(self.chart.save_to_file)
         self.butSaveGraph.clicked.connect(self.download_graph)
     

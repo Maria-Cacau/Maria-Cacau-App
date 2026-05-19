@@ -3,7 +3,7 @@
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QFont
 from PyQt6.QtWidgets import (QComboBox, QGraphicsView, QGroupBox, QLabel,
-                             QLineEdit, QPushButton, QTextBrowser)
+                             QLineEdit, QTextBrowser)
 
 
 class AuxWidgets:
@@ -18,20 +18,6 @@ class AuxWidgets:
         lb.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)    # Define o alinhamento
         return lb
 
-
-    ## Método: Cria botões
-    def bts(self, txt_:str) -> QPushButton:
-        bt = QPushButton(txt_)                                                          # Cria o botão
-        bt.setFont(QFont('Arial', 10))                                                  # Define a fonte
-        return bt
-
-    ## Método: Cria botões com imagem
-    def button_img(self) -> QPushButton:
-        btI = QPushButton()                                                             # Cria o botão
-        btI.setStyleSheet("image : url(maria_cacau/assets/images/salvar-icon.png);")   # Define a imagem
-        btI.setFixedSize(20, 20)                                                        # Define o tamanho fixo
-        btI.setFont(QFont('Arial', 10))                                                 # Define a fonte
-        return btI
 
     ## Método: Cria a área onde é mostrado e colocado o texto
     def line_edit(self, tam_:int = 10, readonly_:bool = True) -> QLineEdit:
