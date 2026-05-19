@@ -70,10 +70,9 @@ feature/
 | `GET` | `/orders/payments-pendent` | ✅ Implementado |
 | `GET` | `/orders` | ✅ Implementado |
 | `POST/DELETE` | `/auth` | ✅ Implementado |
-| `POST/GET/PUT/DELETE` | `/source` | ⏳ Pendente |
-| `GET` | `/status` | ⏳ Pendente |
+| `PUT/DELETE` | `/sheet` | ✅ Implementado |
 
-As rotas de infra (`auth`, `source`, `status`) serão implementadas conforme as features que as consomem forem sendo migradas.
+O backend está completo. Próximo passo: migrar a feature `home_view` (auth) na camada de aplicação.
 
 > Detalhes em `pocs/backend/ongoing-study.md`.
 
