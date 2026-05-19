@@ -1,6 +1,6 @@
 """View da feature Delivery: resumo diário de entregas e pagamentos pendentes."""
 
-from PyQt6.QtCore import QDate, Qt, pyqtSignal
+from PyQt6.QtCore import QDate, pyqtSignal
 from PyQt6.QtWidgets import (QDateEdit, QHBoxLayout, QSizePolicy, QVBoxLayout,
                              QWidget)
 
@@ -38,20 +38,22 @@ class DeliveryView(QWidget, AuxWidgets):
         self.root = self.group_box(self.view_title)
         mainLayout = QVBoxLayout(self.root)
 
-        contentLayout = QHBoxLayout()
-        contentLayout.addWidget(self.textView, stretch=3)
-        contentLayout.addWidget(self.chart, stretch=2)
-        mainLayout.addLayout(contentLayout)
+        mainLayout.addWidget(self.textView, stretch=3)
 
         btnLayout = QHBoxLayout()
-        btnLayout.setAlignment(Qt.AlignmentFlag.AlignVCenter)
         btnLayout.addWidget(self.dateSelector)
         btnLayout.addWidget(self.butGenerate)
-        btnLayout.addWidget(self.butCopyData)
         btnLayout.addStretch()
-        btnLayout.addWidget(self.butCopyGraph)
-        btnLayout.addWidget(self.butSaveGraph)
+        btnLayout.addWidget(self.butCopyData)
         mainLayout.addLayout(btnLayout)
+
+        mainLayout.addWidget(self.chart, stretch=2)
+
+        btnGraphLayout = QHBoxLayout()
+        btnGraphLayout.addStretch()
+        btnGraphLayout.addWidget(self.butCopyGraph)
+        btnGraphLayout.addWidget(self.butSaveGraph)
+        mainLayout.addLayout(btnGraphLayout)
 
     def _setup_components(self) -> None:
         self.popup = GuiPopup()
