@@ -1,4 +1,5 @@
-from PyQt6.QtWidgets import QDialog, QDialogButtonBox, QFormLayout, QLineEdit, QVBoxLayout
+from PyQt6.QtWidgets import (QDialog, QDialogButtonBox, QFormLayout, QLineEdit,
+                             QVBoxLayout)
 
 from maria_cacau.assets import strings
 
