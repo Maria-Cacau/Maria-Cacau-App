@@ -24,11 +24,6 @@ Maria-Cacau-Contagem/
 │   │   │   ├── _client.py                # HTTPClientContract (Protocol) + LocalClient
 │   │   │   ├── _config.py                # configure() / override() / clear_override() — singleton do client ativo
 │   │   │   └── __init__.py               # exports públicos: API, HTTPMethod, HTTPResponse, LocalClient, erros, config
-│   │   ├── sheets/
-│   │   │   ├── service.py                # autenticação e leitura bruta do Google Sheets
-│   │   │   ├── manager.py                # orquestra service + handler; singleton `manager`
-│   │   │   └── handlers/
-│   │   │       └── cadastro.py           # processa a aba Cadastro (filtragem, datas, colunas)
 │   │   ├── storage/
 │   │   │   ├── handler.py                # ABC StorageHandler[T] — contrato único de persistência
 │   │   │   ├── security.py               # SecurityStorage — arquivo protegido em ~/.mariacacau/
@@ -46,8 +41,10 @@ Maria-Cacau-Contagem/
 │   │   ├── strings.py            # textos de UI centralizados
 │   │   └── images/               # ícones e imagens
 │   └── features/
+│       ├── auth/                          # ✅ migrada — data/ + domain/ + presentation/ — menu "Segurança"
+│       ├── sheets/                        # ✅ migrada — data/ + domain/ + presentation/view/ — menu "Arquivo"
 │       └── home/
-│           ├── home_view.py      # janela principal + orquestração
+│           ├── home_view.py      # janela principal + orquestração (refatoração home/main pendente)
 │           └── sub_features/
 │               ├── cpf_validation/        # ✅ migrada — domain/ + presentation/
 │               ├── nota_fiscal/           # ✅ migrada — placeholder "Em breve" (futuro: API Tiny/OList)
@@ -291,25 +288,17 @@ clear_override()
 | `SecurityStorage` | Arquivo `~/.mariacacau/<key>.credential` (chmod 600) | Credenciais da Service Account |
 | `CacheStorage` | JSON em `~/.mariacacau/` | Planilhas salvas (`sheets.json`) |
 
-`service.py` define `_KEYRING_KEY = "google-credentials"` e usa `SecurityStorage()` para salvar/ler o JSON completo da Service Account em `~/.mariacacau/google-credentials.credential`.
-`home_view.py` usa `CacheStorage` para persistir e ler a lista de planilhas conectadas.
+`features/auth` usa `SecurityStorage` com chave `"google-credentials"` para persistir o JSON da Service Account.
+`features/sheets` usa `CacheStorage` para persistir a lista de planilhas conectadas (`[{nome, sheet_id}]`).
 
 > **Motivação da mudança**: o Windows Credential Manager tem limite de ~1280 chars (UTF-16LE). O JSON de Service Account do Google tem ~2400–2800 chars, estourando esse limite com erro 1783. A solução é arquivo protegido por permissões do filesystem, cross-platform e sem limite de tamanho.
 
 ## Threading
-Consultas ao Google Sheets rodam em `QThread` via `_Worker` + `_run_async` em `home_view.py`.
-O `gspread.Client` é um singleton não thread-safe — `_set_busy` bloqueia todos os botões OK enquanto uma consulta estiver em andamento, prevenindo requisições concorrentes.
 
-### Prewarm OAuth
-Ao ativar uma planilha, `service.prewarm_async()` dispara uma thread em background que:
-1. Renova o token OAuth via `credentials.refresh(Request())`
-2. Abre a planilha no gspread (aquece a conexão TLS)
+O padrão adotado em todas as features migradas é `ThreadPoolExecutor(max_workers=1)` no `ViewModel`. Operações com I/O (chamadas ao backend) rodam em background; o resultado volta para a main thread via `pyqtSignal`. Operações de cache local (leitura de JSON) são síncronas — sem thread.
 
-Um `threading.Event` (`_auth_ready`) garante que a primeira consulta real aguarda o prewarm sem bloquear a UI. Reduz o tempo da primeira query de ~11s para ~5s.
-
-### Cache
-`SheetsManager` mantém `_cadastro: CadastroAnalyseHandler` em memória após o primeiro `load_cadastro()`.
-O usuário pode limpar via **Arquivo → Limpar cache**, que chama `manager.clear_cache()` + reset das views.
+### "Limpar cache" no menu Arquivo
+Refere-se ao cache **em memória** dos repositories/services (dados carregados da planilha), não à pasta `~/.mariacacau/`. A action está presente no menu mas desabilitada — será implementada quando os repositories tiverem cache em memória explícito.
 
 ## Status bar (`GuiStatusBar`)
 Barra fixa na base da janela com três estados de cor:

@@ -13,9 +13,7 @@ App desktop PyQt6 + Python para a loja Maria Cacau. Lê dados de uma planilha Go
 
 ## O que estamos fazendo agora
 
-**Refatoração arquitetural em andamento.** Cada feature que existia num arquivo flat (`gui_xxx.py` com tudo junto) está sendo migrada para a nova estrutura em camadas. A feature `delivery` foi a primeira — use seu `README.md` como template.
-
-A migração acontece **por funcionalidade**, uma de cada vez.
+**Refatoração arquitetural concluída para features existentes.** Todas as features foram migradas para a nova estrutura em camadas. As próximas etapas são infraestruturais: separação da janela principal, orquestração de inicialização e dados compartilhados de sessão.
 
 ---
 
@@ -58,9 +56,16 @@ feature/
 - `controller.py` cola tudo: abre dialogs, conecta signals da view ao viewmodel e signals do domínio de volta à view
 - `viewmodel.py` usa `ThreadPoolExecutor` só se houver I/O (chamada de rede); validação local é síncrona
 - `events.py` define `FeatureEvents(Enum)` — os valores de log ficam aqui, não no `AppEvent` global
+- Models de domínio têm sufixo `Model` (ex: `SheetModel`) para distinguir no uso
+
+**Views com sub-views:**
+- Quando uma feature tem mais de uma view (ex: menu + dialog), criar `presentation/view/` como pasta
+- Cada view é um arquivo separado dentro de `view/`
+- O controller instancia e gerencia as duas views
+- Padrão interno de cada view: `_setup_ui() → _setup_components() + _setup_layout()`
 
 **Features vs Sub-features:**
-- Features independentes do fluxo de `home/` vivem em `features/<nome>/` (ex: `features/auth/`)
+- Features independentes do fluxo de `home/` vivem em `features/<nome>/` (ex: `features/auth/`, `features/sheets/`)
 - Sub-features da janela principal vivem em `features/home/sub_features/<nome>/`
 
 > Detalhes completos em `.ai/architecture.md` — seção "Padrão de arquitetura de feature".
@@ -93,31 +98,66 @@ O backend está completo.
 | `shipping_rate` | `home/sub_features/shipping_rate/` | ✅ Migrada | Só `presentation/` — placeholder; futuro: API Melhor Envio |
 | `summary` | `home/sub_features/summary/` | ✅ Migrada | `data/` + `domain/` + `presentation/` — usa backend (`GET /orders`) |
 | `auth` | `features/auth/` | ✅ Migrada | `data/` + `domain/` + `presentation/` — usa `/auth`; menu "Segurança" é um `QMenu` |
-| `sheets` | — | ⏳ Pendente | Cadastro e seleção de planilhas — vai usar rotas `/sheet`; menu "Arquivo" é um `QMenu` |
+| `sheets` | `features/sheets/` | ✅ Migrada | `data/` + `domain/` + `presentation/view/` — usa `PUT /sheet`; menu "Arquivo" é um `QMenu`; `core/sheets/` deletado |
 
 ---
 
-## Ordem de prioridade definida
+## Ordem de prioridade — concluída
 
-1. ~~**`nota_fiscal` + `freight_query` (CEP)**~~ ✅ Concluído
-2. ~~**`summary`**~~ ✅ Concluído
-3. ~~**`auth`**~~ ✅ Concluído — `features/auth/`; menu "Segurança" como `QMenu`
-4. **`sheets`** — cadastro e seleção de planilhas; usa `PUT /sheet/<id>` e `DELETE /sheet`; mesma estrutura de `auth` (feature independente em `features/sheets/`)
+1. ~~**`nota_fiscal` + `freight_query` (CEP)**~~ ✅
+2. ~~**`summary`**~~ ✅
+3. ~~**`auth`**~~ ✅
+4. ~~**`sheets`**~~ ✅ — `features/sheets/`; menu "Arquivo" como `QMenu`; `core/sheets/` removido
 
 ---
 
-## O que a próxima sessão vai fazer: feature `sheets`
+## Próximas sessões
 
-A feature `sheets` segue exatamente o mesmo padrão que `auth`. Pontos já decididos:
+### 1. Refatoração da home e MainWindow (nova branch)
 
-- **Localização:** `features/sheets/` (feature independente, não sub-feature)
-- **View:** `QMenu` com título "Arquivo" — submenu "Planilhas conectadas" + action "Conectar nova planilha" + separador + "Limpar cache" (TODO futuro)
-- **Backend calls:** `PUT /sheet/<sheet_id>` (selecionar) e `DELETE /sheet` (remover)
-- **Storage:** `CacheStorage` — persiste lista de planilhas `[{nome, sheet_id}]` em `~/.mariacacau/`
-- **Regra de negócio:** ao conectar nova planilha, verifica se já tem credenciais em `SecurityStorage`; se tiver → chama backend; se não tiver → só salva em cache
-- **Diálogos:** todos no controller (mesmo padrão decidido em `auth`)
-- **`home_view.py` depois:** remove todo o código de planilhas (`_DialogConectarPlanilha`, `_extract_sheet_id`, `_auto_connect`, `on_conectar_planilha`, `_add_planilha_menu`, `_update_planilha_check`, `_on_selecionar_planilha`, `_resolve_nome`, `on_limpar_cache`, `_load_sheets`, `_save_sheet`); instancia `SheetsController()` e adiciona `self.sheetsFeature.view` ao menubar
-- **Bridge em `__main__.py`:** remover o bloco `TODO: REMOVER` por completo após sheets migrar
+Separar `GuiMain` em duas responsabilidades:
+
+- **`features/home/`** → `HomeView` + `HomeController` — contém as sub-features, layout central, background
+- **`features/main/`** → `MainWindow` — configura a janela (`QMainWindow`), menubar, status bar; usa `HomeView` como root
+
+Estrutura esperada:
+```
+features/
+├── main/
+│   └── main_window.py      # QMainWindow — configura janela, menus, status bar
+└── home/
+    ├── source/
+    │   ├── view.py         # HomeView — layout central com as sub-features
+    │   └── controller.py   # HomeController
+    └── sub_features/       # sem mudança
+```
+
+### 2. Criação das ações de pre-load do app
+
+Orquestrar as chamadas de inicialização que hoje estão dispersas:
+- `auth.auto_connect()` precisa completar antes de `sheets.auto_connect()` chamar o backend
+- Definir ordem e dependências de inicialização de forma explícita
+
+### 3. `core/session` — dados compartilhados do app
+
+Centralizar estado global compartilhado entre features (ex: planilha ativa, status de autenticação).
+Hoje esse estado fica implícito no backend (`data_source`). A ideia é ter um objeto de sessão acessível às features sem acoplar ao backend.
+
+### 4. Feature: status bar
+
+A barra de status existe (`features/home/sub_features/status_bar/`) mas ainda recebe dados diretamente de `home_view.py`. Após a separação home/main, ela precisa ser conectada via eventos/signals da sessão — não via chamadas diretas.
+
+---
+
+## Decisões e padrões estabelecidos nessa fase
+
+| Decisão | Detalhe |
+|---|---|
+| Sub-views em pasta | Quando feature tem 2+ views → `presentation/view/` com um arquivo por view |
+| `update_name` separado de `connect` | Renomear planilha existente = só cache; nenhuma chamada ao backend |
+| "Limpar cache" no menu Arquivo | Refere-se ao cache **em memória** dos repositories/services — não à pasta `~/.mariacacau/` |
+| `RemoveSheetAPI` (DELETE /sheet) | Criado, não conectado; será usado quando "Limpar cache" for implementado |
+| Sufixo `Model` em domain models | Ex: `SheetModel` — facilita identificação no uso dentro do código |
 
 ---
 
