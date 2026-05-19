@@ -1,5 +1,4 @@
 from ..sub_features import *
-
 from .models import HomeFeaturesModel
 from .view import HomeView
 

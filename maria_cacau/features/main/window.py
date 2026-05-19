@@ -4,7 +4,8 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QMenuBar
 from maria_cacau.assets import strings
 from maria_cacau.core.observability import AppEvent, observability
 from maria_cacau.features.home import HomeController
-from maria_cacau.features.home.sub_features.status_bar.status_bar_view import GuiStatusBar
+from maria_cacau.features.home.sub_features.status_bar.status_bar_view import \
+    GuiStatusBar
 
 from .handler import MenuHandler
 
