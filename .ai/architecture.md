@@ -297,8 +297,11 @@ clear_override()
 
 O padrão adotado em todas as features migradas é `ThreadPoolExecutor(max_workers=1)` no `ViewModel`. Operações com I/O (chamadas ao backend) rodam em background; o resultado volta para a main thread via `pyqtSignal`. Operações de cache local (leitura de JSON) são síncronas — sem thread.
 
-### "Limpar cache" no menu Arquivo
-Refere-se ao cache **em memória** dos repositories/services (dados carregados da planilha), não à pasta `~/.mariacacau/`. A action está presente no menu mas desabilitada — será implementada quando os repositories tiverem cache em memória explícito.
+### Cache em memória nos repositories
+
+`OrdersRepository` (delivery) e `SummaryRepository` (summary) armazenam os resultados das chamadas ao backend em dicts internos, com a chave sendo os parâmetros da request (`date` ou `(start, end)`). Na segunda consulta com os mesmos parâmetros, o dado é devolvido do cache sem bater na planilha.
+
+O cache é limpo pelo usuário via **Arquivo → Limpar cache**: a view emite `cache_clear_triggered`, o controller chama `bus.cache_cleared.emit()`, e cada repository — que subscreveu esse signal no `__init__` — limpa o seu dict interno. O evento `CACHE_CLEAR` é logado na observabilidade. Cache hits também geram log via `FeatureEvents.CACHE_HIT` de cada feature.
 
 ## Status bar (`GuiStatusBar`)
 Barra fixa na base da janela com três estados de cor:
@@ -329,7 +332,7 @@ Módulo `maria_cacau/core/observability.py` — singleton `observability` com en
 | `SHEET_SELECT` | `name=`, `sheet_id=` | Planilha existente selecionada |
 | `BTN_COPY` | `feature=` | Botão Copiar clicado (entregas ou produtos) |
 | `PREWARM_DONE` | `duration_s=` | Pré-aquecimento OAuth + TLS concluído |
-| `CACHE_CLEAR` | — | Cache da planilha limpo pelo usuário |
+| `CACHE_CLEAR` | — | Cache em memória limpo pelo usuário (Arquivo → Limpar cache) |
 | `ERROR` | `msg=`, `where=` (opcional), `duration_s=` (opcional) | Qualquer exceção capturada |
 
 Saída: `~/.mariacacau/logs.log` (append-only, formato `YYYY-MM-DD HH:MM:SS  LEVEL  mensagem`).
