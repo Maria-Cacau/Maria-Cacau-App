@@ -52,6 +52,10 @@ class _SheetsGuard:
 
     # ── Validações ────────────────────────────────────────────────────────
 
+    def validate_credentials(self, credentials: dict) -> None:
+        if not credentials:
+            raise CredentialsFormatError()
+
     def validate_sheet_id(self, sheet_id: str) -> None:
         if not sheet_id or not sheet_id.strip():
             raise SheetIdInvalidError(sheet_id=sheet_id)

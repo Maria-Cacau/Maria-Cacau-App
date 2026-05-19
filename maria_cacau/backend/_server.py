@@ -5,9 +5,11 @@ from ..core.network._response import HTTPResponse
 from .data_source.errors._errors import DataSourceError
 from .errors import generic_mapper, translate
 from .features import orders_bp
+from .routes import auth_bp
 
 _app = Flask(__name__)
 _app.register_blueprint(orders_bp)
+_app.register_blueprint(auth_bp)
 
 
 @_app.errorhandler(DataSourceError)

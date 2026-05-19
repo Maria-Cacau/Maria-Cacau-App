@@ -1,5 +1,6 @@
 """Entry point da aplicação. Execute com: python -m maria_cacau"""
 
+import json
 import sys
 
 from PyQt6.QtCore import Qt
@@ -8,9 +9,10 @@ from PyQt6.QtWidgets import QApplication
 
 from maria_cacau import __app_name__, __icon_mac__, __icon_win__
 from maria_cacau.backend._server import BackendServer
-from maria_cacau.backend.data_source import data_source ## TODO: REMOVER
+from maria_cacau.backend.data_source import data_source  # # TODO: REMOVER
 from maria_cacau.core.network import LocalClient, configure
-from maria_cacau.core.sheets._helper import read_credentials, read_sheets ## TODO: REMOVER
+from maria_cacau.core.sheets._helper import (  # # TODO: REMOVER
+    read_credentials, read_sheets)
 from maria_cacau.features.home.home_view import GuiMain
 
 
@@ -19,7 +21,7 @@ def main():
 
     ## TODO: REMOVER
     if raw := read_credentials():
-        data_source.set_credentials(raw)
+        data_source.set_credentials(json.loads(raw))
     if sheets := read_sheets():
         data_source.set_sheet(sheets[-1]['sheet_id'])
     ## TODO: REMOVER

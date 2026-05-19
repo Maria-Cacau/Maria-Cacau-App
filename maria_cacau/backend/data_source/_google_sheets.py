@@ -1,4 +1,3 @@
-import json
 import threading
 from typing import Final
 
@@ -27,13 +26,17 @@ class GoogleSheetsDataSource:
     def is_ready(self) -> bool:
         return self._vm is not None
 
-    def set_credentials(self, raw_json: str) -> None:
+    def set_credentials(self, credentials: dict) -> None:
+        _guard.validate_credentials(credentials)
         with _guard.authentication():
-            info         = json.loads(raw_json)
-            creds        = Credentials.from_service_account_info(info, scopes=_SCOPES)
+            creds        = Credentials.from_service_account_info(credentials, scopes=_SCOPES)
             self._client = gspread.authorize(creds)
         if self._sheet_id is not None:
             self._setup_vm()
+
+    def clear_credentials(self) -> None:
+        self._client = None
+        self._vm     = None
 
     def set_sheet(self, sheet_id: str) -> None:
         _guard.validate_sheet_id(sheet_id)

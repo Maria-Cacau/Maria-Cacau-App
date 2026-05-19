@@ -106,7 +106,6 @@ maria_cacau/backend/
 │   ├── _viewmodel.py               # _SheetsViewModel — schema cacheado, prewarm, fetch com dois passes
 │   ├── _protocol.py                # DataSourceProtocol — contrato agnóstico de fonte de dados
 │   ├── _utils.py                   # funções puras: normalize_date, to_dicts, to_ranges, date_range
-│   ├── _helper.py                  # ponte com core/storage — usado pelas routes (auth/source), não pelo DataSource
 │   ├── sheet_mapper.py             # SheetCols, ProductCols, PaymentCols, SheetTabs, PAYMENT_SLOTS, PRODUCT_SLOTS
 │   └── errors/
 │       ├── _errors.py              # DataSourceError + subclasses DS01–DS18 (code, user_message, dev_message)
@@ -118,6 +117,12 @@ maria_cacau/backend/
 ├── utils/
 │   ├── __init__.py
 │   └── numbers.py                  # normalize_decimal — converte número BR → EN (ex: "1.234,56" → "1234.56")
+├── routes/
+│   ├── __init__.py                 # re-exporta auth_bp
+│   └── auth/
+│       ├── __init__.py             # re-exporta auth_bp
+│       ├── route.py                # auth_bp — POST /auth + DELETE /auth (registered directly in _server.py, no before_request)
+│       └── service.py              # AuthService — connect(credentials, sheet_id) + disconnect()
 ├── features/
 │   ├── __init__.py                 # re-exporta orders_bp (ponto de entrada do _server.py)
 │   └── orders/
@@ -163,8 +168,8 @@ maria_cacau/backend/
 
 | Método | Path | Blueprint | Status | Descrição |
 |---|---|---|---|---|
-| `POST` | `/auth` | — | Pendente | Recebe JSON bruto das credenciais e autentica o DataSource |
-| `DELETE` | `/auth` | — | Pendente | Limpa credenciais salvas no disco |
+| `POST` | `/auth` | `auth_bp` | Implementado | Recebe `credentials` (dict) + `sheet_id` e autentica o DataSource em memória |
+| `DELETE` | `/auth` | `auth_bp` | Implementado | Limpa credenciais e vm do DataSource em memória (mantém `sheet_id`) |
 | `POST` | `/source` | — | Pendente | Registra nova planilha (nome + sheet_id) |
 | `GET` | `/source` | — | Pendente | Lista todas as planilhas salvas |
 | `PUT` | `/source/{sheet_id}` | — | Pendente | Seleciona a planilha ativa no DataSource |
@@ -251,8 +256,9 @@ Vive em `data_source/_google_sheets.py`. Singleton exposto como `data_source: Fi
 | Método | Descrição |
 |---|---|
 | `is_ready() -> bool` | True quando `_vm` está instanciado (credenciais + sheet setados) |
-| `set_credentials(raw_json)` | Autentica com JSON bruto da service account; cria `_vm` se sheet já setado |
-| `set_sheet(sheet_id)` | Guarda sheet em memória e dispara prewarm; cria `_vm` se client já setado |
+| `set_credentials(credentials)` | Autentica com dict da service account; cria `_vm` se sheet already set |
+| `clear_credentials()` | Clears `_client` e `_vm` da memória; mantém `_sheet_id` |
+| `set_sheet(sheet_id)` | Guarda sheet em memória e dispara prewarm; cria `_vm` se client already set |
 | `fetch_orders_by_date(date)` | Delega para `_vm.fetch({date})` + aplica `SheetNormalizer.normalize()` |
 | `fetch_orders_by_period(start, end)` | Delega para `_vm.fetch(date_range)` + aplica `SheetNormalizer.normalize()` |
 
@@ -268,7 +274,7 @@ Vive em `data_source/_google_sheets.py`. Singleton exposto como `data_source: Fi
 - **`OrderMapper` compartilhado:** a conversão `Series → Order` é genérica e reutilizada por qualquer subfeature que precise do model completo
 - **`__init__.py` chain para blueprints:** `subfeatures/__init__` → `orders/__init__` (blueprint pai) → `features/__init__`. `_server.py` só importa de `features`
 - **Blueprint pai para `orders/`:** `orders/__init__.py` cria `orders_bp` pai com `before_request`. Sub-blueprints herdam o check automaticamente. Rotas de infra entram direto no `_server.py` e não herdam o check.
-- **Backend stateless:** `GoogleSheetsDataSource` não lê nem escreve disco. Persistência é responsabilidade das routes `auth` e `source`
+- **Backend e DataSource stateless em disco:** nem o backend nem o DataSource leem ou escrevem no cache do dispositivo. Quem lê o cache e envia as credenciais ao backend via HTTP é a feature de auth na camada de aplicação. As rotas `/auth` e `/source` apenas recebem os dados e repassam ao DataSource em memória.
 - **`set_credentials(raw_json)`:** recebe o JSON bruto, não o path do arquivo
 - **Roteamento Flask (Abordagem A):** `test_client()` in-process — ver `pocs/backend/routes-design.md`
 - **Retorno `list[dict]`:** data source retorna formato neutro — agnóstico de fonte de dados
