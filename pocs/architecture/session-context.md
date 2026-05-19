@@ -13,7 +13,7 @@ App desktop PyQt6 + Python para a loja Maria Cacau. Lê dados de uma planilha Go
 
 ## O que estamos fazendo agora
 
-**Separação da `GuiMain` concluída.** `GuiMain` foi decomposta em `MainWindow` (`features/main/`) e `HomeController/HomeView` (`features/home/source/`). `MenuHandler` centraliza as controllers de menu (`auth`, `sheets`). Próximas etapas: orquestração de pre-load e `core/session`.
+**Infraestrutura do app concluída.** `GuiMain` foi decomposta, a pasta `app/` centraliza a casca do app com `AppCoordinator`, `core/session` centraliza o estado global, `core/bus` disponibiliza o event bus e `AppInitUseCase` orquestra a inicialização com uma única chamada HTTP. Próximas etapas: status bar via eventos de sessão e limpeza de cache.
 
 ---
 
