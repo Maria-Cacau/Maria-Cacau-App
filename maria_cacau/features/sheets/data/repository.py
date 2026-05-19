@@ -1,16 +1,15 @@
 import re
 from pathlib import Path
 
-from maria_cacau.core.storage import CacheStorage, SecurityStorage
+from maria_cacau.core import session
+from maria_cacau.core.storage import CacheStorage
 
 from ..domain.models import SheetModel
 from .apis import SelectSheetAPI
 
-_SHEETS_KEY      = "sheets"
-_CREDENTIALS_KEY = "google-credentials"
+_SHEETS_KEY = "sheets"
 
-_cache    = CacheStorage(Path.home() / ".mariacacau")
-_security = SecurityStorage()
+_cache = CacheStorage(Path.home() / ".mariacacau")
 
 _SHEET_ID_RE = re.compile(r"/spreadsheets/d/([a-zA-Z0-9_-]+)")
 
@@ -34,8 +33,7 @@ class SheetsRepository:
             sheets.append({"nome": name, "sheet_id": sheet_id})
         _cache.save(sheets, _SHEETS_KEY)
 
-        # TODO: substituir por AuthUseCase.has_credentials() — ver features/auth
-        if _security.retrieve(_CREDENTIALS_KEY):
+        if session.is_authenticated:
             SelectSheetAPI(sheet_id).call()
 
         return SheetModel(name=name, sheet_id=sheet_id)

@@ -1,3 +1,5 @@
+from maria_cacau.core import session
+
 from ..data import SheetsRepository
 from .models import SheetModel
 
@@ -7,10 +9,15 @@ class SheetsUseCase:
         self.repository = SheetsRepository()
 
     def connect(self, link: str, name: str) -> SheetModel:
-        return self.repository.connect(link, name)
+        sheet = self.repository.connect(link, name)
+        if session.is_authenticated:
+            session.active_sheet_id = sheet.sheet_id
+        return sheet
 
     def select(self, sheet_id: str) -> SheetModel:
-        return self.repository.select(sheet_id)
+        sheet = self.repository.select(sheet_id)
+        session.active_sheet_id = sheet.sheet_id
+        return sheet
 
     def load_all(self) -> list[SheetModel]:
         return self.repository.load_all()
@@ -20,4 +27,3 @@ class SheetsUseCase:
 
     def update_name(self, sheet_id: str, new_name: str) -> SheetModel:
         return self.repository.update_name(sheet_id, new_name)
-
