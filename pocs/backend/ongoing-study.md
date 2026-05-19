@@ -106,7 +106,6 @@ maria_cacau/backend/
 │   ├── _viewmodel.py               # _SheetsViewModel — schema cacheado, prewarm, fetch com dois passes
 │   ├── _protocol.py                # DataSourceProtocol — contrato agnóstico de fonte de dados
 │   ├── _utils.py                   # funções puras: normalize_date, to_dicts, to_ranges, date_range
-│   ├── _helper.py                  # ponte com core/storage — usado pelas routes (auth/source), não pelo DataSource
 │   ├── sheet_mapper.py             # SheetCols, ProductCols, PaymentCols, SheetTabs, PAYMENT_SLOTS, PRODUCT_SLOTS
 │   └── errors/
 │       ├── _errors.py              # DataSourceError + subclasses DS01–DS18 (code, user_message, dev_message)
@@ -268,7 +267,7 @@ Vive em `data_source/_google_sheets.py`. Singleton exposto como `data_source: Fi
 - **`OrderMapper` compartilhado:** a conversão `Series → Order` é genérica e reutilizada por qualquer subfeature que precise do model completo
 - **`__init__.py` chain para blueprints:** `subfeatures/__init__` → `orders/__init__` (blueprint pai) → `features/__init__`. `_server.py` só importa de `features`
 - **Blueprint pai para `orders/`:** `orders/__init__.py` cria `orders_bp` pai com `before_request`. Sub-blueprints herdam o check automaticamente. Rotas de infra entram direto no `_server.py` e não herdam o check.
-- **Backend stateless:** `GoogleSheetsDataSource` não lê nem escreve disco. Persistência é responsabilidade das routes `auth` e `source`
+- **Backend e DataSource stateless em disco:** nem o backend nem o DataSource leem ou escrevem no cache do dispositivo. Quem lê o cache e envia as credenciais ao backend via HTTP é a feature de auth na camada de aplicação. As rotas `/auth` e `/source` apenas recebem os dados e repassam ao DataSource em memória.
 - **`set_credentials(raw_json)`:** recebe o JSON bruto, não o path do arquivo
 - **Roteamento Flask (Abordagem A):** `test_client()` in-process — ver `pocs/backend/routes-design.md`
 - **Retorno `list[dict]`:** data source retorna formato neutro — agnóstico de fonte de dados

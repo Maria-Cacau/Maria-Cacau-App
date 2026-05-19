@@ -9,8 +9,12 @@ class DataSourceProtocol(Protocol):
         """Retorna True se credentials e sheet estão configurados em memória."""
         ...
 
-    def set_credentials(self, raw_json: str) -> None:
-        """Autentica com o JSON bruto da service account e guarda o client em memória."""
+    def set_credentials(self, credentials: dict) -> None:
+        """Autentica com o dict da service account e guarda o client em memória."""
+        ...
+
+    def clear_credentials(self) -> None:
+        """Remove o client autenticado da memória. Mantém o sheet_id."""
         ...
 
     def set_sheet(self, sheet_id: str) -> None:
