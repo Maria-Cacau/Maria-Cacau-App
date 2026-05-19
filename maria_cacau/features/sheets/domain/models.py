@@ -2,6 +2,6 @@ from dataclasses import dataclass
 
 
 @dataclass
-class Sheet:
+class SheetModel:
     name: str
     sheet_id: str

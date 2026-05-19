@@ -6,7 +6,7 @@ from maria_cacau.core.observability import observability
 from maria_cacau.design_system.gui_popup import GuiPopup
 
 from ..domain.events import FeatureEvents as ObsEv
-from ..domain.models import Sheet
+from ..domain.models import SheetModel
 from ..domain.signals import signals
 from .view import SheetCreateView, SheetsMenuView
 from .viewmodel import SheetsViewModel
@@ -25,6 +25,7 @@ class SheetsController:
         self.view.sheet_selected.connect(self._on_select)
         signals.sheet_connected.connect(self._on_connected)
         signals.sheet_selected.connect(self._on_selected)
+        signals.sheet_renamed.connect(self._on_renamed)
         signals.error.connect(self._on_error)
 
     def _load_saved_sheets(self) -> None:
@@ -39,35 +40,52 @@ class SheetsController:
         link = dialog.link
         name = dialog.name
 
-        existing = self.viewmodel.find_by_link(link)
-        if existing:
-            msg     = strings.DLG_PLANILHA_EXISTENTE_MSG.format(nome=existing.name)
-            confirm = QMessageBox.question(
-                None,
-                strings.DLG_PLANILHA_EXISTENTE_TITULO,
-                msg,
-                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-            )
-            if confirm != QMessageBox.StandardButton.Yes:
-                return
-            new_name, ok = QInputDialog.getText(
-                None, strings.DLG_RENOMEAR_TITULO, strings.DLG_RENOMEAR_MSG
-            )
-            if not ok or not new_name.strip():
-                return
-            name = new_name.strip()
+        model = self.viewmodel.find_by_link(link)
+        if model:
+            return self._update_sheet_name_if_needed(model)
 
         self.viewmodel.connect(link, name)
+
+    def _update_sheet_name_if_needed(self, model: SheetModel) -> None:
+        new_name = self._show_existing_dialog(model)
+        if new_name is None:
+            return
+        self.viewmodel.update_name(model.sheet_id, new_name)
+
+    def _show_existing_dialog(self, model: SheetModel) -> str | None:
+        msg     = strings.DLG_PLANILHA_EXISTENTE_MSG.format(nome=model.name)
+        confirm = QMessageBox.question(
+            None,
+            strings.DLG_PLANILHA_EXISTENTE_TITULO,
+            msg,
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+        )
+
+        if confirm != QMessageBox.StandardButton.Yes:
+            return
+    
+        new_name, ok = QInputDialog.getText(
+            None, strings.DLG_RENOMEAR_TITULO, strings.DLG_RENOMEAR_MSG
+        )
+
+        if not ok or not new_name.strip():
+            return
+        
+        return new_name.strip()
 
     def _on_select(self, sheet_id: str) -> None:
         self.viewmodel.select(sheet_id)
 
-    def _on_connected(self, sheet: Sheet) -> None:
+    def _on_renamed(self, sheet: SheetModel) -> None:
+        self.view.add_or_update_sheet(sheet.name, sheet.sheet_id)
+        observability.log(ObsEv.SHEET_RENAMED)
+
+    def _on_connected(self, sheet: SheetModel) -> None:
         self.view.add_or_update_sheet(sheet.name, sheet.sheet_id)
         self.view.set_active(sheet.sheet_id)
         observability.log(ObsEv.SHEET_CONNECTED)
 
-    def _on_selected(self, sheet: Sheet) -> None:
+    def _on_selected(self, sheet: SheetModel) -> None:
         self.view.set_active(sheet.sheet_id)
         observability.log(ObsEv.SHEET_SELECTED)
 

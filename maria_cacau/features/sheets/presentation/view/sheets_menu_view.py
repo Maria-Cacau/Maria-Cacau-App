@@ -11,28 +11,32 @@ class SheetsMenuView(QMenu):
 
     def __init__(self) -> None:
         super().__init__(strings.MNU_ARQUIVO)
-        self._submenu: QMenu            = QMenu(strings.ACT_PLANILHAS_CONECTADAS, self)
+        self._submenu      = QMenu(strings.ACT_PLANILHAS_CONECTADAS, self)
+        self._act_conectar = QAction(strings.ACT_CONECTAR_PLANILHA, self)
+        self._act_limpar   = QAction(strings.ACT_LIMPAR_CACHE, self)
         self._actions: dict[str, QAction] = {}
-        self._setup_actions()
+        self._setup_ui()
 
     @property
     def view_title(self) -> str:
         return strings.MNU_ARQUIVO
 
-    def _setup_actions(self) -> None:
+    def _setup_ui(self) -> None:
+        self._setup_components()
+        self._setup_layout()
+
+    def _setup_components(self) -> None:
+        self._act_conectar.setMenuRole(QAction.MenuRole.NoRole)
+        self._act_conectar.triggered.connect(self.connect_triggered)
+
+        self._act_limpar.setMenuRole(QAction.MenuRole.NoRole)
+        self._act_limpar.setEnabled(False)  # TODO futuro
+
+    def _setup_layout(self) -> None:
         self.addMenu(self._submenu)
-
-        act_conectar = QAction(strings.ACT_CONECTAR_PLANILHA, self)
-        act_conectar.setMenuRole(QAction.MenuRole.NoRole)
-        self.addAction(act_conectar)
-        act_conectar.triggered.connect(self.connect_triggered)
-
+        self.addAction(self._act_conectar)
         self.addSeparator()
-
-        act_limpar = QAction(strings.ACT_LIMPAR_CACHE, self)
-        act_limpar.setMenuRole(QAction.MenuRole.NoRole)
-        act_limpar.setEnabled(False)  # TODO futuro
-        self.addAction(act_limpar)
+        self.addAction(self._act_limpar)
 
     def add_or_update_sheet(self, name: str, sheet_id: str) -> None:
         if sheet_id in self._actions:

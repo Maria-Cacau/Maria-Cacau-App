@@ -2,7 +2,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 from maria_cacau.core.error import unexpected_error
 
-from ..domain.models import Sheet
+from ..domain.models import SheetModel
 from ..domain.signals import signals
 from ..domain.use_case import SheetsUseCase
 
@@ -14,11 +14,23 @@ class SheetsViewModel:
 
     # --- sync: leitura de cache local, sem necessidade de thread ---
 
-    def load_all(self) -> list[Sheet]:
+    def load_all(self) -> list[SheetModel]:
         return self.use_case.load_all()
 
-    def find_by_link(self, link: str) -> Sheet | None:
+    def find_by_link(self, link: str) -> SheetModel | None:
         return self.use_case.find_by_link(link)
+
+    # --- async: cache local ---
+
+    def update_name(self, sheet_id: str, new_name: str) -> None:
+        self.executor.submit(lambda: self._update_name(sheet_id, new_name))
+
+    def _update_name(self, sheet_id: str, new_name: str) -> None:
+        try:
+            sheet = self.use_case.update_name(sheet_id, new_name)
+            signals.sheet_renamed.emit(sheet)
+        except Exception as e:
+            signals.error.emit(unexpected_error(e))
 
     # --- async: operações com I/O (backend) ---
 
@@ -32,6 +44,7 @@ class SheetsViewModel:
         except Exception as e:
             signals.error.emit(unexpected_error(e))
 
+
     def select(self, sheet_id: str) -> None:
         self.executor.submit(lambda: self._select(sheet_id))
 
@@ -41,6 +54,7 @@ class SheetsViewModel:
             signals.sheet_selected.emit(sheet)
         except Exception as e:
             signals.error.emit(unexpected_error(e))
+
 
     def auto_connect(self) -> None:
         self.executor.submit(self._auto_connect)
