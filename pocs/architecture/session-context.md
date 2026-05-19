@@ -13,7 +13,7 @@ App desktop PyQt6 + Python para a loja Maria Cacau. Lê dados de uma planilha Go
 
 ## O que estamos fazendo agora
 
-**Refatoração arquitetural concluída para features existentes.** Todas as features foram migradas para a nova estrutura em camadas. As próximas etapas são infraestruturais: separação da janela principal, orquestração de inicialização e dados compartilhados de sessão.
+**Separação da `GuiMain` concluída.** `GuiMain` foi decomposta em `MainWindow` (`features/main/`) e `HomeController/HomeView` (`features/home/source/`). `MenuHandler` centraliza as controllers de menu (`auth`, `sheets`). Próximas etapas: orquestração de pre-load e `core/session`.
 
 ---
 
@@ -113,24 +113,14 @@ O backend está completo.
 
 ## Próximas sessões
 
-### 1. Refatoração da home e MainWindow (nova branch)
+### ~~1. Refatoração da home e MainWindow~~ ✅
 
-Separar `GuiMain` em duas responsabilidades:
-
-- **`features/home/`** → `HomeView` + `HomeController` — contém as sub-features, layout central, background
-- **`features/main/`** → `MainWindow` — configura a janela (`QMainWindow`), menubar, status bar; usa `HomeView` como root
-
-Estrutura esperada:
-```
-features/
-├── main/
-│   └── main_window.py      # QMainWindow — configura janela, menus, status bar
-└── home/
-    ├── source/
-    │   ├── view.py         # HomeView — layout central com as sub-features
-    │   └── controller.py   # HomeController
-    └── sub_features/       # sem mudança
-```
+`GuiMain` decomposta em:
+- `features/main/window.py` → `MainWindow` (QMainWindow, menubar, status bar, central widget)
+- `features/main/handler.py` → `MenuHandler` (instancia `AuthController` + `SheetsController`, monta os QMenus)
+- `features/home/source/view.py` → `HomeView` (background + layout das sub-features)
+- `features/home/source/controller.py` → `HomeController` (instancia as 5 sub-features, chama `setup_view`)
+- `features/home/source/models.py` → `HomeFeaturesModel` (DTO com os `view.root` de cada sub-feature)
 
 ### 2. Criação das ações de pre-load do app
 
