@@ -142,7 +142,7 @@ Registradas em `overview.md`. Não reabrir sem motivo claro.
 1. ~~**Refatoração home/main**~~ ✅ — `GuiMain` separada em `MainWindow` + `MenuHandler` (`features/main/`) e `HomeController/HomeView/HomeFeaturesModel` (`features/home/source/`)
 2. ~~**Ações de pre-load e `core/session`**~~ ✅ — `AppCoordinator` orquestra inicialização via `AppInitUseCase` (uma única chamada HTTP com credentials + sheet_id); `core/session` singleton com `has_credentials_cached`, `has_sheet_cached`, `is_authenticated`, `active_sheet_id`; `core/bus` como event bus para signals cross-feature
 3. **Feature: status bar** — conectar via `bus` após sinal de sessão ser definido
-4. **Limpeza de cache** — `RemoveSheetAPI` existe mas não está conectada; usar bus quando implementado
+4. ~~**Limpeza de cache**~~ ✅ — cache nos repositories (`OrdersRepository`, `SummaryRepository`); `bus.cache_cleared` dispara via menu Arquivo → "Limpar cache"
 
 ---
 

@@ -6,8 +6,9 @@ from maria_cacau.assets import strings
 
 
 class SheetsMenuView(QMenu):
-    connect_triggered = pyqtSignal()
-    sheet_selected    = pyqtSignal(str)  # emite sheet_id
+    connect_triggered     = pyqtSignal()
+    sheet_selected        = pyqtSignal(str)  # emite sheet_id
+    cache_clear_triggered = pyqtSignal()
 
     def __init__(self) -> None:
         super().__init__(strings.MNU_ARQUIVO)
@@ -30,6 +31,7 @@ class SheetsMenuView(QMenu):
 
         self._act_limpar   = QAction(strings.ACT_LIMPAR_CACHE, self)
         self._act_limpar.setMenuRole(QAction.MenuRole.NoRole)
+        self._act_limpar.triggered.connect(self.cache_clear_triggered)
 
         self._actions: dict[str, QAction] = {}
 
