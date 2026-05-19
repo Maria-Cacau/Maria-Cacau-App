@@ -20,11 +20,13 @@ class SummaryRepository:
         if key in self._cache:
             observability.log(ObsEv.CACHE_HIT)
             return self._cache[key]
+        
         try:
             response = OrdersSummaryAPI().for_period(start, end).call()
         except HTTPResponseError as e:
             raise ErrorMapper.from_response(e)
         result = OrdersSummaryMapper.from_response(response)
+        
         self._cache[key] = result
         return result
 
