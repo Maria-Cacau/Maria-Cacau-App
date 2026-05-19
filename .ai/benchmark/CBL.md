@@ -759,3 +759,67 @@ Não. O nome do blueprint (`Blueprint("summary", __name__)`) é apenas um identi
 **P: Faz sentido colocar o before_request no nível da app ou no nível de orders?**
 
 No nível de `orders/`. O `check_connection` verifica se o data source está pronto — isso só faz sentido para rotas que acessam dados. As rotas de infra (`/auth`, `/source`, `/status`) não acessam o data source e não devem ser bloqueadas por esse check. Flask suporta blueprints aninhados: `before_request` no blueprint pai aplica-se a todos os sub-blueprints registrados nele. `orders/__init__.py` cria o blueprint pai `orders_bp`, registra `deliveries_bp`, `payments_bp` e `summary_bp` nele, e declara o `before_request` — cobertura automática para todas as subfeatures de orders.
+
+---
+
+## Sessão — Mai/2026 (Arquitetura: App shell, session e inicialização)
+
+---
+
+**P: O que existe no PyQt6/Python equivalente ao ciclo de vida do AppDelegate do Swift?**
+
+O PyQt6 oferece dois pontos principais de ciclo de vida: `QApplication.aboutToQuit` (signal emitido antes do app encerrar — equivalente ao `applicationWillTerminate`) e `QTimer.singleShot(0, callback)` (agenda uma chamada para o próximo loop do event loop — equivalente ao `applicationDidFinishLaunching`). Não existe um `AppDelegate` formal, mas o padrão `AppCoordinator` reproduz o mesmo comportamento: é instanciado no `__main__.py`, configura o app, cria a `MainWindow` e agenda a inicialização para logo após o app subir.
+
+---
+
+**P: Qual é a boa prática para injeção de dependências em Python, já que não temos o ecossistema do Swift (Swinject, etc.)?**
+
+Python favorece injeção manual sem container: quem cria as dependências as passa explicitamente via `__init__`. Para módulos como `LocalClient`, o padrão idiomático é um singleton de módulo configurado por uma função `configure()` — cada subsistema chama `configure()` uma vez no startup e depois acessa a instância global diretamente. Containers DI (Dependency Injector, injector) existem mas são raros em projetos sem necessidade de autowiring. O padrão do projeto é: `AppCoordinator` cria e propriedade as dependências; quem precisa de algo externo importa o módulo com o singleton.
+
+---
+
+**P: Quando um signal PyQt é emitido, uma nova instância da classe conectada é criada?**
+
+Não. O signal não instancia nada — ele chama os slots (funções/métodos) que foram conectados a ele. Se nenhum slot foi conectado, o signal emitido não faz nada. Os objetos que contêm os slots precisam já existir quando o signal for emitido. Por isso a ideia de "deixar o repositório ouvir um signal de inicialização para se auto-registrar" não funciona sem que o repositório já tenha sido instanciado antes do signal ser emitido.
+
+---
+
+**P: Um container DI resolveria o problema de auto-registro dos repositories com o signal de inicialização?**
+
+Sim — um container DI resolve exatamente isso. O container sabe quem precisa de quem e instancia na ordem correta antes de qualquer signal ser emitido. Sem container, é necessário instanciar explicitamente antes de conectar. Decisão: não implementar container agora; o `AppCoordinator` instancia e passa dependências manualmente. O event bus (`core/bus.py`) fica pronto para quando o container vier.
+
+---
+
+**P: Faz sentido criar um `AppInitUseCase` separado para a lógica de pré-carga (verificar caches + fazer uma única chamada HTTP), em vez de deixar isso espalhado nos `auto_connect` de auth e sheets?**
+
+Sim — e é a separação mais limpa. O `auto_connect` era uma mistura de responsabilidades: cada feature sabia de si mesma e tentava se auto-inicializar. O `AppInitUseCase` centraliza toda a sequência: lê cache de credenciais → lê cache de planilha → se ambos presentes, faz uma única chamada HTTP ao `/auth` com o `sheet_id` incluído → atualiza o `session`. A feature de auth não precisa saber de planilhas; a feature de sheets não precisa saber de credenciais. O use case é o único que orquestra os dois.
+
+---
+
+**P: Qual a boa prática em Python para estado global compartilhado entre features (equivalente a um singleton de sessão)?**
+
+Singleton de módulo: um arquivo `core/session.py` define `AppSession` com os campos de estado e expõe uma instância `session = AppSession()`. Qualquer módulo que importar `from core.session import session` obtém a mesma instância — Python garante isso pelo sistema de módulos (cada módulo é carregado uma única vez). É o padrão Pythônico: sem `@Singleton` decorator, sem metaclass, apenas um objeto no nível do módulo.
+
+---
+
+**P: Faz sentido usar um event bus ou um signal de lifecycle para o evento de inicialização do app?**
+
+Event bus é a escolha correta para esse caso. Um signal de lifecycle exigiria que todos os interessados no evento herdassem de uma classe específica ou se registrassem numa lista — criando acoplamento. O event bus (`core/bus.py` com um `QObject` singleton) expõe signals que qualquer módulo pode conectar sem conhecer os outros. Para o projeto, o `app_initialized` foi criado mas removido provisoriamente — será readicionado quando o container DI for implementado, pois sem container ninguém consegue ouvir o signal antes de ser instanciado.
+
+---
+
+**P: Qual é o padrão de organização de arquivos para separar o "shell do app" das features do usuário em um projeto Python?**
+
+O padrão convencional é estrutura flat: `app/`, `features/`, `core/`, `backend/` como irmãos no pacote raiz — cada um com responsabilidade clara. Colocar `features/` dentro de `app/` misturaria o shell técnico com as features de produto. A referência da stdlib e de frameworks como Django: infraestrutura (settings, urls, wsgi) separada das apps/features. No projeto: `app/` contém a casca técnica (`AppCoordinator`, `MainWindow`, `MenuHandler`); `features/` contém as telas e domínios de usuário.
+
+---
+
+**P: É possível automatizar a atualização do grafo graphify fora do PR, como num passo pós-merge?**
+
+Sim via hook `post-merge` do git. O hook roda automaticamente após qualquer `git merge` ou `git pull` bem-sucedido. Com `.githooks/post-merge` versionado e `git config core.hooksPath .githooks` configurado, qualquer desenvolvedor que der `git pull` na branch receberá o grafo atualizado automaticamente — sem que as alterações do grafo apareçam no diff do PR. A alternativa seria CI/CD rodar `graphify update .` no servidor pós-merge e commitar de volta, mas o hook local é mais simples para um projeto de escopo atual.
+
+---
+
+**P: O que faz o hook PreToolUse configurado no `.claude/settings.json`?**
+
+O hook intercepta toda chamada de ferramenta `Bash` que contenha comandos de busca (`grep`, `rg`, `find`, `fd`, `ack`, `ag`). Se o arquivo `graphify-out/graph.json` existir, injeta uma mensagem de contexto pedindo ao Claude para ler o `GRAPH_REPORT.md` antes de buscar arquivos raw. O objetivo é fazer o Claude preferir o grafo de conhecimento (que tem edges EXTRACTED + INFERRED entre módulos) em vez de busca textual — especialmente para perguntas sobre relações entre módulos.
