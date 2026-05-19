@@ -36,7 +36,7 @@ A migração acontece **por funcionalidade**, uma de cada vez.
 ```
 
 - **Aplicação** não importa nada de `backend/`
-- **Backend** não importa nada de `features/` — única exceção: `core/storage` (credenciais)
+- **Backend** não importa nada de `features/`
 - **DataSource** não conhece Flask, não conhece features
 
 ---
