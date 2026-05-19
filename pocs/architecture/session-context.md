@@ -97,71 +97,7 @@ O backend está completo.
 
 ## Próximas sessões
 
-### Fase 3 — Design System: eliminar AuxWidgets
-
-**Objetivo:** Eliminar `AuxWidgets` como herança nas views. Todos os componentes de UI passam a ser instanciados diretamente do Design System, igual ao `DSButton`. Views não herdam mais de nada além de `QWidget`/`QDialog`/`QMenu`.
-
----
-
-**Inventário atual — o que ainda usa `AuxWidgets`:**
-
-| Método | Componente criado | Usado em |
-|---|---|---|
-| `group_box(title)` | `QGroupBox` estilizado (borda marrom) | `DeliveryView`, `SummaryView` |
-| `text_view()` | `QTextBrowser` (fonte Consolas 10) | `DeliveryView`, `SummaryView` |
-| `on_copy(widget)` | helper de cópia de `QTextBrowser` | `DeliveryView`, `SummaryView` |
-| `combo_box()` | `QComboBox` (fonte Arial 10) | `SummaryView` |
-| `lbl(text, size)` | `QLabel` (fonte Arial, alinhamento esquerdo) | `SummaryView` |
-
-**O que já usa PyQt direto (sem DS) e deve continuar assim:**
-- `QDateEdit` — não justifica wrapper por ora
-- `QLineEdit` — idem
-
----
-
-**Componentes a criar em `design_system/components/`:**
-
-| Componente DS | Substitui | Arquivo sugerido |
-|---|---|---|
-| `DSGroupBox` | `group_box()` | `components/group_box.py` |
-| `DSTextView` | `text_view()` + `on_copy()` | `components/text_view.py` |
-| `DSLabel` | `lbl()` | `components/label.py` |
-| `DSComboBox` | `combo_box()` | `components/combo_box.py` |
-
-Cada componente deve seguir o padrão do `DSButton`: classe própria, arquivo próprio, exportado pelo `design_system/components/__init__.py`.
-
-**Migração do `ChartWidget`:**
-- `core/charts.py` → `design_system/components/chart_widget.py` (ou subpasta `charts/`)
-- Atualizar imports em `DeliveryView` e `SummaryView`
-
----
-
-**Abordagem sugerida — componente por componente:**
-
-1. **`DSGroupBox`** — criar + migrar `DeliveryView` e `SummaryView`
-2. **`DSTextView`** — criar (inclui `copy_to_clipboard()` como método próprio) + migrar as duas views
-3. **`DSLabel`** — criar + migrar `SummaryView`
-4. **`DSComboBox`** — criar + migrar `SummaryView`
-5. **`ChartWidget`** — mover de `core/` para `design_system/components/` + atualizar imports
-6. **Deletar `AuxWidgets`** — arquivo vazio/inutilizado após todos os passos acima
-
-Ao finalizar cada componente: remover `AuxWidgets` da herança da view correspondente assim que **todos** os seus métodos estiverem migrados nela.
-
----
-
-**Estado final esperado:**
-
-```python
-# antes
-class DeliveryView(QWidget, AuxWidgets): ...
-
-# depois
-class DeliveryView(QWidget): ...
-# componentes instanciados diretamente:
-self.textView  = DSTextView()
-self.root      = DSGroupBox(self.view_title)
-self.cbType    = DSComboBox()  # só summary
-```
+> Nenhuma fase pendente para a v5.0. Fase 4 (refinamentos adicionais do DS) ficará para a v6.0.
 
 ---
 
@@ -177,6 +113,7 @@ self.cbType    = DSComboBox()  # só summary
 | Refinamentos pós-refatoração | Status bar via bus, `core/session` em requests, dialogs com `DIALOG_MIN_WIDTH = 500`, remoção de planilha (DELETE /sheet) com sub-menu + confirmação + atualização de session/status bar |
 | Report + Design System | Cache removido dos repositories; tela limpa ao gerar novo relatório (`clear_content()`); `DSButton` com `DSButtonState` (DEFAULT/DISABLED/LOADING) + `DSLoadingHandler` mixin em `design_system/components/` e `design_system/handlers/`; `bts()` e `aux_frames.py` removidos |
 | Redesign + Fase 2 | Removidas features `nota_fiscal` e `shipping_rate`; `delivery` e `summary` lado a lado na home; `cpf_validation` migrada para `features/` como feature independente e virou `QDialog`; criado menu "Funcionalidades" (`features/funcionalidades/`) com sub-item "Validador de CPF" que abre o dialog via `show()` |
+| Fase 3 — Design System | `AuxWidgets`, `gui_popup.py` e `core/charts.py` removidos; Design System expandido com 7 novos componentes em pastas próprias (`alerts/`, `chart/`, `combo_box/`, `containers/`, `inputs/`, `label/`, `text_view/`); views e controllers migrados para consumir somente componentes DS; `features/funcionalidades/` removida — `MenuHandler` cria o menu inline e instancia `CpfValidationController` diretamente; `menu_title` exposto como property em `CpfValidationView` |
 
 ---
 
