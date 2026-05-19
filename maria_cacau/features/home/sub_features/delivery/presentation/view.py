@@ -1,25 +1,23 @@
 """View da feature Delivery: resumo diário de entregas e pagamentos pendentes."""
 
-from PyQt6.QtCore import QDate, pyqtSignal
-from PyQt6.QtWidgets import (QDateEdit, QHBoxLayout, QSizePolicy, QVBoxLayout,
-                             QWidget)
+from PyQt6.QtCore import pyqtSignal
+from PyQt6.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget
 
 from maria_cacau.assets import strings
-from maria_cacau.core.charts import ChartType, ChartWidget
-from maria_cacau.design_system.aux_widgets import AuxWidgets
-from maria_cacau.design_system.components import DSButton, DSButtonState
-from maria_cacau.design_system.gui_popup import GuiPopup
+from maria_cacau.design_system.components import (DSButton, DSButtonState,
+                                                   DSChart, DSChartType,
+                                                   DSDateInput, DSDialog,
+                                                   DSGroupBox, DSTextView)
 
 from ..domain.models import DeliveryViewData
 
 
-class DeliveryView(QWidget, AuxWidgets):
+class DeliveryView(QWidget):
     generate_report = pyqtSignal()
-    copy_report = pyqtSignal()
-    copy_graph = pyqtSignal()
-    download_graph = pyqtSignal()
+    copy_report     = pyqtSignal()
+    copy_graph      = pyqtSignal()
+    download_graph  = pyqtSignal()
 
-    ## Init
     def __init__(self) -> None:
         super().__init__()
         self._setup_ui()
@@ -29,13 +27,39 @@ class DeliveryView(QWidget, AuxWidgets):
         return "Entregas"
 
     ## MARK: - Life Cycle
+
     def _setup_ui(self) -> None:
         self._setup_components()
         self._setup_layout()
         self._update_buttons_state(False)
 
+    def _setup_components(self) -> None:
+        self.popup    = DSDialog()
+        self.textView = DSTextView()
+        self.textView.setText(strings.TXT_OK_INSTRUCAO_ENTREGAS)
+
+        self.chart = DSChart(DSChartType.PIE)
+
+        self.butGenerate = DSButton(strings.BTN_OK)
+        self.butGenerate.clicked.connect(self.generate_report)
+
+        self.dateSelector = DSDateInput()
+        self.dateSelector.setFixedHeight(self.butGenerate.sizeHint().height())
+
+        self.butCopyData = DSButton(strings.BTN_COPIAR)
+        self.butCopyData.clicked.connect(self.textView.copy_to_clipboard)
+        self.butCopyData.clicked.connect(self.copy_report)
+
+        self.butCopyGraph = DSButton(strings.BTN_COPIAR)
+        self.butCopyGraph.clicked.connect(self.chart.copy_to_clipboard)
+        self.butCopyGraph.clicked.connect(self.copy_graph)
+
+        self.butSaveGraph = DSButton(strings.BTN_SALVAR)
+        self.butSaveGraph.clicked.connect(self.chart.save_to_file)
+        self.butSaveGraph.clicked.connect(self.download_graph)
+
     def _setup_layout(self) -> None:
-        self.root = self.group_box(self.view_title)
+        self.root = DSGroupBox(self.view_title)
         mainLayout = QVBoxLayout(self.root)
 
         mainLayout.addWidget(self.textView, stretch=3)
@@ -55,48 +79,19 @@ class DeliveryView(QWidget, AuxWidgets):
         btnGraphLayout.addWidget(self.butSaveGraph)
         mainLayout.addLayout(btnGraphLayout)
 
-    def _setup_components(self) -> None:
-        self.popup = GuiPopup()
+    ## MARK: - Private
 
-        self.textView = self.text_view()
-        self.textView.setText(strings.TXT_OK_INSTRUCAO_ENTREGAS)
-
-        self.chart = ChartWidget(ChartType.PIE)
-
-        self.butGenerate = DSButton(strings.BTN_OK)
-        self.butGenerate.clicked.connect(self.generate_report)
-
-        self.dateSelector = QDateEdit(QDate.currentDate())
-        self.dateSelector.setDisplayFormat("dd/MM/yy")
-        self.dateSelector.setCalendarPopup(True)
-        self.dateSelector.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
-        self.dateSelector.setFixedHeight(self.butGenerate.sizeHint().height())
-
-        self.butCopyData = DSButton(strings.BTN_COPIAR)
-        self.butCopyData.clicked.connect(lambda: self.on_copy(self.textView))
-        self.butCopyData.clicked.connect(self.copy_report)
-
-        self.butCopyGraph = DSButton(strings.BTN_COPIAR)
-        self.butCopyGraph.clicked.connect(self.chart.copy_to_clipboard)
-        self.butCopyGraph.clicked.connect(self.copy_graph)
-
-        self.butSaveGraph = DSButton(strings.BTN_SALVAR)
-        self.butSaveGraph.clicked.connect(self.chart.save_to_file)
-        self.butSaveGraph.clicked.connect(self.download_graph)
-    
-    ## MARK: - Others
     def _update_buttons_state(self, enabled: bool) -> None:
         self.butCopyData.setEnabled(enabled)
         self.butCopyGraph.setEnabled(enabled)
         self.butSaveGraph.setEnabled(enabled)
 
-    ## MARK: - Public methods
+    ## MARK: - Public
+
     def get_date(self) -> str:
-        r'''Retorna a data selecionada no formato DD/MM/YY'''
         return self.dateSelector.date().toString('dd/MM/yy')
 
     def update_data(self, data: DeliveryViewData) -> None:
-        r'''Atualiza os dados da view'''
         self.textView.setText(data.report)
         self.chart.update_data(data.chart_data, title=self.view_title)
         self._update_buttons_state(True)
@@ -106,12 +101,10 @@ class DeliveryView(QWidget, AuxWidgets):
         self.butGenerate.update_state(DSButtonState.DEFAULT)
 
     def clear_content(self) -> None:
-        r'''Reseta o conteúdo da view para o estado inicial'''
         self.textView.setText(strings.TXT_OK_INSTRUCAO_ENTREGAS)
         self.chart.clear()
         self._update_buttons_state(False)
 
     def prepare_to_fetch(self) -> None:
-        r'''Prepara a view para uma nova consulta'''
         self.clear_content()
         self.butGenerate.update_state(DSButtonState.LOADING)

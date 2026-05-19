@@ -1,11 +1,10 @@
 """View da feature CPF Validation: dialog para validação de CPF."""
 
 from PyQt6.QtCore import Qt, pyqtSignal
-from PyQt6.QtWidgets import (QDialog, QFormLayout, QHBoxLayout, QLabel,
-                             QLineEdit, QVBoxLayout)
+from PyQt6.QtWidgets import QDialog, QFormLayout, QHBoxLayout, QLabel, QVBoxLayout
 
 from maria_cacau.assets import strings
-from maria_cacau.design_system.components import DSButton
+from maria_cacau.design_system.components import DSButton, DSTextInput
 from maria_cacau.design_system.constants import DIALOG_MIN_WIDTH
 
 from ..domain.models import CpfValidationResult
@@ -29,7 +28,7 @@ class CpfValidationView(QDialog):
         self.setWindowTitle(strings.DLG_CPF_TITULO)
         self.setMinimumWidth(DIALOG_MIN_WIDTH)
 
-        self._cpf_input = QLineEdit()
+        self._cpf_input = DSTextInput()
         self._cpf_input.setPlaceholderText("000.000.000-00")
         self._cpf_input.returnPressed.connect(self.validate_cpf)
 
