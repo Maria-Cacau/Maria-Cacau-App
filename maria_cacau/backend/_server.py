@@ -2,7 +2,7 @@ from flask import Flask, jsonify
 
 from ..core.network import HTTPRequest, HTTPResponse
 from .data_source import DataSourceError
-from .errors import generic_mapper, translate, BackendError
+from .errors import BackendError, generic_mapper, translate
 from .features import *
 
 _app = Flask(__name__)
