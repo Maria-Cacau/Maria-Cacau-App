@@ -14,6 +14,7 @@ class _EventBus(QObject):
     sheet_connected = pyqtSignal(object)   # SheetModel
     sheet_selected  = pyqtSignal(object)   # SheetModel
     sheet_renamed   = pyqtSignal(object)   # SheetModel
+    sheet_removed   = pyqtSignal(object)   # SheetModel
 
     # ── Requests ──────────────────────────────────────────────────────────────
     request_started  = pyqtSignal(object)   # Service

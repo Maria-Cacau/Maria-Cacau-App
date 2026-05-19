@@ -843,3 +843,37 @@ A decisão foi nos **repositories**. O critério determinante: os repos já têm
 **P: O que faz o hook PreToolUse configurado no `.claude/settings.json`?**
 
 O hook intercepta toda chamada de ferramenta `Bash` que contenha comandos de busca (`grep`, `rg`, `find`, `fd`, `ack`, `ag`). Se o arquivo `graphify-out/graph.json` existir, injeta uma mensagem de contexto pedindo ao Claude para ler o `GRAPH_REPORT.md` antes de buscar arquivos raw. O objetivo é fazer o Claude preferir o grafo de conhecimento (que tem edges EXTRACTED + INFERRED entre módulos) em vez de busca textual — especialmente para perguntas sobre relações entre módulos.
+
+---
+
+## Sessão — Mai/2026 (Feature: Remover planilha + refinamentos de dialog)
+
+---
+
+**P: Por que ao remover uma planilha e reconectar uma nova na sessão seguinte aparece o erro "Planilha não configurada"?**
+
+Causa raiz em cadeia: `AppInitUseCase` retornava cedo quando havia credenciais mas nenhuma planilha em cache → `ConnectAuthAPI` nunca era chamada → o backend ficava sem `_client` → `session.is_authenticated = False` → ao conectar planilha, `repository.connect` skipava `SelectSheetAPI` por causa do check `if session.is_authenticated` → `data_source.set_sheet` era chamado mas `_client = None` → `_setup_vm()` não rodava → `_vm = None` → `is_ready()` = False → `DataSourceNotReadyError`. Fix: `AppInitUseCase` agora chama `pre_login(sheet_id)` mesmo sem `sheet_id`, garantindo que o backend receba as credenciais em qualquer caso.
+
+---
+
+**P: Faz sentido o use case chamar a API de auth diretamente, ou isso deveria ficar no repository?**
+
+No repository. Clean Arch: o use case orquestra, o repository encapsula acesso a dados externos. `ConnectAuthAPI` é um detalhe de implementação da camada `data/` de auth — o use case não deve conhecê-la. A solução foi criar `AuthRepository.pre_login(sheet_id)`: lê as credenciais internamente e chama a API. O use case passa só o `sheet_id` e o repositório resolve o resto.
+
+---
+
+**P: Por que `setMinimumWidth` não funciona no `QMessageBox` no macOS?**
+
+`QMessageBox` no macOS tem tamanho gerenciado pelo sistema operacional, que ignora `setMinimumWidth`. A solução idiomática é adicionar um `QSpacerItem` com a largura desejada diretamente no `QGridLayout` interno do dialog — o layout respeita o spacer e expande o popup. Implementado em `GuiPopup._apply_min_width()` usando `grid.rowCount()` e `grid.columnCount()` para inserir na posição correta.
+
+---
+
+**P: Como fazer um check mark aparecer no item pai de um sub-menu no PyQt6?**
+
+`QMenu` não exibe check mark diretamente no sub-menu. O mecanismo é via `menuAction()`: cada `QMenu` tem uma `QAction` associada (`menuAction()`). Essa action pode ser marcada como checkable com `menuAction().setCheckable(True)` e verificada com `menuAction().setChecked(True)`. O check mark aparece no item pai no menu que contém o sub-menu.
+
+---
+
+**P: Por que `QFormLayout` não expande os campos no macOS como no Windows?**
+
+No macOS, o `QFormLayout` usa por padrão a política `DontGrowFields` — os campos ficam com o tamanho mínimo necessário em vez de se expandirem para preencher o espaço disponível. A correção é `form.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)`, que força os campos com `QSizePolicy.Expanding` a ocuparem toda a largura disponível — comportamento padrão no Windows.

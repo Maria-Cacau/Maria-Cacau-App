@@ -2,7 +2,6 @@ from maria_cacau.core import session
 from maria_cacau.features.sheets.data import SheetsRepository
 
 from ..data import AuthRepository
-from ..data.apis import ConnectAuthAPI
 
 
 class AppInitUseCase:
@@ -18,13 +17,17 @@ class AppInitUseCase:
 
         sheet_id = self._sheets.last_sheet_id_from_cache()
         session.has_sheet_cached = sheet_id is not None
+
+        try:
+            self._auth.pre_login(sheet_id)
+            session.is_authenticated = True
+        except Exception:
+            return
+
         if not sheet_id:
             return
 
-        ConnectAuthAPI().with_credentials(credentials, sheet_id=sheet_id).call()
-        session.is_authenticated  = True
-        session.active_sheet_id   = sheet_id
-
+        session.active_sheet_id = sheet_id
         sheets = self._sheets.load_all()
         match = next((s for s in sheets if s.sheet_id == sheet_id), None)
         session.active_sheet_name = match.name if match else None

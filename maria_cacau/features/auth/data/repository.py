@@ -4,6 +4,7 @@ import json
 
 from maria_cacau.core.storage.security import SecurityStorage
 
+from ..domain.errors import NoCachedCredentialsError
 from .apis import ConnectAuthAPI, DisconnectAuthAPI
 
 _CREDENTIALS_KEY = "google-credentials"
@@ -17,6 +18,13 @@ class AuthRepository:
             raw = f.read()
         ConnectAuthAPI().with_credentials(json.loads(raw)).call()
         _security.save(raw, _CREDENTIALS_KEY)
+
+    def pre_login(self, sheet_id: str | None) -> None:
+        """Reenvia credenciais ao backend com o sheet_id atual."""
+        credentials = self.read_credentials()
+        if not credentials:
+            raise NoCachedCredentialsError()
+        ConnectAuthAPI().with_credentials(credentials, sheet_id=sheet_id).call()
 
     def read_credentials(self) -> dict | None:
         """Lê credenciais do storage sem fazer chamada HTTP."""

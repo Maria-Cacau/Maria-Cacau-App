@@ -2,6 +2,7 @@ from PyQt6.QtWidgets import (QDialog, QDialogButtonBox, QFormLayout, QLineEdit,
                              QVBoxLayout)
 
 from maria_cacau.assets import strings
+from maria_cacau.design_system.constants import DIALOG_MIN_WIDTH
 
 
 class SheetCreateView(QDialog):
@@ -23,6 +24,7 @@ class SheetCreateView(QDialog):
 
     def _setup_components(self) -> None:
         self.setWindowTitle(strings.DLG_CONECTAR_TITULO)
+        self.setMinimumWidth(DIALOG_MIN_WIDTH)
         
         self._link_input = QLineEdit()
         self._link_input.setPlaceholderText(strings.DLG_CONECTAR_PLACEHOLDER_LINK)
@@ -38,6 +40,7 @@ class SheetCreateView(QDialog):
 
     def _setup_layout(self) -> None:
         form = QFormLayout()
+        form.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)
         form.addRow(strings.DLG_CONECTAR_LBL_LINK, self._link_input)
         form.addRow(strings.DLG_CONECTAR_LBL_NOME, self._name_input)
 

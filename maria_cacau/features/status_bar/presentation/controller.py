@@ -22,6 +22,7 @@ class StatusBarController:
         bus.credentials_cleared.connect(self._on_credentials_cleared)
         bus.sheet_connected.connect(self._on_sheet_updated)
         bus.sheet_selected.connect(self._on_sheet_updated)
+        bus.sheet_removed.connect(self._on_sheet_removed)
         bus.request_started.connect(self._on_request_started)
         bus.request_finished.connect(self._on_request_finished)
 
@@ -37,11 +38,15 @@ class StatusBarController:
             self._set_base(StatusBarState.CONNECTED, strings.SB_PLANILHA.format(nome=name, id=session.active_sheet_id))
 
     def _on_credentials_configured(self) -> None:
-        self._set_base(StatusBarState.NO_SHEET, strings.SB_SEM_PLANILHA)
+        self._on_sheet_removed()
 
     def _on_credentials_cleared(self) -> None:
         self._busy_count = 0
         self._set_base(StatusBarState.NO_CREDENTIALS, strings.SB_SEM_CREDENCIAIS)
+
+    def _on_sheet_removed(self, _ = None) -> None:
+        if session.active_sheet_id is None:
+            self._set_base(StatusBarState.NO_SHEET, strings.SB_SEM_PLANILHA)
 
     def _on_sheet_updated(self, sheet) -> None:
         text = strings.SB_PLANILHA.format(nome=sheet.name, id=sheet.sheet_id)

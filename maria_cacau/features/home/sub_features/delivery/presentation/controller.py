@@ -52,6 +52,7 @@ class DeliveryController():
     ## Respostas
     def handle_error(self, error: ErrorModel) -> None:
         self.view.popup.show(error.to_popup())
+        self.view.activate_button_state()
 
     def handle_report_generated(self, data: DeliveryViewData) -> None:
         """Recebe o resultado do ViewModel, atualiza a view e loga a duração da consulta."""

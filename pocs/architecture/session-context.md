@@ -13,7 +13,7 @@ App desktop PyQt6 + Python para a loja Maria Cacau. Lê dados de uma planilha Go
 
 ## O que estamos fazendo agora
 
-**Refinamentos pós-refatoração.** Toda a infraestrutura e as features estão migradas. O foco agora é finalizar os detalhes que ficaram pendentes: conectar a status bar via bus, usar as variáveis de `core/session` para validar requests, aumentar a cobertura de observabilidade e ajustar o tamanho mínimo dos dialogs.
+**Refinamentos pós-refatoração concluídos.** Status bar via bus ✅, `core/session` em requests ✅, largura mínima de dialogs ✅, remoção de planilha (DELETE /sheet) ✅. A infraestrutura e todas as features estão migradas e estabilizadas. Próximo foco: cobertura de observabilidade.
 
 ---
 
@@ -104,10 +104,7 @@ O backend está completo.
 
 ## Próximas sessões
 
-1. **Status bar** — conectar via `bus` após sinal de sessão; hoje ainda recebe dados direto do `home_view.py`
-2. **Usar variáveis de `core/session` nas requests** — validar/bloquear request quando `is_authenticated` ou `active_sheet_id` não estiver pronto
 3. **Aumentar observabilidade** — cobertura de log com lacunas (ex: parâmetros no cache hit, duração de requests)
-4. **Popup de dialog com dimensão mínima aumentada** — `SheetCreateView` e outros dialogs abrem pequenos demais
 
 ---
 
@@ -120,6 +117,7 @@ O backend está completo.
 | Refatoração home/main | `GuiMain` decomposta em `MainWindow` + `MenuHandler` (`app/`) e `HomeController/HomeView` (`features/home/source/`) |
 | Infraestrutura de sessão | `AppCoordinator`, `AppInitUseCase`, `AppSession` (`core/session`), `_EventBus` (`core/bus`) |
 | Cache em memória | `OrdersRepository` e `SummaryRepository` com cache por params; limpeza via `bus.cache_cleared` → menu "Arquivo → Limpar cache" |
+| Refinamentos pós-refatoração | Status bar via bus, `core/session` em requests, dialogs com `DIALOG_MIN_WIDTH = 500`, remoção de planilha (DELETE /sheet) com sub-menu + confirmação + atualização de session/status bar |
 
 ---
 
@@ -130,7 +128,11 @@ O backend está completo.
 | Sub-views em pasta | Quando feature tem 2+ views → `presentation/view/` com um arquivo por view |
 | `update_name` separado de `connect` | Renomear planilha existente = só cache; nenhuma chamada ao backend |
 | "Limpar cache" no menu Arquivo | Limpa o cache em memória dos repositories via `bus.cache_cleared` |
-| `RemoveSheetAPI` (DELETE /sheet) | Criado, não conectado; mantido por hora para uso futuro |
+| `RemoveSheetAPI` (DELETE /sheet) | Conectado via `SheetsRepository.remove` — só chama o backend se for a planilha ativa |
+| `pre_login` em `AuthRepository` | Encapsula o reenvio de credenciais ao backend; `AppInitUseCase` usa este método em vez de chamar `ConnectAuthAPI` diretamente |
+| `NoCachedCredentialsError` | Erro de domínio em `auth/domain/errors.py`; `pre_login` lança se não houver credenciais no cache |
+| `DIALOG_MIN_WIDTH = 500` | Constante em `design_system/constants.py`; `GuiPopup` usa `QSpacerItem` (macOS ignora `setMinimumWidth` em `QMessageBox`) |
+| Sub-menu por planilha | `QMenu` por item em vez de `QAction`; check mark via `menuAction().setCheckable(True)`; "Selecionar" oculto quando já ativa |
 | Sufixo `Model` em domain models | Ex: `SheetModel` — facilita identificação no uso dentro do código |
 
 ---

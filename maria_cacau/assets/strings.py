@@ -33,6 +33,8 @@ MNU_AJUDA        = "Ajuda"
 
 ACT_CONECTAR_PLANILHA     = "Conectar nova planilha"
 ACT_PLANILHAS_CONECTADAS  = "Planilhas conectadas"
+ACT_SELECIONAR_PLANILHA   = "Selecionar"
+ACT_REMOVER_PLANILHA      = "Remover planilha"
 ACT_CONFIGURAR_CERT       = "Configurar certificado"
 ACT_LIMPAR_CERT           = "Limpar certificado"
 ACT_DOCUMENTACAO          = "Documentação"
@@ -48,6 +50,8 @@ DLG_LIMPAR_CERT_MSG    = "Tem certeza que deseja remover o certificado salvo?"
 
 DLG_PLANILHA_EXISTENTE_TITULO  = "Planilha já cadastrada"
 DLG_PLANILHA_EXISTENTE_MSG     = 'Esta planilha já está salva com o nome "{nome}". Deseja renomear?'
+DLG_REMOVER_PLANILHA_TITULO    = "Remover planilha"
+DLG_REMOVER_PLANILHA_MSG       = 'Deseja remover a planilha "{nome}"? Esta ação não pode ser desfeita.'
 DLG_RENOMEAR_TITULO            = "Renomear planilha"
 DLG_RENOMEAR_MSG               = "Novo nome:"
 

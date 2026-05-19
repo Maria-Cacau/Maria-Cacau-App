@@ -25,5 +25,12 @@ class SheetsUseCase:
     def find_by_link(self, link: str) -> SheetModel | None:
         return self.repository.find_by_link(link)
 
+    def remove(self, sheet_id: str) -> SheetModel:
+        sheet = self.repository.remove(sheet_id)
+        if session.active_sheet_id == sheet_id:
+            session.active_sheet_id   = None
+            session.active_sheet_name = None
+        return sheet
+
     def update_name(self, sheet_id: str, new_name: str) -> SheetModel:
         return self.repository.update_name(sheet_id, new_name)
