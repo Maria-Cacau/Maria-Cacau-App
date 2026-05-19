@@ -11,10 +11,6 @@ App desktop PyQt6 + Python para a loja Maria Cacau. Lê dados de uma planilha Go
 
 ---
 
-## O que estamos fazendo agora
-
-**Report + Design System.** Cache removido dos repositories (delivery + summary) ✅, tela limpa ao gerar novo relatório ✅, `DSButton` com estados (DEFAULT / DISABLED / LOADING) no design system ✅. Próximo foco: cobertura de observabilidade.
-
 ---
 
 ## Os três mundos (isolamento total)
