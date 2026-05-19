@@ -822,4 +822,24 @@ Sim via hook `post-merge` do git. O hook roda automaticamente após qualquer `gi
 
 **P: O que faz o hook PreToolUse configurado no `.claude/settings.json`?**
 
+---
+
+## Sessão — Mai/2026 (Refatoração: Feature Status Bar)
+
+---
+
+**P: Onde emitir os signals de `request_started`/`request_finished` — repositories, viewmodels ou controllers?**
+
+A decisão foi nos **repositories**. O critério determinante: os repos já têm a lógica de cache (`if key in self._cache: return`) — cache hits retornam antes da chamada HTTP. Emitindo do repo, o signal só dispara para requisições que realmente vão à rede; viewmodels disparariam mesmo em cache hit. Repos já importavam `bus` (para `cache_cleared`), então não há nova dependência de camada. O `try/finally` garante que `request_finished` sempre dispara — inclusive em erro — para decrementar o `_busy_count` corretamente. Cada repo usa o membro `Services` correspondente ao seu domínio: `Services.DELIVERY`, `Services.PAYMENTS`, `Services.SUMMARY`.
+
+---
+
+**P: Faz sentido criar uma variável tipo `controllers` para agrupar imports de features e facilitar o acesso?**
+
+É um padrão válido em Python — criar um sub-módulo `features/controllers.py` que agrupa re-exports permite `from maria_cacau.features.controllers import X`. O trade-off: adiciona uma camada de indireção sem ganho real quando os imports já são limpos (`from maria_cacau.features import X`). A decisão foi não implementar nesse momento — o `features/__init__.py` com `__all__` já entrega o caminho curto. O sub-módulo agrupador faria sentido quando o `__init__.py` começar a ter 10+ exports e houver necessidade de separar por papel (`controllers`, `use_cases`, `models`).
+
+---
+
+**P: O que faz o hook PreToolUse configurado no `.claude/settings.json`?**
+
 O hook intercepta toda chamada de ferramenta `Bash` que contenha comandos de busca (`grep`, `rg`, `find`, `fd`, `ack`, `ag`). Se o arquivo `graphify-out/graph.json` existir, injeta uma mensagem de contexto pedindo ao Claude para ler o `GRAPH_REPORT.md` antes de buscar arquivos raw. O objetivo é fazer o Claude preferir o grafo de conhecimento (que tem edges EXTRACTED + INFERRED entre módulos) em vez de busca textual — especialmente para perguntas sobre relações entre módulos.

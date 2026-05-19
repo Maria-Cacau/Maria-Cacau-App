@@ -28,6 +28,9 @@ Maria-Cacau-Contagem/
 │   │   │   ├── handler.py                # ABC StorageHandler[T] — contrato único de persistência
 │   │   │   ├── security.py               # SecurityStorage — arquivo protegido em ~/.mariacacau/
 │   │   │   └── cache.py                  # CacheStorage — JSON em ~/.mariacacau/
+│   │   ├── bus.py                        # _EventBus (QObject) singleton `bus` — todos os signals globais do app
+│   │   ├── services.py                   # Services enum — identifica os serviços disponíveis (DELIVERY, PAYMENTS, SUMMARY)
+│   │   ├── session.py                    # AppSession singleton — estado pós-inicialização (credentials, sheet_id, sheet_name)
 │   │   ├── observability.py              # AppEvent enum + singleton `observability` → logs.log
 │   │   └── error/
 │   │       ├── errors.py                 # AppError + constantes A001–E001, C001–C005
@@ -41,8 +44,10 @@ Maria-Cacau-Contagem/
 │   │   ├── strings.py            # textos de UI centralizados
 │   │   └── images/               # ícones e imagens
 │   └── features/
+│       ├── __init__.py                    # re-exports públicos: AuthController, AppInitUseCase, HomeController, SheetsController, StatusBarController
 │       ├── auth/                          # ✅ migrada — data/ + domain/ + presentation/ — menu "Segurança"
 │       ├── sheets/                        # ✅ migrada — data/ + domain/ + presentation/view/ — menu "Arquivo"
+│       ├── status_bar/                    # ✅ feature própria — domain/state.py + presentation/controller.py + view.py
 │       └── home/
 │           ├── home_view.py      # janela principal + orquestração (refatoração home/main pendente)
 │           └── sub_features/
@@ -50,8 +55,7 @@ Maria-Cacau-Contagem/
 │               ├── nota_fiscal/           # ✅ migrada — placeholder "Em breve" (futuro: API Tiny/OList)
 │               ├── shipping_rate/         # ✅ migrada — placeholder "Em breve" (futuro: API Melhor Envio)
 │               ├── summary/               # ✅ migrada — data/ + domain/ + presentation/
-│               ├── delivery/              # ✅ migrada — data/ + domain/ + presentation/
-│               └── status_bar/            # barra de status global (credenciais, planilha, loading)
+│               └── delivery/              # ✅ migrada — data/ + domain/ + presentation/
 ├── pyproject.toml                # fonte única de verdade para deps e metadados
 └── ...
 ```
@@ -301,20 +305,50 @@ O padrão adotado em todas as features migradas é `ThreadPoolExecutor(max_worke
 
 `OrdersRepository` (delivery) e `SummaryRepository` (summary) armazenam os resultados das chamadas ao backend em dicts internos, com a chave sendo os parâmetros da request (`date` ou `(start, end)`). Na segunda consulta com os mesmos parâmetros, o dado é devolvido do cache sem bater na planilha.
 
-O cache é limpo pelo usuário via **Arquivo → Limpar cache**: a view emite `cache_clear_triggered`, o controller chama `bus.cache_cleared.emit()`, e cada repository — que subscreveu esse signal no `__init__` — limpa o seu dict interno. O evento `CACHE_CLEAR` é logado na observabilidade. Cache hits também geram log via `FeatureEvents.CACHE_HIT` de cada feature.
+O cache é limpo pelo usuário via **Arquivo → Limpar cache**: a view emite `cache_clear_triggered`, o controller chama `bus.cache_cleared.emit()`, e cada repository — que subscreveu esse signal no `__init__` — limpa o seu dict interno.
 
-## Status bar (`GuiStatusBar`)
-Barra fixa na base da janela com três estados de cor:
+### EventBus (`core/bus.py`)
 
-| Cor | Condição |
+Todos os signals globais do app vivem no singleton `bus`. Viewmodels emitem; controllers e a status bar subscrevem. Errors de feature (ex: `AuthSignals.error`, `SheetsSignals.error`) continuam locais — são específicos de cada feature e não precisam de visibilidade global.
+
+| Grupo | Signals |
 |---|---|
-| Amarelo | Credenciais não configuradas **ou** nenhuma planilha selecionada |
-| Verde | Credenciais OK + planilha conectada (estado padrão) |
-| Laranja | Consulta em andamento |
+| App | `app_init_finished` |
+| Auth | `credentials_configured`, `credentials_cleared` |
+| Sheets | `cache_cleared`, `sheet_connected(obj)`, `sheet_selected(obj)`, `sheet_renamed(obj)` |
+| Requests | `request_started(Services)`, `request_finished(Services)` | O evento `CACHE_CLEAR` é logado na observabilidade. Cache hits também geram log via `FeatureEvents.CACHE_HIT` de cada feature.
 
-Reverte automaticamente para verde 3s após o sucesso.
+## Status bar (`features/status_bar/`)
 
-Durante o estado laranja, um contador de 1s atualiza o texto com o tempo decorrido (ex: `3s  Realizando consulta...`). Implementado com `QTimer.singleShot` recursivo (mais compatível com Nuitka do que `QTimer` persistente).
+Feature própria com controller + view + domain. Barra fixa na base da janela, reativa a signals do `bus`.
+
+### Estados (`StatusBarState`)
+
+| Estado | Cor | Condição |
+|---|---|---|
+| `NO_CREDENTIALS` | Amarelo `#A07800` | Credenciais não configuradas |
+| `NO_SHEET` | Amarelo `#A07800` | Credenciais OK, nenhuma planilha selecionada |
+| `CONNECTED` | Verde `#388e3c` | Credenciais + planilha conectada |
+| `BUSY` | Laranja `#C27D18` | Pelo menos uma requisição em andamento |
+
+### Fluxo de signals
+
+`StatusBarController` subscreve os seguintes signals do `bus`:
+
+| Signal | Efeito na barra |
+|---|---|
+| `app_init_finished` | Lê `session` e define estado inicial |
+| `credentials_configured` | → `NO_SHEET` |
+| `credentials_cleared` | → `NO_CREDENTIALS`, reseta contador de busy |
+| `sheet_connected` / `sheet_selected` | → `CONNECTED` com nome e id da planilha |
+| `request_started(Services)` | Incrementa `_busy_count`; se chegar a 1 → `BUSY` |
+| `request_finished(Services)` | Decrementa `_busy_count`; se chegar a 0 → restaura estado base |
+
+O `_busy_count` suporta múltiplas requisições simultâneas: a cor laranja persiste enquanto qualquer req estiver em andamento.
+
+### Quem emite os signals de request
+
+`request_started` / `request_finished` são emitidos nos **repositories**, antes e depois da chamada HTTP (em `finally` para garantir decremento mesmo em erro). Cache hits não emitem — a barra só muda de cor para chamadas reais à rede.
 
 ## Observabilidade (`observability`)
 
