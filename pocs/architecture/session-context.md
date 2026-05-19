@@ -69,7 +69,7 @@ feature/
 | `GET` | `/orders/deliveries` | ✅ Implementado |
 | `GET` | `/orders/payments-pendent` | ✅ Implementado |
 | `GET` | `/orders` | ✅ Implementado |
-| `POST/DELETE` | `/auth` | ⏳ Pendente |
+| `POST/DELETE` | `/auth` | ✅ Implementado |
 | `POST/GET/PUT/DELETE` | `/source` | ⏳ Pendente |
 | `GET` | `/status` | ⏳ Pendente |
 

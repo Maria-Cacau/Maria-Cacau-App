@@ -117,6 +117,12 @@ maria_cacau/backend/
 ├── utils/
 │   ├── __init__.py
 │   └── numbers.py                  # normalize_decimal — converte número BR → EN (ex: "1.234,56" → "1234.56")
+├── routes/
+│   ├── __init__.py                 # re-exporta auth_bp
+│   └── auth/
+│       ├── __init__.py             # re-exporta auth_bp
+│       ├── route.py                # auth_bp — POST /auth + DELETE /auth (registered directly in _server.py, no before_request)
+│       └── service.py              # AuthService — connect(credentials, sheet_id) + disconnect()
 ├── features/
 │   ├── __init__.py                 # re-exporta orders_bp (ponto de entrada do _server.py)
 │   └── orders/
@@ -162,8 +168,8 @@ maria_cacau/backend/
 
 | Método | Path | Blueprint | Status | Descrição |
 |---|---|---|---|---|
-| `POST` | `/auth` | — | Pendente | Recebe JSON bruto das credenciais e autentica o DataSource |
-| `DELETE` | `/auth` | — | Pendente | Limpa credenciais salvas no disco |
+| `POST` | `/auth` | `auth_bp` | Implementado | Recebe `credentials` (dict) + `sheet_id` e autentica o DataSource em memória |
+| `DELETE` | `/auth` | `auth_bp` | Implementado | Limpa credenciais e vm do DataSource em memória (mantém `sheet_id`) |
 | `POST` | `/source` | — | Pendente | Registra nova planilha (nome + sheet_id) |
 | `GET` | `/source` | — | Pendente | Lista todas as planilhas salvas |
 | `PUT` | `/source/{sheet_id}` | — | Pendente | Seleciona a planilha ativa no DataSource |
@@ -250,8 +256,9 @@ Vive em `data_source/_google_sheets.py`. Singleton exposto como `data_source: Fi
 | Método | Descrição |
 |---|---|
 | `is_ready() -> bool` | True quando `_vm` está instanciado (credenciais + sheet setados) |
-| `set_credentials(raw_json)` | Autentica com JSON bruto da service account; cria `_vm` se sheet já setado |
-| `set_sheet(sheet_id)` | Guarda sheet em memória e dispara prewarm; cria `_vm` se client já setado |
+| `set_credentials(credentials)` | Autentica com dict da service account; cria `_vm` se sheet already set |
+| `clear_credentials()` | Clears `_client` e `_vm` da memória; mantém `_sheet_id` |
+| `set_sheet(sheet_id)` | Guarda sheet em memória e dispara prewarm; cria `_vm` se client already set |
 | `fetch_orders_by_date(date)` | Delega para `_vm.fetch({date})` + aplica `SheetNormalizer.normalize()` |
 | `fetch_orders_by_period(start, end)` | Delega para `_vm.fetch(date_range)` + aplica `SheetNormalizer.normalize()` |
 
