@@ -1,3 +1,4 @@
+from .errors._errors import DataSourceError
 from ._google_sheets import data_source
 from ._protocol import DataSourceProtocol
 from .sheet_mapper import (PAYMENT_SLOTS, PRODUCT_SLOTS, PaymentCols,
@@ -5,6 +6,7 @@ from .sheet_mapper import (PAYMENT_SLOTS, PRODUCT_SLOTS, PaymentCols,
 
 __all__ = [
     "data_source",
+    "DataSourceError",
     "DataSourceProtocol",
     "SheetCols",
     "SheetTabs",
