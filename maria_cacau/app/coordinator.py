@@ -9,7 +9,7 @@ from maria_cacau.backend._server import BackendServer
 from maria_cacau.core.bus import bus
 from maria_cacau.core.network import LocalClient, configure
 from maria_cacau.core.observability import AppEvent, observability
-from maria_cacau.features.auth.domain.init_use_case import AppInitUseCase
+from maria_cacau.features import AppInitUseCase
 
 from .window import MainWindow
 

@@ -2,8 +2,7 @@ from PyQt6.QtCore import QRect
 from PyQt6.QtWidgets import QApplication, QMainWindow, QMenuBar
 
 from maria_cacau.assets import strings
-from maria_cacau.features.home import HomeController
-from maria_cacau.features.status_bar import StatusBarController
+from maria_cacau.features import HomeController, StatusBarController
 
 from .handler import MenuHandler
 
