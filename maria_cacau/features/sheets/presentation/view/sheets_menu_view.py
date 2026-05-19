@@ -11,10 +11,6 @@ class SheetsMenuView(QMenu):
 
     def __init__(self) -> None:
         super().__init__(strings.MNU_ARQUIVO)
-        self._submenu      = QMenu(strings.ACT_PLANILHAS_CONECTADAS, self)
-        self._act_conectar = QAction(strings.ACT_CONECTAR_PLANILHA, self)
-        self._act_limpar   = QAction(strings.ACT_LIMPAR_CACHE, self)
-        self._actions: dict[str, QAction] = {}
         self._setup_ui()
 
     @property
@@ -26,11 +22,16 @@ class SheetsMenuView(QMenu):
         self._setup_layout()
 
     def _setup_components(self) -> None:
+        self._submenu      = QMenu(strings.ACT_PLANILHAS_CONECTADAS, self)
+
+        self._act_conectar = QAction(strings.ACT_CONECTAR_PLANILHA, self)
         self._act_conectar.setMenuRole(QAction.MenuRole.NoRole)
         self._act_conectar.triggered.connect(self.connect_triggered)
 
+        self._act_limpar   = QAction(strings.ACT_LIMPAR_CACHE, self)
         self._act_limpar.setMenuRole(QAction.MenuRole.NoRole)
-        self._act_limpar.setEnabled(False)  # TODO futuro
+
+        self._actions: dict[str, QAction] = {}
 
     def _setup_layout(self) -> None:
         self.addMenu(self._submenu)
@@ -42,10 +43,12 @@ class SheetsMenuView(QMenu):
         if sheet_id in self._actions:
             self._actions[sheet_id].setText(name)
             return
+        
         action = QAction(name, self._submenu)
         action.setCheckable(True)
         action.setMenuRole(QAction.MenuRole.NoRole)
         self._submenu.addAction(action)
+        
         self._actions[sheet_id] = action
         action.triggered.connect(lambda _, sid=sheet_id: self.sheet_selected.emit(sid))
 
