@@ -44,7 +44,7 @@ class StatusBarController:
         self._busy_count = 0
         self._set_base(StatusBarState.NO_CREDENTIALS, strings.SB_SEM_CREDENCIAIS)
 
-    def _on_sheet_removed(self, _) -> None:
+    def _on_sheet_removed(self, _ = None) -> None:
         if session.active_sheet_id is None:
             self._set_base(StatusBarState.NO_SHEET, strings.SB_SEM_PLANILHA)
 

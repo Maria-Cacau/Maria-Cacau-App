@@ -1,12 +1,12 @@
 # Graph Report - Maria-Cacau-Contagem  (2026-05-19)
 
 ## Corpus Check
-- 164 files · ~609,283 words
+- 166 files · ~609,587 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 945 nodes · 1935 edges · 71 communities detected
-- Extraction: 55% EXTRACTED · 45% INFERRED · 0% AMBIGUOUS · INFERRED: 876 edges (avg confidence: 0.61)
+- 967 nodes · 2002 edges · 70 communities detected
+- Extraction: 54% EXTRACTED · 46% INFERRED · 0% AMBIGUOUS · INFERRED: 922 edges (avg confidence: 0.61)
 - Token cost: 0 input · 0 output
 
 ## Community Hubs (Navigation)
@@ -29,7 +29,6 @@
 - [[_COMMUNITY_Community 16|Community 16]]
 - [[_COMMUNITY_Community 17|Community 17]]
 - [[_COMMUNITY_Community 18|Community 18]]
-- [[_COMMUNITY_Community 19|Community 19]]
 - [[_COMMUNITY_Community 36|Community 36]]
 - [[_COMMUNITY_Community 37|Community 37]]
 - [[_COMMUNITY_Community 39|Community 39]]
@@ -83,108 +82,104 @@
 - [[_COMMUNITY_Community 90|Community 90]]
 
 ## God Nodes (most connected - your core abstractions)
-1. `SecurityStorage` - 41 edges
-2. `AuxWidgets` - 37 edges
-3. `GuiPopup` - 33 edges
-4. `ChartWidget` - 31 edges
+1. `SecurityStorage` - 44 edges
+2. `AuxWidgets` - 38 edges
+3. `GuiPopup` - 35 edges
+4. `ChartWidget` - 32 edges
 5. `AppEvent` - 29 edges
 6. `HTTPResponse` - 26 edges
-7. `DeliveryView` - 21 edges
-8. `DataSourceError` - 21 edges
-9. `connect()` - 21 edges
-10. `SummaryView` - 20 edges
+7. `DeliveryView` - 23 edges
+8. `SheetsController` - 21 edges
+9. `DataSourceError` - 21 edges
+10. `connect()` - 21 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `AppEvent` --uses--> `Área de validação de CPF: interface gráfica e lógica de verificação.`  [INFERRED]
-  maria_cacau/core/observability.py → features/home/sub_features/cpf_validation/cpf_validation_view.py
+- `AuxWidgets` --uses--> `Área de validação de CPF: interface gráfica e lógica de verificação.`  [INFERRED]
+  maria_cacau/design_system/aux_widgets.py → features/home/sub_features/cpf_validation/cpf_validation_view.py
 - `Entry point da aplicação. Execute com: python -m maria_cacau` --uses--> `BackendServer`  [INFERRED]
   __main__.py → maria_cacau/backend/_server.py
 - `AppEvent` --uses--> `Autenticação e acesso ao Google Sheets.`  [INFERRED]
   maria_cacau/core/observability.py → core/sheets/service.py
 - `AppEvent` --uses--> `Tenta autenticar usando credenciais salvas. Retorna False se não houver.`  [INFERRED]
   maria_cacau/core/observability.py → core/sheets/service.py
-- `AppEvent` --uses--> `Lê o .json da Service Account, autentica e salva em ~/.mariacacau/.`  [INFERRED]
-  maria_cacau/core/observability.py → core/sheets/service.py
+- `AppEvent` --uses--> `Área de validação de CPF: interface gráfica e lógica de verificação.`  [INFERRED]
+  maria_cacau/core/observability.py → features/home/sub_features/cpf_validation/cpf_validation_view.py
 
 ## Communities
 
 ### Community 0 - "Community 0"
 Cohesion: 0.04
-Nodes (60): GoogleSheetsDataSource, Implementação de DataSourceProtocol para Google Sheets via gspread., Implementação de DataSourceProtocol para Google Sheets via gspread., _fix_prod4(), normalize(), Normaliza headers inconsistentes da planilha para os valores canônicos dos enums, Renomeia a coluna que segue prod3 para prod4, independente do header atual., Traduz headers reais da planilha para os nomes canônicos definidos nos enums. (+52 more)
+Nodes (47): connect(), AuxWidgets, ChartType, ChartWidget, Widget de gráfico reutilizável (barras ou pizza) usando seaborn + matplotlib., Retorna (w, h) para o canvas.         h = altura do viewport (sem desperdício/ov, _short_label(), AuxFrame (+39 more)
 
 ### Community 1 - "Community 1"
-Cohesion: 0.05
-Nodes (41): AuxWidgets, ChartType, ChartWidget, Widget de gráfico reutilizável (barras ou pizza) usando seaborn + matplotlib., Retorna (w, h) para o canvas.         h = altura do viewport (sem desperdício/ov, _short_label(), Área de validação de CPF: interface gráfica e lógica de verificação., AuxFrame (+33 more)
+Cohesion: 0.04
+Nodes (60): GoogleSheetsDataSource, Implementação de DataSourceProtocol para Google Sheets via gspread., Implementação de DataSourceProtocol para Google Sheets via gspread., _fix_prod4(), normalize(), Normaliza headers inconsistentes da planilha para os valores canônicos dos enums, Renomeia a coluna que segue prod3 para prod4, independente do header atual., Traduz headers reais da planilha para os nomes canônicos definidos nos enums. (+52 more)
 
 ### Community 2 - "Community 2"
 Cohesion: 0.05
-Nodes (33): _EventBus, AppSession, CpfValidationResult, DaySummary, DeliveriesSummary, DeliveryModel, ProductCount, ProductsSummary (+25 more)
+Nodes (20): Retorna pedidos da data informada (DD/MM/YYYY)., DeliveryModel, DeliveryUseCase, Busca deliveries e payments em paralelo e retorna o modelo consolidado., main(), main(), main(), main() (+12 more)
 
 ### Community 3 - "Community 3"
-Cohesion: 0.07
-Nodes (43): Exception, API, call(), entity(), Comunicação alto nivel para chamadas de api, O tipo precisa aceitar **kwargs (dataclass ou similar)., O tipo precisa aceitar **kwargs (dataclass ou similar)., O tipo precisa aceitar **kwargs (dataclass ou similar). (+35 more)
+Cohesion: 0.06
+Nodes (27): _EventBus, AppSession, CpfValidationResult, DaySummary, ProductCount, ProductsSummary, ProductsViewData, Models utilizados no módulo (+19 more)
 
 ### Community 4 - "Community 4"
-Cohesion: 0.05
-Nodes (41): ABC, AppEvent, _Observability, Observabilidade centralizada do app., Janela principal da aplicação e orquestração das sub-features., # TODO: MIGRAR, # TODO: MIGRAR, # TODO: MIGRAR (+33 more)
+Cohesion: 0.06
+Nodes (43): AppCoordinator, BackendServer, main(), Entry point da aplicação. Execute com: python -m maria_cacau, entity(), Comunicação alto nivel para chamadas de api, O tipo precisa aceitar **kwargs (dataclass ou similar)., O tipo precisa aceitar **kwargs (dataclass ou similar). (+35 more)
 
 ### Community 5 - "Community 5"
-Cohesion: 0.1
-Nodes (29): API, Services, DeliveriesAPI, OrdersSummaryAPI, path(), PaymentsPendentAPI, Definição dos endpoints do backend consumidos pela feature Delivery., DeliveriesMapper (+21 more)
+Cohesion: 0.08
+Nodes (26): API, ConnectAuthAPI, DisconnectAuthAPI, path(), Definição dos endpoints do backend consumidos pela feature Delivery., RemoveSheetAPI, SelectSheetAPI, AuthRepository (+18 more)
 
 ### Community 6 - "Community 6"
-Cohesion: 0.06
-Nodes (14): Retorna pedidos da data informada (DD/MM/YYYY)., main(), main(), main(), main(), DeliveryController, SummaryController, remove_sheet() (+6 more)
+Cohesion: 0.05
+Nodes (42): ABC, AppEvent, _Observability, Observabilidade centralizada do app., Área de validação de CPF: interface gráfica e lógica de verificação., Janela principal da aplicação e orquestração das sub-features., # TODO: MIGRAR, # TODO: MIGRAR (+34 more)
 
 ### Community 7 - "Community 7"
 Cohesion: 0.06
-Nodes (8): connect(), SheetsUseCase, SheetsController, SheetsViewModel, QDialog, QMenu, SheetCreateView, SheetsMenuView
+Nodes (7): SheetsUseCase, SheetsController, SheetsViewModel, QDialog, QMenu, SheetCreateView, SheetsMenuView
 
 ### Community 8 - "Community 8"
+Cohesion: 0.12
+Nodes (27): Services, DeliveriesAPI, OrdersSummaryAPI, PaymentsPendentAPI, DeliveriesMapper, ErrorMapper, from_response(), OrdersSummaryMapper (+19 more)
+
+### Community 9 - "Community 9"
 Cohesion: 0.08
 Nodes (29): DeliveryTypeCount, Models de domínio da feature de entregas., DeliveriesRepository, Repositório de entregas — busca e prepara dados da planilha para o DeliveriesSer, Retorna todos os pedidos de uma data como DataFrame bruto., Acessa o data source e entrega um DataFrame para o DeliveriesService.      Não f, get_deliveries(), Rota de entregas — GET /orders/deliveries. (+21 more)
 
-### Community 9 - "Community 9"
-Cohesion: 0.09
-Nodes (15): ConnectAuthAPI, DisconnectAuthAPI, RemoveSheetAPI, SelectSheetAPI, AuthRepository, _extract_sheet_id(), Lê o JSON do caminho, persiste em storage seguro e envia ao backend., Lê credenciais salvas e autentica o backend. Retorna False se não houver. (+7 more)
-
 ### Community 10 - "Community 10"
-Cohesion: 0.09
-Nodes (13): AppCoordinator, MenuHandler, MainWindow, BackendServer, handle_backend_error(), handle_data_source_error(), handle_unexpected_error(), BackendError (+5 more)
+Cohesion: 0.1
+Nodes (25): handle_backend_error(), handle_data_source_error(), handle_unexpected_error(), AppError, certificado_limpo(), certificado_ok(), http_error(), planilha_conectada() (+17 more)
 
 ### Community 11 - "Community 11"
 Cohesion: 0.09
-Nodes (8): _date_field(), DateRangePicker, POC — date picker moderno com QDateEdit + QSS., NotaFiscalController, NotaFiscalView, QWidget, ShippingRateController, ShippingRateView
+Nodes (7): MenuHandler, MainWindow, CpfValidationController, QMainWindow, HomeController, HomeFeaturesModel, HomeView
 
 ### Community 12 - "Community 12"
 Cohesion: 0.27
 Nodes (24): _customer(), _customization(), _delivery(), _financial(), OrderMapper, _payments(), _products(), Mapeamento de uma linha do DataFrame para o model Order. (+16 more)
 
 ### Community 13 - "Community 13"
-Cohesion: 0.1
-Nodes (8): AuthSignals, AuthUseCase, Lê o arquivo JSON, salva em storage seguro e autentica o backend., Remove credenciais do storage e desautentica o backend., AuthController, Tenta autenticar no startup usando credenciais salvas em storage., AuthView, AuthViewModel
+Cohesion: 0.14
+Nodes (4): StatusBarState, StatusBarController, StatusBarView, QStatusBar
 
 ### Community 14 - "Community 14"
 Cohesion: 0.09
 Nodes (12): Rotas de autenticação, AuthService, Service de autenticação — gerencia o estado de conexão do DataSource., DataSourceProtocol, Autentica com o JSON bruto da service account e guarda o client em memória., Define a planilha ativa e dispara prewarm em background., Retorna pedidos no intervalo de datas informado (DD/MM/YYYY)., Retorna pedidos no intervalo de datas informado (DD/MM/YYYY). (+4 more)
 
 ### Community 15 - "Community 15"
-Cohesion: 0.14
-Nodes (4): StatusBarState, StatusBarController, StatusBarView, QStatusBar
+Cohesion: 0.12
+Nodes (7): AuthUseCase, Lê o arquivo JSON, salva em storage seguro e autentica o backend., Remove credenciais do storage e desautentica o backend., AuthController, Tenta autenticar no startup usando credenciais salvas em storage., AuthView, AuthViewModel
 
 ### Community 16 - "Community 16"
 Cohesion: 0.15
-Nodes (17): AppError, certificado_limpo(), certificado_ok(), http_error(), planilha_conectada(), planilha_ok(), Códigos de erro da aplicação com estrutura AppError., Confirmação de certificado configurado com sucesso. (+9 more)
-
-### Community 17 - "Community 17"
-Cohesion: 0.15
 Nodes (14): _cast_numeric(), OrdersSummaryRepository, Repositório de pedidos — busca por período para o OrdersService., Retorna todos os pedidos de um período como DataFrame., Retorna todos os pedidos de um período com colunas numéricas convertidas para fl, _to_dataframe(), get_orders(), Rota de pedidos — GET /orders. (+6 more)
 
-### Community 18 - "Community 18"
+### Community 17 - "Community 17"
 Cohesion: 0.4
 Nodes (3): normalize_decimal(), Utilitários de formatação numérica., Converte número no formato brasileiro para o formato inglês.      Remove o separ
 
-### Community 19 - "Community 19"
+### Community 18 - "Community 18"
 Cohesion: 1.0
 Nodes (1): r"""Indica se a resposta foi bem sucedida (status code 2xx).
 
@@ -395,7 +390,7 @@ Nodes (1): r"""Indica se a resposta foi bem sucedida (status code 2xx).
 ## Knowledge Gaps
 - **106 isolated node(s):** `Metadados centralizados do pacote maria-cacau.`, `Resolve um path relativo à pasta assets, funciona em dev e no .exe compilado.`, `Widget de gráfico reutilizável (barras ou pizza) usando seaborn + matplotlib.`, `Retorna (w, h) para o canvas.         h = altura do viewport (sem desperdício/ov`, `Observabilidade centralizada do app.` (+101 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **Thin community `Community 19`** (1 nodes): `r"""Indica se a resposta foi bem sucedida (status code 2xx).`
+- **Thin community `Community 18`** (1 nodes): `r"""Indica se a resposta foi bem sucedida (status code 2xx).`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 36`** (1 nodes): `Converte list[dict] em DataFrame com cast numérico de todas as colunas de valor.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
@@ -503,17 +498,17 @@ Nodes (1): r"""Indica se a resposta foi bem sucedida (status code 2xx).
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `FeatureEvents` connect `Community 5` to `Community 1`, `Community 2`, `Community 6`, `Community 7`, `Community 13`?**
-  _High betweenness centrality (0.091) - this node is a cross-community bridge._
-- **Why does `GuiPopup` connect `Community 1` to `Community 2`, `Community 4`, `Community 5`, `Community 6`, `Community 7`, `Community 13`?**
-  _High betweenness centrality (0.076) - this node is a cross-community bridge._
-- **Why does `DataSourceError` connect `Community 0` to `Community 10`, `Community 3`?**
+- **Why does `FeatureEvents` connect `Community 8` to `Community 2`, `Community 3`, `Community 7`, `Community 11`, `Community 15`?**
+  _High betweenness centrality (0.096) - this node is a cross-community bridge._
+- **Why does `GuiPopup` connect `Community 0` to `Community 2`, `Community 3`, `Community 6`, `Community 7`, `Community 8`, `Community 15`?**
+  _High betweenness centrality (0.079) - this node is a cross-community bridge._
+- **Why does `SheetsController` connect `Community 7` to `Community 0`, `Community 2`, `Community 5`, `Community 8`, `Community 11`?**
   _High betweenness centrality (0.069) - this node is a cross-community bridge._
-- **Are the 34 inferred relationships involving `SecurityStorage` (e.g. with `StorageHandler` and `AuthRepository`) actually correct?**
-  _`SecurityStorage` has 34 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 25 inferred relationships involving `AuxWidgets` (e.g. with `AuxFrame` and `Frame composto reutilizável com label, entrada de texto e botão de cópia.`) actually correct?**
-  _`AuxWidgets` has 25 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 28 inferred relationships involving `GuiPopup` (e.g. with `DeliveryView` and `Área de entregas pendentes: resumo diário com inadimplências.`) actually correct?**
-  _`GuiPopup` has 28 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 19 inferred relationships involving `ChartWidget` (e.g. with `DeliveryView` and `Área de entregas pendentes: resumo diário com inadimplências.`) actually correct?**
-  _`ChartWidget` has 19 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 37 inferred relationships involving `SecurityStorage` (e.g. with `StorageHandler` and `AuthRepository`) actually correct?**
+  _`SecurityStorage` has 37 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 26 inferred relationships involving `AuxWidgets` (e.g. with `AuxFrame` and `Frame composto reutilizável com label, entrada de texto e botão de cópia.`) actually correct?**
+  _`AuxWidgets` has 26 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 29 inferred relationships involving `GuiPopup` (e.g. with `DeliveryView` and `Área de entregas pendentes: resumo diário com inadimplências.`) actually correct?**
+  _`GuiPopup` has 29 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 20 inferred relationships involving `ChartWidget` (e.g. with `DeliveryView` and `Área de entregas pendentes: resumo diário com inadimplências.`) actually correct?**
+  _`ChartWidget` has 20 INFERRED edges - model-reasoned connections that need verification._
