@@ -6,9 +6,10 @@ from PyQt6.QtWidgets import QApplication
 
 from maria_cacau import __icon_mac__, __icon_win__
 from maria_cacau.backend._server import BackendServer
+from maria_cacau.core.bus import bus
 from maria_cacau.core.network import LocalClient, configure
 from maria_cacau.core.observability import AppEvent, observability
-from maria_cacau.features.auth.domain.init_use_case import AppInitUseCase
+from maria_cacau.features import AppInitUseCase
 
 from .window import MainWindow
 
@@ -39,6 +40,7 @@ class AppCoordinator:
             AppInitUseCase().initialize()
         except Exception:
             pass
+        bus.app_init_finished.emit()
         observability.log(AppEvent.APP_START)
 
     def _on_quit(self) -> None:

@@ -3,8 +3,7 @@ from PyQt6.QtGui import QAction, QDesktopServices
 from PyQt6.QtWidgets import QMenu, QMenuBar
 
 from maria_cacau.assets import strings
-from maria_cacau.features.auth import AuthController
-from maria_cacau.features.sheets import SheetsController
+from maria_cacau.features import AuthController, SheetsController
 
 
 class MenuHandler:

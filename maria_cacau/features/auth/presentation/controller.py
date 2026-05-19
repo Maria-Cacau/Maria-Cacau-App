@@ -3,6 +3,7 @@
 from PyQt6.QtWidgets import QFileDialog, QMessageBox
 
 from maria_cacau.assets import strings
+from maria_cacau.core.bus import bus
 from maria_cacau.core.error import ErrorModel
 from maria_cacau.core.observability import observability
 from maria_cacau.design_system.gui_popup import GuiPopup
@@ -24,8 +25,8 @@ class AuthController:
         self.view.configure_triggered.connect(self._on_configure)
         self.view.clear_triggered.connect(self._on_clear)
 
-        signals.credentials_configured.connect(self._on_configured)
-        signals.credentials_cleared.connect(self._on_cleared)
+        bus.credentials_configured.connect(self._on_configured)
+        bus.credentials_cleared.connect(self._on_cleared)
         signals.error.connect(self._on_error)
 
     def _on_configure(self) -> None:

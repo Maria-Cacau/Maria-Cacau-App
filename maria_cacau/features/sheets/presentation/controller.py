@@ -25,9 +25,9 @@ class SheetsController:
         self.view.connect_triggered.connect(self._on_connect)
         self.view.sheet_selected.connect(self._on_select)
         self.view.cache_clear_triggered.connect(self._on_clear_cache)
-        signals.sheet_connected.connect(self._on_connected)
-        signals.sheet_selected.connect(self._on_selected)
-        signals.sheet_renamed.connect(self._on_renamed)
+        bus.sheet_connected.connect(self._on_connected)
+        bus.sheet_selected.connect(self._on_selected)
+        bus.sheet_renamed.connect(self._on_renamed)
         signals.error.connect(self._on_error)
 
     def _load_saved_sheets(self) -> None:

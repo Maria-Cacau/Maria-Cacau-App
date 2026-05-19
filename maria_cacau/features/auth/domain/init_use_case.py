@@ -24,3 +24,7 @@ class AppInitUseCase:
         ConnectAuthAPI().with_credentials(credentials, sheet_id=sheet_id).call()
         session.is_authenticated  = True
         session.active_sheet_id   = sheet_id
+
+        sheets = self._sheets.load_all()
+        match = next((s for s in sheets if s.sheet_id == sheet_id), None)
+        session.active_sheet_name = match.name if match else None

@@ -1,5 +1,6 @@
 from concurrent.futures import ThreadPoolExecutor
 
+from maria_cacau.core.bus import bus
 from maria_cacau.core.error import unexpected_error
 
 from ..domain.models import SheetModel
@@ -28,7 +29,7 @@ class SheetsViewModel:
     def _update_name(self, sheet_id: str, new_name: str) -> None:
         try:
             sheet = self.use_case.update_name(sheet_id, new_name)
-            signals.sheet_renamed.emit(sheet)
+            bus.sheet_renamed.emit(sheet)
         except Exception as e:
             signals.error.emit(unexpected_error(e))
 
@@ -40,7 +41,7 @@ class SheetsViewModel:
     def _connect(self, link: str, name: str) -> None:
         try:
             sheet = self.use_case.connect(link, name)
-            signals.sheet_connected.emit(sheet)
+            bus.sheet_connected.emit(sheet)
         except Exception as e:
             signals.error.emit(unexpected_error(e))
 
@@ -51,7 +52,7 @@ class SheetsViewModel:
     def _select(self, sheet_id: str) -> None:
         try:
             sheet = self.use_case.select(sheet_id)
-            signals.sheet_selected.emit(sheet)
+            bus.sheet_selected.emit(sheet)
         except Exception as e:
             signals.error.emit(unexpected_error(e))
 

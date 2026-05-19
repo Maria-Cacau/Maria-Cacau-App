@@ -2,6 +2,7 @@
 
 from concurrent.futures import ThreadPoolExecutor
 
+from maria_cacau.core.bus import bus
 from maria_cacau.core.error import unexpected_error
 
 from ..domain.signals import signals
@@ -20,7 +21,7 @@ class AuthViewModel:
     def _configure(self, path: str) -> None:
         try:
             self.use_case.configure(path)
-            signals.credentials_configured.emit()
+            bus.credentials_configured.emit()
         except Exception as e:
             signals.error.emit(unexpected_error(e))
 
@@ -31,7 +32,7 @@ class AuthViewModel:
     def _clear(self) -> None:
         try:
             if self.use_case.clear():
-                signals.credentials_cleared.emit()
+                bus.credentials_cleared.emit()
         except Exception as e:
             signals.error.emit(unexpected_error(e))
 
