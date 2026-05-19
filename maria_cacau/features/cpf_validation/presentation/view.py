@@ -21,6 +21,10 @@ class CpfValidationView(QDialog):
         super().__init__(parent)
         self._setup_ui()
 
+    @property
+    def menu_title(self) -> str:
+        return strings.ACT_VALIDAR_CPF
+
     def _setup_ui(self) -> None:
         self._setup_components()
         self._setup_layout()

@@ -1,1 +1,0 @@
-from .presentation.controller import FuncionalidadesController
