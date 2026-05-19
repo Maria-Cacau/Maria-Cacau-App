@@ -21,5 +21,3 @@ class SheetsUseCase:
     def update_name(self, sheet_id: str, new_name: str) -> SheetModel:
         return self.repository.update_name(sheet_id, new_name)
 
-    def auto_select_last(self) -> SheetModel | None:
-        return self.repository.auto_select_last()

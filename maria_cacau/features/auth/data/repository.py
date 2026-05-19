@@ -12,19 +12,16 @@ _security        = SecurityStorage()
 
 class AuthRepository:
     def configure(self, path: str) -> None:
-        """Lê o JSON do caminho, persiste em storage seguro e envia ao backend."""
+        """Lê o JSON do caminho, envia ao backend e persiste apenas se der sucesso."""
         with open(path, encoding="utf-8") as f:
             raw = f.read()
+        ConnectAuthAPI().with_credentials(json.loads(raw)).call()
         _security.save(raw, _CREDENTIALS_KEY)
-        ConnectAuthAPI().with_credentials(json.loads(raw)).call()
 
-    def connect_from_storage(self) -> bool:
-        """Lê credenciais salvas e autentica o backend. Retorna False se não houver."""
+    def read_credentials(self) -> dict | None:
+        """Lê credenciais do storage sem fazer chamada HTTP."""
         raw = _security.retrieve(_CREDENTIALS_KEY)
-        if not raw:
-            return False
-        ConnectAuthAPI().with_credentials(json.loads(raw)).call()
-        return True
+        return json.loads(raw) if raw else None
 
     def clear(self) -> bool:
         """Remove credenciais do storage e desautentica o backend."""

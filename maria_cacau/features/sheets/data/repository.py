@@ -57,14 +57,6 @@ class SheetsRepository:
     def load_all(self) -> list[SheetModel]:
         return [SheetModel(name=s["nome"], sheet_id=s["sheet_id"]) for s in self._load_raw()]
 
-    def auto_select_last(self) -> SheetModel | None:
-        sheets = self._load_raw()
-        if not sheets:
-            return None
-        last = sheets[-1]
-        SelectSheetAPI(last["sheet_id"]).call()
-        return SheetModel(name=last["nome"], sheet_id=last["sheet_id"])
-
     def update_name(self, sheet_id: str, new_name: str) -> SheetModel:
         sheets = self._load_raw()
         for s in sheets:
@@ -73,6 +65,11 @@ class SheetsRepository:
                 break
         _cache.save(sheets, _SHEETS_KEY)
         return SheetModel(name=new_name, sheet_id=sheet_id)
+
+    def last_sheet_id_from_cache(self) -> str | None:
+        """Retorna o sheet_id da última planilha salva em cache, sem HTTP."""
+        sheets = self._load_raw()
+        return sheets[-1]["sheet_id"] if sheets else None
 
     def _load_raw(self) -> list[dict]:
         return _cache.retrieve(_SHEETS_KEY) or []
