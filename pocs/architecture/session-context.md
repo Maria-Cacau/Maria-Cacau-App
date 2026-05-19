@@ -104,8 +104,6 @@ O backend está completo.
 
 ## Próximas sessões
 
-1. **Status bar** — conectar via `bus` após sinal de sessão; hoje ainda recebe dados direto do `home_view.py`
-2. **Usar variáveis de `core/session` nas requests** — validar/bloquear request quando `is_authenticated` ou `active_sheet_id` não estiver pronto
 3. **Aumentar observabilidade** — cobertura de log com lacunas (ex: parâmetros no cache hit, duração de requests)
 4. **Popup de dialog com dimensão mínima aumentada** — `SheetCreateView` e outros dialogs abrem pequenos demais
 
