@@ -11,12 +11,6 @@ App desktop PyQt6 + Python para a loja Maria Cacau. Lê dados de uma planilha Go
 
 ---
 
-## O que estamos fazendo agora
-
-**Report + Design System.** Cache removido dos repositories (delivery + summary) ✅, tela limpa ao gerar novo relatório ✅, `DSButton` com estados (DEFAULT / DISABLED / LOADING) no design system ✅. Próximo foco: cobertura de observabilidade.
-
----
-
 ## Os três mundos (isolamento total)
 
 ```
@@ -92,19 +86,18 @@ O backend está completo.
 
 | Feature | Localização | Status | Observação |
 |---|---|---|---|
-| `delivery` | `home/sub_features/delivery/` | ✅ Migrada | `data/` + `domain/` + `presentation/` — usa backend |
-| `cpf_validation` | `home/sub_features/cpf_validation/` | ✅ Migrada | Só `domain/` + `presentation/` — validação local |
-| `nota_fiscal` | `home/sub_features/nota_fiscal/` | ✅ Migrada | Só `presentation/` — placeholder; futuro: API Tiny/OList |
-| `shipping_rate` | `home/sub_features/shipping_rate/` | ✅ Migrada | Só `presentation/` — placeholder; futuro: API Melhor Envio |
-| `summary` | `home/sub_features/summary/` | ✅ Migrada | `data/` + `domain/` + `presentation/` — usa backend (`GET /orders`) |
-| `auth` | `features/auth/` | ✅ Migrada | `data/` + `domain/` + `presentation/` — usa `/auth`; menu "Segurança" é um `QMenu` |
-| `sheets` | `features/sheets/` | ✅ Migrada | `data/` + `domain/` + `presentation/view/` — usa `PUT /sheet`; menu "Arquivo" é um `QMenu` |
+| `delivery` | `home/sub_features/delivery/` | ✅ | `data/` + `domain/` + `presentation/` — usa backend |
+| `summary` | `home/sub_features/summary/` | ✅ | `data/` + `domain/` + `presentation/` — usa backend (`GET /orders`) |
+| `cpf_validation` | `features/cpf_validation/` | ✅ | Só `domain/` + `presentation/` — validação local; abre via menu Funcionalidades |
+| `funcionalidades` | `features/funcionalidades/` | ✅ | Só `presentation/` — `QMenu` que agrega ferramentas auxiliares |
+| `auth` | `features/auth/` | ✅ | `data/` + `domain/` + `presentation/` — usa `/auth`; menu "Segurança" é um `QMenu` |
+| `sheets` | `features/sheets/` | ✅ | `data/` + `domain/` + `presentation/view/` — usa `PUT /sheet`; menu "Arquivo" é um `QMenu` |
 
 ---
 
 ## Próximas sessões
 
-3. **Aumentar observabilidade** — cobertura de log com lacunas (ex: parâmetros no cache hit, duração de requests)
+> Nenhuma fase pendente para a v5.0. Fase 4 (refinamentos adicionais do DS) ficará para a v6.0.
 
 ---
 
@@ -119,6 +112,8 @@ O backend está completo.
 | Cache em memória | `OrdersRepository` e `SummaryRepository` com cache por params; limpeza via `bus.cache_cleared` → menu "Arquivo → Limpar cache" |
 | Refinamentos pós-refatoração | Status bar via bus, `core/session` em requests, dialogs com `DIALOG_MIN_WIDTH = 500`, remoção de planilha (DELETE /sheet) com sub-menu + confirmação + atualização de session/status bar |
 | Report + Design System | Cache removido dos repositories; tela limpa ao gerar novo relatório (`clear_content()`); `DSButton` com `DSButtonState` (DEFAULT/DISABLED/LOADING) + `DSLoadingHandler` mixin em `design_system/components/` e `design_system/handlers/`; `bts()` e `aux_frames.py` removidos |
+| Redesign + Fase 2 | Removidas features `nota_fiscal` e `shipping_rate`; `delivery` e `summary` lado a lado na home; `cpf_validation` migrada para `features/` como feature independente e virou `QDialog`; criado menu "Funcionalidades" (`features/funcionalidades/`) com sub-item "Validador de CPF" que abre o dialog via `show()` |
+| Fase 3 — Design System | `AuxWidgets`, `gui_popup.py` e `core/charts.py` removidos; Design System expandido com 7 novos componentes em pastas próprias (`alerts/`, `chart/`, `combo_box/`, `containers/`, `inputs/`, `label/`, `text_view/`); views e controllers migrados para consumir somente componentes DS; `features/funcionalidades/` removida — `MenuHandler` cria o menu inline e instancia `CpfValidationController` diretamente; `menu_title` exposto como property em `CpfValidationView` |
 
 ---
 

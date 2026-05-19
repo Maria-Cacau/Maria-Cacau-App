@@ -14,7 +14,6 @@ Maria-Cacau-Contagem/
 │   ├── __init__.py               # metadados centralizados (versão, copyright, ícones) + helper `asset()`
 │   ├── __main__.py               # entry point
 │   ├── core/
-│   │   ├── charts.py                     # ChartWidget (QWidget) + ChartType enum (BAR/PIE)
 │   │   ├── network/
 │   │   │   ├── api.py                    # class API (ABC) — interface pública de alto nível
 │   │   │   ├── _method.py                # HTTPMethod (StrEnum)
@@ -34,17 +33,20 @@ Maria-Cacau-Contagem/
 │   │   ├── observability.py              # AppEvent enum + singleton `observability` → logs.log
 │   │   └── error/
 │   │       ├── errors.py                 # AppError + constantes A001–E001, C001–C005
-│   │       ├── models.py                 # ErrorModel — duck typing (code/user_message/dev_message) → to_popup() → PopupModel
+│   │       ├── models.py                 # ErrorModel — duck typing (code/user_message/dev_message) → to_popup() → DSDialogModel
 │   │       └── __init__.py               # exports: AppError, constantes, ErrorModel
 │   ├── design_system/
-│   │   ├── aux_widgets.py        # factory de widgets reutilizáveis (lbl, text_view, group_box, combo_box, on_copy)
-│   │   ├── gui_popup.py          # GuiPopup + PopupModel (dataclass) + PopupIcon (enum) — sem dependência de core
 │   │   ├── handlers/
 │   │   │   └── loading_handler.py  # DSLoadingHandler — mixin que adiciona spinner animado a qualquer QObject
-│   │   └── components/
-│   │       └── buttons/
-│   │           ├── button.py     # DSButton(QPushButton, DSLoadingHandler) — botão base do DS com estados
-│   │           └── states.py     # DSButtonState(Enum): DEFAULT, DISABLED, LOADING
+│   │   └── components/             # todos os componentes DS exportados flat pelo __init__.py
+│   │       ├── alerts/             # DSDialog + DSDialogIcon + DSDialogModel
+│   │       ├── buttons/            # DSButton(QPushButton, DSLoadingHandler) + DSButtonState
+│   │       ├── chart/              # DSChart(QWidget) + DSChartType(Enum: BAR/PIE)
+│   │       ├── combo_box/          # DSComboBox
+│   │       ├── containers/         # DSGroupBox (borda marrom, Arial 12)
+│   │       ├── inputs/             # DSTextInput + DSDateInput
+│   │       ├── label/              # DSLabel (Arial, alinhamento esquerdo)
+│   │       └── text_view/          # DSTextView + copy_to_clipboard()
 │   ├── assets/
 │   │   ├── strings.py            # textos de UI centralizados
 │   │   └── images/               # ícones e imagens
@@ -375,17 +377,17 @@ Saída: `~/.mariacacau/logs.log` (append-only, formato `YYYY-MM-DD HH:MM:SS  LEV
 
 Para adicionar um novo evento: acrescentar valor ao `AppEvent` e chamar `observability.log(AppEvent.NOVO, ...)`.
 
-## Gráficos (`ChartWidget`)
+## Gráficos (`DSChart`)
 
-Módulo `maria_cacau/core/charts.py` — widget reutilizável baseado em `matplotlib` + `seaborn`, embutido diretamente nas views via Qt.
+Componente `design_system/components/chart/` — widget reutilizável baseado em `matplotlib` + `seaborn`, embutido diretamente nas views via Qt.
 
 | Símbolo | Descrição |
 |---|---|
-| `ChartType` | Enum `BAR` / `PIE` — tipo de visualização |
-| `ChartWidget` | `QWidget` com `FigureCanvasQTAgg` dentro de `QScrollArea` |
+| `DSChartType` | Enum `BAR` / `PIE` — tipo de visualização |
+| `DSChart` | `QWidget` com `FigureCanvasQTAgg` dentro de `QScrollArea` |
 | `update_data(data, title)` | Alimenta o gráfico com dados novos e re-renderiza |
 | `clear()` | Limpa a figura e renderiza estado vazio — chamado em `prepare_to_fetch()` |
-| `set_type(ChartType)` | Troca o tipo sem precisar repassar os dados |
+| `set_type(DSChartType)` | Troca o tipo sem precisar repassar os dados |
 | `copy_to_clipboard()` | Exporta o gráfico como PNG para a área de transferência (150 dpi) |
 | `save_to_file()` | Salva como PNG ou SVG via diálogo de arquivo |
 
@@ -394,8 +396,8 @@ Módulo `maria_cacau/core/charts.py` — widget reutilizável baseado em `matplo
 **Paleta**: barras usam `YlOrBr` invertido (marrom escuro nas maiores quantidades); pizza usa `Set2`. Labels de pizza com >10 fatias são movidos para legenda lateral.
 
 **Uso nas views**:
-- `summary/presentation/view.py`: `ChartWidget(ChartType.BAR)` com `QComboBox` para alternar para pizza
-- `delivery/presentation/view.py`: `ChartWidget(ChartType.PIE)` fixo (modalidades de entrega)
+- `summary/presentation/view.py`: `DSChart(DSChartType.BAR)` com `DSComboBox` para alternar para pizza
+- `delivery/presentation/view.py`: `DSChart(DSChartType.PIE)` fixo (modalidades de entrega)
 
 ## Assets (`asset()`)
 Qualquer path de asset deve ser resolvido via `asset('images/foo.png')` de `maria_cacau/__init__.py`.

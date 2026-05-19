@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from maria_cacau.design_system.gui_popup import PopupModel
+from maria_cacau.design_system.components import DSDialogModel
 
 
 @dataclass
@@ -20,8 +20,8 @@ class ErrorModel(Exception):
             dev_message=err.dev_message,
         )
 
-    def to_popup(self) -> PopupModel:
-        return PopupModel(
+    def to_popup(self) -> DSDialogModel:
+        return DSDialogModel(
             title=f"Erro {self.code}",
             message=self.user_message,
             detail=self.dev_message,

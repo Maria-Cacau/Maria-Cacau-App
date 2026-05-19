@@ -5,7 +5,7 @@ from maria_cacau.core import session
 from maria_cacau.core.bus import bus
 from maria_cacau.core.error import ErrorModel
 from maria_cacau.core.observability import observability
-from maria_cacau.design_system.gui_popup import GuiPopup
+from maria_cacau.design_system.components import DSDialog
 
 from ..domain.events import FeatureEvents as ObsEv
 from ..domain.models import SheetModel
@@ -18,7 +18,7 @@ class SheetsController:
     def __init__(self) -> None:
         self.view      = SheetsMenuView()
         self.viewmodel = SheetsViewModel()
-        self._popup    = GuiPopup()
+        self._popup    = DSDialog()
         self._setup_actions()
         self._load_saved_sheets()
 

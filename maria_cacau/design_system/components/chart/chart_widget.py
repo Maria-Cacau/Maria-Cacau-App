@@ -1,7 +1,6 @@
 """Widget de gráfico reutilizável (barras ou pizza) usando seaborn + matplotlib."""
 
 import re
-from enum import Enum, auto
 
 import matplotlib
 
@@ -13,10 +12,7 @@ from matplotlib.figure import Figure
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QScrollArea, QVBoxLayout, QWidget
 
-
-class ChartType(Enum):
-    BAR = auto()
-    PIE = auto()
+from .chart_type import DSChartType
 
 
 def _short_label(name: str) -> str:
@@ -27,8 +23,8 @@ def _short_label(name: str) -> str:
     return (clean[:10] + '…') if len(clean) > 10 else clean or '—'
 
 
-class ChartWidget(QWidget):
-    def __init__(self, chart_type: ChartType = ChartType.BAR) -> None:
+class DSChart(QWidget):
+    def __init__(self, chart_type: DSChartType = DSChartType.BAR) -> None:
         super().__init__()
         self._fig = Figure(layout='tight')
         self._canvas = FigureCanvasQTAgg(self._fig)
@@ -38,7 +34,7 @@ class ChartWidget(QWidget):
 
         self._scroll = QScrollArea()
         self._scroll.setWidget(self._canvas)
-        self._scroll.setWidgetResizable(False)   # canvas controla o próprio tamanho
+        self._scroll.setWidgetResizable(False)
         self._scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
         self._scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self._scroll.setStyleSheet('''
@@ -77,7 +73,7 @@ class ChartWidget(QWidget):
         ax = self._fig.add_subplot(111)
         self._empty(ax)
 
-    def set_type(self, chart_type: ChartType) -> None:
+    def set_type(self, chart_type: DSChartType) -> None:
         self._type = chart_type
         if self._data:
             self._render()
@@ -103,10 +99,6 @@ class ChartWidget(QWidget):
     # ── Helpers ──────────────────────────────────────────────────────────────
 
     def _canvas_dims(self, desired_w: int) -> tuple[int, int]:
-        """Retorna (w, h) para o canvas.
-        h = altura do viewport (sem desperdício/overflow vertical).
-        w = max(desired_w, largura do viewport) → scroll se desired_w > viewport.
-        """
         vp = self._scroll.viewport()
         h  = vp.height() if vp.height() > 10 else 280
         w  = max(desired_w, vp.width() if vp.width() > 10 else desired_w)
@@ -115,7 +107,7 @@ class ChartWidget(QWidget):
     # ── Renderização ─────────────────────────────────────────────────────────
 
     def _render(self) -> None:
-        if self._type == ChartType.BAR:
+        if self._type == DSChartType.BAR:
             self._render_bar()
         else:
             self._render_pie()
@@ -167,7 +159,6 @@ class ChartWidget(QWidget):
             self._empty(ax)
             return
 
-        # Pie preenche o viewport sem scroll
         w_px, h_px = self._canvas_dims(0)
         self._canvas.resize(w_px, h_px)
 

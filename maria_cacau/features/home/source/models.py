@@ -7,6 +7,3 @@ from PyQt6.QtWidgets import QWidget
 class HomeFeaturesModel:
     summary: QWidget
     deliveries: QWidget
-    nota_fiscal: QWidget
-    cpf: QWidget
-    shipping_rate: QWidget
