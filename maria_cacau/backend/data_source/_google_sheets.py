@@ -38,6 +38,10 @@ class GoogleSheetsDataSource:
         self._client = None
         self._vm     = None
 
+    def clear_sheet(self) -> None:
+        self._sheet_id = None
+        self._vm       = None
+
     def set_sheet(self, sheet_id: str) -> None:
         _guard.validate_sheet_id(sheet_id)
         self._sheet_id = sheet_id

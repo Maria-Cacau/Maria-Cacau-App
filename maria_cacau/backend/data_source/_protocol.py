@@ -17,6 +17,10 @@ class DataSourceProtocol(Protocol):
         """Remove o client autenticado da memória. Mantém o sheet_id."""
         ...
 
+    def clear_sheet(self) -> None:
+        """Remove a planilha ativa da memória. Mantém as credenciais."""
+        ...
+
     def set_sheet(self, sheet_id: str) -> None:
         """Define a planilha ativa e dispara prewarm em background."""
         ...

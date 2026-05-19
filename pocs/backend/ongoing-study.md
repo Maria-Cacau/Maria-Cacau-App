@@ -170,10 +170,8 @@ maria_cacau/backend/
 |---|---|---|---|---|
 | `POST` | `/auth` | `auth_bp` | Implementado | Recebe `credentials` (dict) + `sheet_id` e autentica o DataSource em memória |
 | `DELETE` | `/auth` | `auth_bp` | Implementado | Limpa credenciais e vm do DataSource em memória (mantém `sheet_id`) |
-| `POST` | `/source` | — | Pendente | Registra nova planilha (nome + sheet_id) |
-| `GET` | `/source` | — | Pendente | Lista todas as planilhas salvas |
-| `PUT` | `/source/{sheet_id}` | — | Pendente | Seleciona a planilha ativa no DataSource |
-| `DELETE` | `/source/{sheet_id}` | — | Pendente | Remove planilha da lista salva |
+| `PUT` | `/sheet/{sheet_id}` | `sheet_bp` | Implementado | Seleciona a planilha ativa no DataSource (mantém credenciais) |
+| `DELETE` | `/sheet` | `sheet_bp` | Implementado | Limpa a planilha ativa do DataSource (mantém credenciais) |
 | `GET` | `/orders/payments-pendent` | `payments_bp` | Implementado | Pedidos com pagamento pendente (`amount_pendent > 0`) para uma data |
 | `GET` | `/orders/deliveries` | `deliveries_bp` | Implementado | Contagem de pedidos agrupada por tipo de entrega para uma data |
 | `GET` | `/orders` | `summary_bp` | Implementado | Lista completa de pedidos de um período (`?start=DD/MM/YY&end=DD/MM/YY`) |
@@ -286,18 +284,14 @@ Vive em `data_source/_google_sheets.py`. Singleton exposto como `data_source: Fi
 
 ## Próximos Passos (ordem sugerida)
 
-### Bloco 1 — Bridge temporária de autenticação (próximo)
+### Backend — concluído
 
-1. No startup do `BackendServer`, ler credenciais e `sheet_id` salvos em `core/storage` via `_helper.py` e repassar ao `data_source` (`set_credentials` + `set_sheet`) — sem precisar das rotas `auth`/`source` ainda
-2. Objetivo: validar a feature `orders_pendent` end-to-end com dados reais antes de implementar as rotas de infra
+- ~~Bridge temporária de autenticação~~ ✅ Concluído
+- ~~Implementar `subfeatures/summary/service.py`~~ ✅ Concluído
+- ~~Criar `features/auth/` — `POST /auth` + `DELETE /auth`~~ ✅ Concluído
+- ~~Criar `features/sheet/` — `PUT /sheet/<sheet_id>` + `DELETE /sheet`~~ ✅ Concluído
 
-### Bloco 2 — Backend (após validação da bridge)
-
-3. ~~Implementar `subfeatures/summary/service.py`~~ ✅ Concluído
-4. Criar `routes/auth.py` — `POST /auth` + `DELETE /auth`
-5. Criar `routes/source.py` — CRUD de planilhas
-6. Criar `routes/status.py` — `GET /status`
-10. Registrar rotas de infra (`auth`, `source`, `status`) no `_server.py`
+**Próximo:** migrar a feature `home_view` (auth) na camada de aplicação — vai consumir `/auth` e `/sheet`.
 
 ---
 
