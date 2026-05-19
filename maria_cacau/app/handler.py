@@ -16,7 +16,7 @@ class MenuHandler:
         menubar.addMenu(self._sheets.view)
         menubar.addMenu(self._auth.view)
         self._create_help_menu(menubar)
-    
+
     def _create_help_menu(self, menubar: QMenuBar) -> None:
         help_menu = QMenu(strings.MNU_AJUDA, menubar)
         menubar.addAction(help_menu.menuAction())

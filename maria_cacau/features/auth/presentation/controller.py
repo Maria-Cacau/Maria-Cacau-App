@@ -45,10 +45,6 @@ class AuthController:
         if confirm == QMessageBox.StandardButton.Yes:
             self.viewmodel.clear()
 
-    def auto_connect(self) -> None:
-        """Tenta autenticar no startup usando credenciais salvas em storage."""
-        self.viewmodel.auto_connect()
-
     def _on_configured(self) -> None:
         observability.log(ObsEv.CERT_SET)
 

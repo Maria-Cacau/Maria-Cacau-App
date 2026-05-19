@@ -93,5 +93,3 @@ class SheetsController:
         self._popup.show(error.to_popup())
         observability.log(ObsEv.SHEET_ERROR)
 
-    def auto_connect(self) -> None:
-        self.viewmodel.auto_connect()

@@ -13,8 +13,8 @@ class ConnectAuthAPI(API):
     def path(self) -> str:
         return "/auth"
 
-    def with_credentials(self, credentials: dict) -> "ConnectAuthAPI":
-        self.parameters.body = {"credentials": credentials}
+    def with_credentials(self, credentials: dict, sheet_id: str | None = None) -> "ConnectAuthAPI":
+        self.parameters.body = {"credentials": credentials, "sheet_id": sheet_id}
         return self
 
 

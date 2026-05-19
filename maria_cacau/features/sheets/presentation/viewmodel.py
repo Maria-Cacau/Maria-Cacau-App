@@ -56,13 +56,3 @@ class SheetsViewModel:
             signals.error.emit(unexpected_error(e))
 
 
-    def auto_connect(self) -> None:
-        self.executor.submit(self._auto_connect)
-
-    def _auto_connect(self) -> None:
-        try:
-            sheet = self.use_case.auto_select_last()
-            if sheet:
-                signals.sheet_selected.emit(sheet)
-        except Exception as e:
-            signals.error.emit(unexpected_error(e))

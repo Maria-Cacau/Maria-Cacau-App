@@ -35,13 +35,3 @@ class AuthViewModel:
         except Exception as e:
             signals.error.emit(unexpected_error(e))
 
-
-    def auto_connect(self) -> None:
-        self.executor.submit(self._auto_connect)
-
-    def _auto_connect(self) -> None:
-        try:
-            if self.use_case.connect_from_storage():
-                signals.credentials_configured.emit()
-        except Exception as e:
-            signals.error.emit(unexpected_error(e))
