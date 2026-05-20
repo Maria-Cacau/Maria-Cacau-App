@@ -1,13 +1,17 @@
+from maria_cacau import asset
+
 from PyQt6.QtGui import QPainter, QPixmap
 from PyQt6.QtWidgets import QHBoxLayout, QWidget
 
 from .models import HomeFeaturesModel
 
+_IMAGE_PATH = asset("images/background.png")
+
 
 class HomeView(QWidget):
-    def __init__(self, image_path: str) -> None:
+    def __init__(self) -> None:
         super().__init__()
-        self._pixmap = QPixmap(image_path)
+        self._pixmap = QPixmap(_IMAGE_PATH)
 
     def paintEvent(self, event) -> None:
         painter = QPainter(self)
