@@ -1,35 +1,11 @@
-# Maria Cacau - Contagem
+# Maria Cacau — App
 
-[![Version](https://img.shields.io/badge/version-4.0-orange)](https://github.com/Gui25Reis/Maria-Cacau-Contagem/releases/tag/4.0.0)
+[![Version](https://img.shields.io/badge/version-4.0-orange)](https://github.com/Maria-Cacau/Maria-Cacau-App/releases/tag/4.0.0)
 ![Language](https://img.shields.io/badge/language-Python-blue?logo=python)
 [![Python Version](https://img.shields.io/badge/python-v3.13+-blue?logo=python)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-CC%20BY--NC%204.0-brightgreen?logo=creativecommons)](./LICENSE)
 ![macOS](https://img.shields.io/badge/macOS-000000?logo=apple&logoColor=white)
 ![Windows](https://img.shields.io/badge/Windows-0078D6?logo=windows&logoColor=white)
-
-<p align="center">
-    <img width=97% src="files/images/cover.png"/>
-</p>
-
-App desktop para gestão de pedidos e entregas da Maria Cacau. Lê diretamente a planilha Google Sheets e gera resumos de:
-- **Produtos**: contagem de itens por período
-- **Entregas**: resumo diário com inadimplências
-- **Validação do CPF**: validação matemática do cpf.
-
-> [!IMPORTANT]
-> A documentação de usabilidade da aplicação está documentada na [wiki](https://github.com/Gui25Reis/Maria-Cacau-Contagem/wiki) do projeto. 
-
-</br>
-
-### Demo
-
-<p align="center">
-    <img width=97% src="files/images/demo-v4.gif"/>
-</p>
-
-</br>
-
----
 
 </br>
 
@@ -37,11 +13,11 @@ App desktop para gestão de pedidos e entregas da Maria Cacau. Lê diretamente a
 - [Como rodar](#como-rodar)
 - [Gerar executável](#gerar-executável)
 - [Autor](#autor)
-- [Empresa](#empresa)
 
 ## Plataforma e Requisitos
+
 > [!NOTE]
-> O app é **Windows first**, precisa sempre ter como referência a tela gerada no Windows (os layouts não ficam iguais). 
+> O app é **Windows first**, precisa sempre ter como referência a tela gerada no Windows (os layouts não ficam iguais).
 > É possível rodar no mac e gerar o .dmg se necessário.
 
 | **Arquivo** | **Descrição** |
@@ -86,8 +62,8 @@ python -m maria_cacau
 > É necessário rodar o `build` antes para instalar as dependências e ter o venv configurado.
 > O executável gerado acaba ficando na pasta dist/.
 
-| OS | Comando 
-|---|---
+| OS | Comando |
+|---|---|
 | ![macOS](https://img.shields.io/badge/macOS-000000?logo=apple&logoColor=white) | `./scripts/build.sh && ./scripts/package.sh` |
 | ![Windows](https://img.shields.io/badge/Windows-0078D6?logo=windows&logoColor=white) | `scripts\build.bat && scripts\package.bat` |
 
@@ -106,29 +82,6 @@ python -m maria_cacau
                     <b>Gui Reis</b>
                 </sub>
             </a>
-        </td>
-    </tr>
-</table>
-
-## Empresa
-
-<table>
-    <tr>
-        <td colspan="3" align="center">
-            <a href="https://www.mariacacau.com.br/">
-                <img src="files/images/logo.png" width="150px;" alt="Logo Maria Cacau"/><br>
-            </a>
-        </td>
-    </tr>
-    <tr>
-        <td align="center">
-            <a href="https://www.mariacacau.com.br/">site</a>
-        </td>
-        <td>
-            <a href="https://www.instagram.com/mariacacau_oficial/">instagram</a>
-        </td>
-        <td>
-            <a href="https://linktr.ee/mariacacau_oficial">orçamento</a>
         </td>
     </tr>
 </table>
