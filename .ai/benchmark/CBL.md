@@ -929,3 +929,21 @@ Adicionar `# type: ignore[import]` no final da linha problemática. O código en
 **P: Por que o `import pywinsparkle` ficou dentro do método em vez de no topo do arquivo, como é a convenção?**
 
 Exceção justificada pelo monkey-patch. O `setup()` precisa setar `sys._MEIPASS` *antes* do `import pywinsparkle` — pois a lib lê esse atributo no momento da importação para localizar a DLL. Se o import estivesse no topo do arquivo, seria executado no carregamento do módulo, antes de qualquer método rodar, tornando o patch inútil. É um dos dois casos legítimos de import dentro de função: dependência que precisa de pré-condição antes de ser carregada. O comentário `# type: ignore[import]` na mesma linha cobre o aviso do Pylance.
+
+---
+
+**P: Qual a melhor forma de validar a implementação do auto-update com WinSparkle/pywinsparkle?**
+
+A validação é feita em camadas: (1) unit tests com mock de `sys.platform` e `pywinsparkle` — testam a lógica de guards e o patch do `_MEIPASS` sem precisar de Windows; (2) verificação do `appcast.xml` — testa se a URL está acessível e o XML é válido; (3) checklist manual no Windows — rodar o `.exe` gerado pelo Nuitka e confirmar que o WinSparkle não crasha e exibe o dialog de update quando a versão no appcast é maior. A decisão foi validar via camada 3 ao gerar o próximo build de teste.
+
+---
+
+**P: Como funcionam os testes unitários em Python? Comparação com XCTest.**
+
+Os dois principais frameworks são `unittest` (stdlib, estilo XCTest com herança de `TestCase` e métodos `assertX`) e `pytest` (padrão da indústria, usa `assert` nativo, menos boilerplate). O `pytest` é o mais adotado. Fixtures substituem `setUp/tearDown` de forma mais flexível — são funções injetadas por parâmetro com escopo configurável. Mocks são feitos com `unittest.mock.patch`, que troca objetos em runtime e restaura depois, equivalente a substituir protocolos por doubles em Swift.
+
+---
+
+**P: Qual a boa prática de organização de pastas de testes em Python? Co-located vs separado.**
+
+Existem dois modelos: `tests/` separado na raiz (convenção dominante, zero config com pytest) e testes co-localizados junto ao source de cada feature (comum em arquiteturas feature-first, facilita deletar features com os testes juntos). O padrão adotado no projeto MC Consultas é `tests/` separado, espelhando a estrutura de `maria_cacau/`.
