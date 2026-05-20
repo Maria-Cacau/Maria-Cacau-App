@@ -51,4 +51,4 @@ python -m nuitka ^
 echo.
 echo Gerado em: %OUTPUT%\%APP_NAME%.exe
 
-python scripts\update_appcast.py
+REM python scripts\update_appcast.py
