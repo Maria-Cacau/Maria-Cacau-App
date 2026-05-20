@@ -11,12 +11,15 @@ from maria_cacau.core.network import LocalClient, configure
 from maria_cacau.core.observability import AppEvent, observability
 from maria_cacau.features import AppInitUseCase
 
+from .auto_update import AppAutoUpdate
 from .window import MainWindow
 
 
 class AppCoordinator:
     def __init__(self, app: QApplication) -> None:
+        self._auto_update = AppAutoUpdate()
         self._configure_app(app)
+        
         self._window   = MainWindow()
         self._executor = ThreadPoolExecutor(max_workers=1)
         app.aboutToQuit.connect(self._on_quit)
@@ -45,3 +48,4 @@ class AppCoordinator:
 
     def _on_quit(self) -> None:
         observability.log(AppEvent.APP_CLOSE)
+        self._auto_update.cleanup()

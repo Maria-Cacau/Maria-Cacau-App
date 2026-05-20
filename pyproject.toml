@@ -14,7 +14,8 @@ dependencies = [
     "gspread",
     "matplotlib",
     "seaborn",
-    "flask"
+    "flask",
+    "pywinsparkle"
 ]
 
 [project.scripts]

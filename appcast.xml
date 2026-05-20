@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
+    <channel>
+        <title>MC Consultas</title>
+        <item>
+            <title>Versão 4.0.1</title>
+            <sparkle:version>4.0.1</sparkle:version>
+            <enclosure
+                url="https://github.com/Maria-Cacau/Maria-Cacau-App/releases/download/4.0.1/MC.Consultas.exe"
+                type="application/octet-stream"
+            />
+        </item>
+    </channel>
+</rss>
