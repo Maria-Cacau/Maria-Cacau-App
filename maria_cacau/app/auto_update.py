@@ -3,7 +3,7 @@ import sys
 
 
 class AppAutoUpdate:
-    _APPCAST_URL = "https://raw.githubusercontent.com/Maria-Cacau/Maria-Cacau-App/main/appcast.xml"
+    _APPCAST_URL = "https://raw.githubusercontent.com/Maria-Cacau/Maria-Cacau-App/feat/auto-update/appcast.xml"
 
     def __init__(self) -> None:
         self.setup()
