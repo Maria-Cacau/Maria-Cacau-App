@@ -15,7 +15,7 @@ dependencies = [
     "matplotlib",
     "seaborn",
     "flask",
-    "pywinsparkle; sys_platform == 'win32'"
+    "pywinsparkle @ git+https://github.com/dyer234/pywinsparkle.git ; sys_platform == 'win32'"
 ]
 
 [project.scripts]
