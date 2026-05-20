@@ -97,7 +97,7 @@ O backend está completo.
 
 ## Próximas sessões
 
-> Nenhuma fase pendente para a v5.0. Fase 4 (refinamentos adicionais do DS) ficará para a v6.0.
+> Nenhuma fase pendente. Fase 4 (refinamentos adicionais do DS) ficará para a v6.0.
 
 ---
 
@@ -114,6 +114,7 @@ O backend está completo.
 | Report + Design System | Cache removido dos repositories; tela limpa ao gerar novo relatório (`clear_content()`); `DSButton` com `DSButtonState` (DEFAULT/DISABLED/LOADING) + `DSLoadingHandler` mixin em `design_system/components/` e `design_system/handlers/`; `bts()` e `aux_frames.py` removidos |
 | Redesign + Fase 2 | Removidas features `nota_fiscal` e `shipping_rate`; `delivery` e `summary` lado a lado na home; `cpf_validation` migrada para `features/` como feature independente e virou `QDialog`; criado menu "Funcionalidades" (`features/funcionalidades/`) com sub-item "Validador de CPF" que abre o dialog via `show()` |
 | Fase 3 — Design System | `AuxWidgets`, `gui_popup.py` e `core/charts.py` removidos; Design System expandido com 7 novos componentes em pastas próprias (`alerts/`, `chart/`, `combo_box/`, `containers/`, `inputs/`, `label/`, `text_view/`); views e controllers migrados para consumir somente componentes DS; `features/funcionalidades/` removida — `MenuHandler` cria o menu inline e instancia `CpfValidationController` diretamente; `menu_title` exposto como property em `CpfValidationView` |
+| Observabilidade — Network layer | `AppEvent` limpo (só `APP_START`/`APP_CLOSE`); `log()` aceita qualquer `Enum`; novo `core/network/_observability.py` com `NetworkEvent` próprio e função `track()` — loga automaticamente `path`, `method`, `status` e `duration_s` de toda request via `LocalClient` |
 
 ---
 
