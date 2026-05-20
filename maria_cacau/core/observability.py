@@ -11,18 +11,8 @@ _DATE_FMT = '%Y-%m-%d %H:%M:%S'
 
 
 class AppEvent(Enum):
-    APP_START      = 'APP_START'
-    APP_CLOSE      = 'APP_CLOSE'
-    QUERY_ENTREGAS = 'QUERY  feature=entregas'
-    QUERY_PRODUTOS = 'QUERY  feature=produtos'
-    CERT_SET       = 'CERT_SET'
-    CERT_CLEAR     = 'CERT_CLEAR'
-    SHEET_ADD      = 'SHEET_ADD'    # extra: name=, sheet_id=
-    SHEET_SELECT   = 'SHEET_SELECT' # extra: name=, sheet_id=
-    BTN_COPY       = 'BTN_COPY'     # extra: feature=
-    PREWARM_DONE   = 'PREWARM_DONE' # extra: duration_s=
-    CACHE_CLEAR    = 'CACHE_CLEAR'
-    ERROR          = 'ERROR'        # extra: msg=, where= (optional)
+    APP_START = 'APP_START'
+    APP_CLOSE = 'APP_CLOSE'
 
 
 class _Observability:
@@ -35,7 +25,7 @@ class _Observability:
             handler.setFormatter(logging.Formatter(_FMT, _DATE_FMT))
             self._log.addHandler(handler)
 
-    def log(self, event: AppEvent, **extra) -> None:
+    def log(self, event: Enum, **extra) -> None:
         msg = event.value
         if extra:
             parts = '  '.join(
@@ -43,10 +33,7 @@ class _Observability:
                 for k, v in extra.items()
             )
             msg += f'  {parts}'
-        if event is AppEvent.ERROR:
-            self._log.error(msg)
-        else:
-            self._log.info(msg)
+        self._log.info(msg)
 
 
 observability = _Observability()
