@@ -1,60 +1,19 @@
 # Self Study — Arquitetura do Projeto
 
-> Documento de intenção e contexto do estudo em andamento.
-> Objetivo: garantir continuidade entre sessões e entre IAs diferentes.
+> Referência de decisões arquiteturais e padrões estabelecidos.
+> Para o estado atual e próximos passos, ver `pocs/architecture/session-context.md`.
 
 ---
 
-## Intenção da conversa
+## Intenção
 
 Estudar e definir a arquitetura ideal para o projeto Maria Cacau (PyQt6 + Python), com foco em escalabilidade e boas práticas Pythônicas. O ponto de partida foi o background em Swift/iOS — mapeando conceitos familiares para o ecossistema Python.
 
 ---
 
-## Status atual
-
-**Fase:** estudo e definição concluídos — pronto para iniciar aplicação.
-
-| Etapa | Status |
-|---|---|
-| Definir arquitetura geral | Concluído — ver `overview.md` |
-| Estudar padrões Python (ABC, Protocol, dataclass, enum) | Concluído — ver `CBL.md` |
-| Estudar modularização e Design System | Concluído — ver `overview.md` |
-| Ajustar arquitetura atual do projeto | Em andamento (branch separada) |
-| Construir o Design System | Pendente |
-| Atualizar app para novas telas (protótipo aprovado) | Pendente |
-| Adicionar feature de novo pedido | Pendente |
-
----
-
-## Roadmap de evolução
-
-### 1. Ajuste arquitetural (agora)
-Refatorar o projeto atual para seguir a arquitetura definida:
-- Extrair Controller do `GuiMain` (hoje é um God Object)
-- Separar View e Controller por feature
-- Aplicar signals com nome de domínio
-
-### 2. Design System
-Criar `design_system/` com estrutura limpa:
-- `components/` — widgets reutilizáveis com enums de estilo
-- `tokens/` — cores, tipografia, espaçamento
-- Regra: zero imports de `features/`, `core/` ou `assets/`
-- Futuro: migrar para repo separado quando estabilizar
-
-### 3. Novas telas
-Atualizar o app para o protótipo aprovado (desenvolvido com IA de design).
-As telas existentes serão substituídas pelas novas — não é adição, é substituição.
-
-### 4. Feature: Novo Pedido
-Tela de cadastro de pedido gravando direto na planilha Google Sheets.
-Design e casos de uso já definidos em `pocs/sheets-analysis/`.
-
----
-
 ## Decisões fechadas
 
-Registradas em `overview.md`. Não reabrir sem motivo claro.
+Não reabrir sem motivo claro.
 
 | Decisão | Resumo |
 |---|---|
@@ -62,22 +21,46 @@ Registradas em `overview.md`. Não reabrir sem motivo claro.
 | Contratos de camada | ABC para base com comportamento, Protocol para contratos puros |
 | DTOs | `@dataclass` |
 | Funções utilitárias | Funções soltas no módulo, não classes com `@staticmethod` |
-| Temas no DS | Não agora — só quando houver segundo tema |
-| DS no repo | Interno por enquanto, migra para repo separado após estabilizar |
+| Temas no Design System | Não agora — só quando houver segundo tema |
+| Design System no repo | Interno por enquanto; migra para repo separado após estabilizar |
 
 ---
 
-## Próximos passos para retomar
+## Roadmap macro
 
-1. Continuar o refactor arquitetural na branch em andamento
-2. Definir quais features refatorar primeiro (começar pelas mais simples)
-3. Estruturar a pasta `design_system/` com a nova organização
+| Fase | Status |
+|---|---|
+| Refatoração arquitetural (MVC + backend) | ✅ Concluído |
+| Infraestrutura do app (sessão, bus, init) | ✅ Concluído |
+| Cache em memória nos repositories | ✅ Concluído |
+| Refinamentos pós-refatoração (status bar, session, obs.) | 🔄 Em andamento |
+| Design System | Pendente |
+| Novas telas (protótipo aprovado) | Pendente |
+| Feature: Novo Pedido | Pendente |
+
+---
+
+## ErrorModel (`core/error/`)
+
+Os erros do backend (`BackendError`) e do data source (`DataSourceError`) seguem o mesmo contrato: `code`, `user_message`, `dev_message`. A camada de `presentation/` converte para popup sem saber a origem do erro.
+
+`ErrorModel` usa duck typing — aceita qualquer objeto com esses três campos, sem herança. Expõe `to_popup() → PopupModel`.
+
+### Regras de dependência
+
+| Módulo | Pode importar de |
+|---|---|
+| `design_system/` | `assets/` apenas — zero dependência de `core` ou `features` |
+| `core/` | `design_system/` (permitido após PR #39) |
+| `features/` | `core/`, `design_system/`, `assets/` |
+| `backend/` | `core/storage` apenas (isolamento total) |
 
 ---
 
 ## Referências
 
-- `overview.md` — decisões e padrões definidos
+- `overview.md` — padrões e decisões detalhadas de feature
 - `pre-study.md` — estudo comparativo iOS/Swift → PyQt/Python
+- `pocs/backend/ongoing-study.md` — referência técnica do módulo backend
 - `pocs/sheets-analysis/` — análise da planilha e design da feature Novo Pedido
-- `CBL.md` em `.ai/benchmark/` — log completo de perguntas e respostas das sessões
+- `.ai/benchmark/CBL.md` — log completo de perguntas e respostas das sessões

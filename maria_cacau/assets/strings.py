@@ -1,4 +1,4 @@
-from maria_cacau import __app_name__, __version__, __year__, __company__
+from maria_cacau import __app_name__, __company__, __version__, __year__
 
 APP_TITLE = __app_name__
 
@@ -27,12 +27,16 @@ TXT_OK_INSTRUCAO_PRODUTOS = 'Selecione o intervalo de datas e pressione "OK" par
 
 # ── Menus ─────────────────────────────────────────────────────────────────────
 
-MNU_ARQUIVO      = "Arquivo"
-MNU_SEGURANCA    = "Segurança"
-MNU_AJUDA        = "Ajuda"
+MNU_ARQUIVO           = "Arquivo"
+MNU_FUNCIONALIDADES   = "Funcionalidades"
+MNU_SEGURANCA         = "Segurança"
+MNU_AJUDA             = "Ajuda"
 
+ACT_VALIDAR_CPF           = "Validador de CPF"
 ACT_CONECTAR_PLANILHA     = "Conectar nova planilha"
 ACT_PLANILHAS_CONECTADAS  = "Planilhas conectadas"
+ACT_SELECIONAR_PLANILHA   = "Selecionar"
+ACT_REMOVER_PLANILHA      = "Remover planilha"
 ACT_CONFIGURAR_CERT       = "Configurar certificado"
 ACT_LIMPAR_CERT           = "Limpar certificado"
 ACT_DOCUMENTACAO          = "Documentação"
@@ -48,8 +52,13 @@ DLG_LIMPAR_CERT_MSG    = "Tem certeza que deseja remover o certificado salvo?"
 
 DLG_PLANILHA_EXISTENTE_TITULO  = "Planilha já cadastrada"
 DLG_PLANILHA_EXISTENTE_MSG     = 'Esta planilha já está salva com o nome "{nome}". Deseja renomear?'
+DLG_REMOVER_PLANILHA_TITULO    = "Remover planilha"
+DLG_REMOVER_PLANILHA_MSG       = 'Deseja remover a planilha "{nome}"? Esta ação não pode ser desfeita.'
 DLG_RENOMEAR_TITULO            = "Renomear planilha"
 DLG_RENOMEAR_MSG               = "Novo nome:"
+
+DLG_CPF_TITULO                 = "Validador de CPF"
+DLG_CPF_LBL_CPF               = "CPF:"
 
 DLG_CONECTAR_TITULO            = "Conectar com planilha"
 DLG_CONECTAR_LBL_LINK          = "Link da planilha:"

@@ -3,9 +3,9 @@ Script para esconder arquivos da área de trabalho, exceto .json e .exe.
 Usado principalmente na hora de gravar o vídeo de demo.
 """
 
-import os
-import json
 import ctypes
+import json
+import os
 import sys
 
 desktop = os.path.join(os.environ["USERPROFILE"], "Desktop")

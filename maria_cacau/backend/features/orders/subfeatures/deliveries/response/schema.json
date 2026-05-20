@@ -1,0 +1,33 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Deliveries Response",
+    "type": "object",
+    "required": ["unique", "total", "deliveries"],
+    "properties": {
+        "unique": {
+            "type": "integer",
+            "description": "Número de tipos distintos de entrega"
+        },
+        "total": {
+            "type": "integer",
+            "description": "Total de pedidos no dia"
+        },
+        "deliveries": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": ["type", "count"],
+                "properties": {
+                    "type": {
+                        "type": "string",
+                        "description": "Tipo de entrega (ex: Entrega, Retirada, FABRICA)"
+                    },
+                    "count": {
+                        "type": "integer",
+                        "minimum": 0
+                    }
+                }
+            }
+        }
+    }
+}
