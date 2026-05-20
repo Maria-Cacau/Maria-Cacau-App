@@ -2,6 +2,8 @@
 
 from typing import Protocol
 
+import _observability as observability
+
 from ._request import HTTPRequest
 from ._response import HTTPResponse
 
@@ -24,4 +26,4 @@ class LocalClient:
         self._backend = backend
 
     def execute(self, request: HTTPRequest) -> HTTPResponse:
-        return self._backend.execute(request)
+        return observability.track(request, lambda: self._backend.execute(request))

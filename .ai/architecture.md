@@ -22,6 +22,7 @@ Maria-Cacau-Contagem/
 │   │   │   ├── _errors.py                # NetworkError, HTTPRequestError, HTTPResponseError
 │   │   │   ├── _client.py                # HTTPClientContract (Protocol) + LocalClient
 │   │   │   ├── _config.py                # configure() / override() / clear_override() — singleton do client ativo
+│   │   │   ├── _observability.py         # NetworkEvent enum + track() — loga path, method, status, duration_s de toda request
 │   │   │   └── __init__.py               # exports públicos: API, HTTPMethod, HTTPResponse, LocalClient, erros, config
 │   │   ├── storage/
 │   │   │   ├── handler.py                # ABC StorageHandler[T] — contrato único de persistência

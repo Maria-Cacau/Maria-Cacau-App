@@ -1,12 +1,12 @@
-# Graph Report - Maria-Cacau-Contagem  (2026-05-19)
+# Graph Report - Maria-Cacau-Contagem  (2026-05-20)
 
 ## Corpus Check
-- 178 files · ~609,128 words
+- 179 files · ~609,200 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 860 nodes · 1745 edges · 24 communities detected
-- Extraction: 62% EXTRACTED · 38% INFERRED · 0% AMBIGUOUS · INFERRED: 665 edges (avg confidence: 0.65)
+- 866 nodes · 1763 edges · 24 communities detected
+- Extraction: 62% EXTRACTED · 38% INFERRED · 0% AMBIGUOUS · INFERRED: 675 edges (avg confidence: 0.65)
 - Token cost: 0 input · 0 output
 
 ## Community Hubs (Navigation)
@@ -36,7 +36,7 @@
 - [[_COMMUNITY_Community 42|Community 42]]
 
 ## God Nodes (most connected - your core abstractions)
-1. `HTTPResponse` - 21 edges
+1. `HTTPResponse` - 25 edges
 2. `SheetsController` - 20 edges
 3. `DataSourceError` - 20 edges
 4. `connect()` - 20 edges
@@ -48,16 +48,16 @@
 10. `DeliveriesSummary` - 16 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `Backend de armazenamento seguro via arquivo protegido no diretório do usuário.` --uses--> `StorageHandler`  [INFERRED]
-  maria_cacau/core/storage/security.py → maria_cacau/core/storage/handler.py
-- `Backend de cache em arquivo JSON no diretório do usuário.` --uses--> `StorageHandler`  [INFERRED]
-  maria_cacau/core/storage/cache.py → maria_cacau/core/storage/handler.py
-- `Erro genérico para exceções não tratadas.` --uses--> `ErrorModel`  [INFERRED]
-  maria_cacau/core/error/errors.py → maria_cacau/core/error/models.py
-- `AppCoordinator` --uses--> `AppEvent`  [INFERRED]
-  maria_cacau/app/coordinator.py → maria_cacau/core/observability.py
-- `call()` --calls--> `HTTPResponseError`  [INFERRED]
-  maria_cacau/core/network/api.py → maria_cacau/core/network/_errors.py
+- `AppEvent` --uses--> `AppCoordinator`  [INFERRED]
+  maria_cacau/core/observability.py → maria_cacau/app/coordinator.py
+- `HTTPResponseError` --calls--> `call()`  [INFERRED]
+  maria_cacau/core/network/_errors.py → maria_cacau/core/network/api.py
+- `Erros mapeados usados no módulo` --uses--> `HTTPResponse`  [INFERRED]
+  maria_cacau/core/network/_errors.py → maria_cacau/core/network/_response.py
+- `r"""Erro base da camada de network.` --uses--> `HTTPResponse`  [INFERRED]
+  maria_cacau/core/network/_errors.py → maria_cacau/core/network/_response.py
+- `configure() não foi chamado antes de usar a lib.` --uses--> `HTTPResponse`  [INFERRED]
+  maria_cacau/core/network/_errors.py → maria_cacau/core/network/_response.py
 
 ## Communities
 
@@ -66,72 +66,72 @@ Cohesion: 0.04
 Nodes (58): GoogleSheetsDataSource, Implementação de DataSourceProtocol para Google Sheets via gspread., _fix_prod4(), normalize(), Normaliza headers inconsistentes da planilha para os valores canônicos dos enums, Renomeia a coluna que segue prod3 para prod4, independente do header atual., Traduz headers reais da planilha para os nomes canônicos definidos nos enums., _rename_at() (+50 more)
 
 ### Community 1 - "Community 1"
-Cohesion: 0.05
-Nodes (48): Services, DeliveriesAPI, PaymentsPendentAPI, DeliveriesMapper, ErrorMapper, from_response(), OrdersSummaryMapper, PaymentsMapper (+40 more)
+Cohesion: 0.04
+Nodes (24): DSDialog, DSDialogIcon, DSDialogModel, DSComboBox, DSGroupBox, DeliveryViewData, DSDateInput, asset() (+16 more)
 
 ### Community 2 - "Community 2"
-Cohesion: 0.05
-Nodes (25): API, ConnectAuthAPI, DisconnectAuthAPI, OrdersSummaryAPI, path(), Endpoints do backend consumidos pela feature Auth., RemoveSheetAPI, SelectSheetAPI (+17 more)
+Cohesion: 0.04
+Nodes (25): ABC, API, ConnectAuthAPI, DisconnectAuthAPI, RemoveSheetAPI, SelectSheetAPI, AuthRepository, _extract_sheet_id() (+17 more)
 
 ### Community 3 - "Community 3"
-Cohesion: 0.04
-Nodes (20): DSDialog, DSDialogIcon, DSDialogModel, DSComboBox, main(), main(), main(), main() (+12 more)
+Cohesion: 0.07
+Nodes (36): Services, DeliveriesAPI, OrdersSummaryAPI, path(), PaymentsPendentAPI, Endpoints do backend consumidos pela feature Auth., DeliveriesMapper, ErrorMapper (+28 more)
 
 ### Community 4 - "Community 4"
-Cohesion: 0.05
-Nodes (16): AppCoordinator, MenuHandler, MainWindow, connect(), BackendServer, Erro genérico para exceções não tratadas., unexpected_error(), main() (+8 more)
+Cohesion: 0.06
+Nodes (13): AppCoordinator, MenuHandler, MainWindow, connect(), BackendServer, main(), Entry point da aplicação. Execute com: python -m maria_cacau, SheetsController (+5 more)
 
 ### Community 5 - "Community 5"
 Cohesion: 0.07
-Nodes (37): ABC, API, entity(), Comunicação alto nivel para chamadas de api, O tipo precisa aceitar **kwargs (dataclass ou similar)., HTTPClientContract, LocalClient, Realiza as request de fato (+29 more)
+Nodes (39): API, entity(), Comunicação alto nivel para chamadas de api, O tipo precisa aceitar **kwargs (dataclass ou similar)., HTTPClientContract, LocalClient, Realiza as request de fato, Contrato que qualquer client precisa cumprir. (+31 more)
 
 ### Community 6 - "Community 6"
 Cohesion: 0.08
 Nodes (30): Retorna pedidos da data informada (DD/MM/YYYY)., DeliveryTypeCount, Models de domínio da feature de entregas., DeliveriesRepository, Repositório de entregas — busca e prepara dados da planilha para o DeliveriesSer, Retorna todos os pedidos de uma data como DataFrame bruto., Acessa o data source e entrega um DataFrame para o DeliveriesService.      Não f, get_deliveries() (+22 more)
 
 ### Community 7 - "Community 7"
-Cohesion: 0.06
-Nodes (13): _date_field(), DateRangePicker, POC — date picker moderno com QDateEdit + QSS., DSDateInput, DSTextInput, CpfValidationController, CpfValidationView, QDateEdit (+5 more)
+Cohesion: 0.05
+Nodes (20): Rotas de autenticação, AuthService, Service de autenticação — gerencia o estado de conexão do DataSource., DataSourceProtocol, Autentica com o dict da service account e guarda o client em memória., Remove o client autenticado da memória. Mantém o sheet_id., Remove a planilha ativa da memória. Mantém as credenciais., Define a planilha ativa e dispara prewarm em background. (+12 more)
 
 ### Community 8 - "Community 8"
-Cohesion: 0.07
-Nodes (11): DSButton, DSGroupBox, DSLoadingHandler, DSLoadingHandler, Deve ser chamado no __init__ do componente, após o super().__init__()., Implementar no componente: o que fazer com cada frame do spinner., Mixin que adiciona comportamento de loading animado a qualquer componente QObjec, DeliveryView (+3 more)
+Cohesion: 0.09
+Nodes (12): CpfValidationResult, Models utilizados no módulo, CpfValidationSignals, Canal de comunicação entre o ViewModel e o Controller., CpfValidationUseCase, _is_valid_cpf(), Valida um CPF pela regra dos dois dígitos verificadores (algoritmo da Receita Fe, DSTextInput (+4 more)
 
 ### Community 9 - "Community 9"
-Cohesion: 0.1
-Nodes (11): DSButtonState, DSChartType, DSChart, Widget de gráfico reutilizável (barras ou pizza) usando seaborn + matplotlib., _short_label(), AppEvent, _Observability, Observabilidade centralizada do app. (+3 more)
+Cohesion: 0.08
+Nodes (13): DSButton, DSButtonState, AppEvent, _Observability, Observabilidade centralizada do app., FeatureEvents, Eventos de observabilidade da feature CPF Validation., DSLoadingHandler (+5 more)
 
 ### Community 10 - "Community 10"
-Cohesion: 0.1
-Nodes (23): handle_backend_error(), handle_data_source_error(), handle_unexpected_error(), AppError, certificado_limpo(), certificado_ok(), http_error(), planilha_conectada() (+15 more)
+Cohesion: 0.07
+Nodes (13): _EventBus, AppSession, AuthSignals, DeliverySignals, SheetsSignals, SummarySignals, AuthUseCase, Lê o arquivo JSON, salva em storage seguro e autentica o backend. (+5 more)
 
 ### Community 11 - "Community 11"
 Cohesion: 0.11
 Nodes (6): StatusBarState, DSLabel, StatusBarController, StatusBarView, QLabel, QStatusBar
 
 ### Community 12 - "Community 12"
+Cohesion: 0.13
+Nodes (19): AppError, certificado_limpo(), certificado_ok(), http_error(), planilha_conectada(), planilha_ok(), Códigos de erro da aplicação com estrutura AppError., Confirmação de certificado configurado com sucesso. (+11 more)
+
+### Community 13 - "Community 13"
 Cohesion: 0.26
 Nodes (22): _customer(), _customization(), _delivery(), _financial(), OrderMapper, _payments(), _products(), Mapeamento de uma linha do DataFrame para o model Order. (+14 more)
 
-### Community 13 - "Community 13"
-Cohesion: 0.09
-Nodes (12): Rotas de autenticação, AuthService, Service de autenticação — gerencia o estado de conexão do DataSource., DataSourceProtocol, Autentica com o dict da service account e guarda o client em memória., Remove o client autenticado da memória. Mantém o sheet_id., Remove a planilha ativa da memória. Mantém as credenciais., Define a planilha ativa e dispara prewarm em background. (+4 more)
-
 ### Community 14 - "Community 14"
+Cohesion: 0.12
+Nodes (9): _date_field(), DateRangePicker, POC — date picker moderno com QDateEdit + QSS., QDateEdit, QPushButton, QWidget, HomeController, HomeFeaturesModel (+1 more)
+
+### Community 15 - "Community 15"
 Cohesion: 0.15
 Nodes (14): _cast_numeric(), OrdersSummaryRepository, Repositório de pedidos por período — busca e prepara dados da planilha para o Or, Acessa o data source e entrega um DataFrame tipado para o OrdersService.      Ún, Retorna todos os pedidos de um período com colunas numéricas convertidas para fl, _to_dataframe(), get_orders(), Rota de pedidos — GET /orders. (+6 more)
 
-### Community 15 - "Community 15"
-Cohesion: 0.26
-Nodes (8): DeliveryModel, DeliveryViewData, DeliveryUseCase, Busca deliveries e payments em paralelo e retorna o modelo consolidado., Inicia a consulta: trava a view, dispara o ViewModel e registra o timestamp para, Recebe o resultado do ViewModel, atualiza a view e loga a duração da consulta., DeliveryViewModel, Roda o UseCase, monta o ViewData e emite sucesso ou erro — sempre via signal par
-
 ### Community 16 - "Community 16"
-Cohesion: 0.29
-Nodes (3): HomeController, HomeFeaturesModel, HomeView
+Cohesion: 0.22
+Nodes (4): DSChartType, DSChart, Widget de gráfico reutilizável (barras ou pizza) usando seaborn + matplotlib., _short_label()
 
 ### Community 17 - "Community 17"
-Cohesion: 0.33
-Nodes (2): _EventBus, AppSession
+Cohesion: 0.27
+Nodes (7): handle_backend_error(), handle_data_source_error(), handle_unexpected_error(), BackendError, generic_mapper(), translate(), Exception
 
 ### Community 18 - "Community 18"
 Cohesion: 0.4
@@ -160,8 +160,6 @@ Nodes (1): Faz cast numérico de uma coluna se ela existir no DataFrame.
 ## Knowledge Gaps
 - **49 isolated node(s):** `Metadados centralizados do pacote maria-cacau.`, `Resolve um path relativo à pasta assets, funciona em dev e no .exe compilado.`, `Entry point da aplicação. Execute com: python -m maria_cacau`, `Observabilidade centralizada do app.`, `HTTP métodos disponíveis para uso` (+44 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **Thin community `Community 17`** (6 nodes): `_EventBus`, `AppSession`, `.__init__()`, `bus.py`, `__init__.py`, `session.py`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 19`** (1 nodes): `r"""Indica se a resposta foi bem sucedida (status code 2xx).`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 38`** (1 nodes): `Converte list[dict] em DataFrame com cast numérico de todas as colunas de valor.`
@@ -176,14 +174,14 @@ Nodes (1): Faz cast numérico de uma coluna se ela existir no DataFrame.
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `FeatureEvents` connect `Community 9` to `Community 1`, `Community 3`, `Community 4`, `Community 7`, `Community 15`?**
+- **Why does `FeatureEvents` connect `Community 9` to `Community 8`, `Community 1`, `Community 10`, `Community 4`?**
   _High betweenness centrality (0.104) - this node is a cross-community bridge._
-- **Why does `SheetsController` connect `Community 4` to `Community 9`, `Community 2`, `Community 3`, `Community 7`?**
-  _High betweenness centrality (0.084) - this node is a cross-community bridge._
-- **Why does `connect()` connect `Community 4` to `Community 3`, `Community 7`, `Community 8`, `Community 11`, `Community 13`?**
-  _High betweenness centrality (0.080) - this node is a cross-community bridge._
-- **Are the 19 inferred relationships involving `HTTPResponse` (e.g. with `NetworkError` and `NetworkNotConfiguredError`) actually correct?**
-  _`HTTPResponse` has 19 INFERRED edges - model-reasoned connections that need verification._
+- **Why does `SheetsController` connect `Community 4` to `Community 1`, `Community 2`, `Community 7`, `Community 9`, `Community 10`, `Community 12`?**
+  _High betweenness centrality (0.083) - this node is a cross-community bridge._
+- **Why does `connect()` connect `Community 4` to `Community 1`, `Community 7`, `Community 8`, `Community 9`, `Community 10`, `Community 11`, `Community 14`?**
+  _High betweenness centrality (0.079) - this node is a cross-community bridge._
+- **Are the 23 inferred relationships involving `HTTPResponse` (e.g. with `NetworkError` and `NetworkNotConfiguredError`) actually correct?**
+  _`HTTPResponse` has 23 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 4 inferred relationships involving `SheetsController` (e.g. with `FeatureEvents` and `SheetModel`) actually correct?**
   _`SheetsController` has 4 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 19 inferred relationships involving `connect()` (e.g. with `.__init__()` and `._create_features_menu()`) actually correct?**

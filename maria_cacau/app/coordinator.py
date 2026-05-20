@@ -36,12 +36,12 @@ class AppCoordinator:
         self._executor.submit(self._initialize)
 
     def _initialize(self) -> None:
+        observability.log(AppEvent.APP_START)
         try:
             AppInitUseCase().initialize()
         except Exception:
             pass
         bus.app_init_finished.emit()
-        observability.log(AppEvent.APP_START)
 
     def _on_quit(self) -> None:
         observability.log(AppEvent.APP_CLOSE)
