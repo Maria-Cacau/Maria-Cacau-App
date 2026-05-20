@@ -43,7 +43,7 @@ python -m nuitka ^
     --copyright="%COPYRIGHT%" ^
     --include-data-dir=maria_cacau/assets=maria_cacau/assets ^
     --include-data-files=pyproject.toml=pyproject.toml ^
-    --include-data-files=venv\Lib\site-packages\pywinsparkle\WinSparkle.dll=WinSparkle.dll ^
+    --include-data-files=venv\Lib\site-packages\pywinsparkle\libs\x64\WinSparkle.dll=WinSparkle.dll ^
     --output-filename="%APP_NAME%" ^
     --output-dir="%OUTPUT%" ^
     %ENTRY%
