@@ -1,6 +1,3 @@
-# Documentos específicos
-pocs/modules/*
-
 # Wiki - Docs
 files/wiki/*
 
@@ -96,8 +93,6 @@ graphify-out/manifest.json
 
 # local token tracking, not useful to share
 graphify-out/cost.json
-
-graphify-out/*.html
 
 
 # Obsidian
