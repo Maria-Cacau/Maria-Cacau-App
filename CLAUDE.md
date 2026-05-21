@@ -16,11 +16,12 @@ Ao adicionar qualquer string visível ao usuário (labels, botões, menus, diál
 ## Finalizar demanda
 
 Quando o usuário pedir "finalizar a demanda" (ou variações), executar sempre:
-1. Rodar `isort` nos arquivos Python alterados na sessão (via `source .envrc && python3 -m isort <arquivos>`)
+1. Rodar `isort` no projeto todo (via `source .envrc && python3 -m isort`) -- SEMPRE
 2. Atualizar os arquivos em `.ai/` que forem afetados pelas mudanças da sessão
-3. Rodar `graphify update .` para manter o grafo atual
-4. Entregar a descrição do PR em bloco ```md para copy/paste — comparar com `develop` (ou `main`)
+3. Rodar `graphify update .` para manter o grafo atual -- SEMPRE
+4. Entregar a descrição do PR em bloco ```md para copy/paste``` — comparar com `develop` (`main` se for a develop)
    Estilo: `## Overview` com 1–2 parágrafos focados na motivação/impacto (não técnico), depois `## Ajustes feitos` com bullets contextuais. Sem checklist, sem referências a arquivos nos bullets.```
+5. Verificar se há perguntas pertinentes para atualizar no CBL.
 
 Nunca trazer código de outras branches, nunca abrir PR automaticamente.
 
