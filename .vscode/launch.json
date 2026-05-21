@@ -5,7 +5,7 @@
             "name": "Python: Arquivo Atual",
             "type": "debugpy",
             "request": "launch",
-            "program": "./maria_cacau/__main__.py",
+            "module": "maria_cacau",
             "console": "integratedTerminal"
         }
     ]
