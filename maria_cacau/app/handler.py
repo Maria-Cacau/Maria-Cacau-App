@@ -15,8 +15,8 @@ class MenuHandler:
 
     def setup_menus(self, menubar: QMenuBar) -> None:
         menubar.addMenu(self._sheets.view)
-        self._create_features_menu(menubar)
         menubar.addMenu(self._auth.view)
+        self._create_features_menu(menubar)
         self._create_help_menu(menubar)
 
     def _create_features_menu(self, menubar: QMenuBar) -> None:
@@ -37,3 +37,9 @@ class MenuHandler:
             lambda: QDesktopServices.openUrl(QUrl(strings.URL_DOCUMENTACAO))
         )
         help_menu.addAction(doc_action)
+
+        report_action = QAction(strings.ACT_REPORTAR_PROBLEMA, help_menu)
+        report_action.triggered.connect(
+            lambda: QDesktopServices.openUrl(QUrl(strings.URL_REPORTAR_PROBLEMA))
+        )
+        help_menu.addAction(report_action)
