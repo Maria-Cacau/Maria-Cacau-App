@@ -6,9 +6,7 @@ from PyQt6.QtCore import QObject, pyqtSignal
 
 
 class AuthSignals(QObject):
-    credentials_configured = pyqtSignal()
-    credentials_cleared    = pyqtSignal()
-    error                  = pyqtSignal(object)
+    error = pyqtSignal(object)
 
 
 signals: Final = AuthSignals()
