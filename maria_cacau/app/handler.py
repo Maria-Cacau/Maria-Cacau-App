@@ -32,14 +32,11 @@ class MenuHandler:
         help_menu = QMenu(strings.MNU_AJUDA, menubar)
         menubar.addAction(help_menu.menuAction())
 
-        doc_action = QAction(strings.ACT_DOCUMENTACAO, help_menu)
-        doc_action.triggered.connect(
-            lambda: QDesktopServices.openUrl(QUrl(strings.URL_DOCUMENTACAO))
-        )
-        help_menu.addAction(doc_action)
-
-        report_action = QAction(strings.ACT_REPORTAR_PROBLEMA, help_menu)
-        report_action.triggered.connect(
-            lambda: QDesktopServices.openUrl(QUrl(strings.URL_REPORTAR_PROBLEMA))
-        )
-        help_menu.addAction(report_action)
+        self._create_url_action(help_menu, strings.ACT_DOCUMENTACAO, strings.URL_DOCUMENTACAO)
+        self._create_url_action(help_menu, strings.ACT_LANÇAMENTO, strings.URL_LANÇAMENTO)
+        self._create_url_action(help_menu, strings.ACT_REPORTAR_PROBLEMA, strings.URL_REPORTAR_PROBLEMA)
+    
+    def _create_url_action(self, menu: QMenu, title: str, url: str) -> None:
+        action = QAction(title, menu)
+        action.triggered.connect(lambda: QDesktopServices.openUrl(QUrl(url)))
+        menu.addAction(action)

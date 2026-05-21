@@ -43,6 +43,8 @@ ACT_DOCUMENTACAO          = "Documentação"
 URL_DOCUMENTACAO          = "https://github.com/Maria-Cacau/.github/wiki"
 ACT_REPORTAR_PROBLEMA     = "Reportar problema"
 URL_REPORTAR_PROBLEMA     = "https://github.com/Maria-Cacau/.github/wiki/troubleshooting"
+ACT_LANÇAMENTO            = "Atualizações"
+URL_LANÇAMENTO            = "https://github.com/Maria-Cacau/Maria-Cacau-App/releases"
 
 # ── Diálogos ──────────────────────────────────────────────────────────────────
 
