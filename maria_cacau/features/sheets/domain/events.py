@@ -7,4 +7,3 @@ class FeatureEvents(Enum):
     SHEET_RENAMED   = "Planilha renomeada"
     SHEET_REMOVED   = "Planilha removida"
     SHEET_ERROR     = "Erro ao conectar planilha"
-    CACHE_CLEAR     = "Cache limpo"

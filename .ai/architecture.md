@@ -320,8 +320,8 @@ Todos os signals globais do app vivem no singleton `bus`. Viewmodels emitem; con
 |---|---|
 | App | `app_init_finished` |
 | Auth | `credentials_configured`, `credentials_cleared` |
-| Sheets | `cache_cleared`, `sheet_connected(obj)`, `sheet_selected(obj)`, `sheet_renamed(obj)` |
-| Requests | `request_started(Services)`, `request_finished(Services)` | O evento `CACHE_CLEAR` é logado na observabilidade. Cache hits também geram log via `FeatureEvents.CACHE_HIT` de cada feature.
+| Sheets | `sheet_connected(obj)`, `sheet_selected(obj)`, `sheet_renamed(obj)` |
+| Requests | `request_started(Services)`, `request_finished(Services)` |
 
 ## Status bar (`features/status_bar/`)
 
@@ -371,7 +371,6 @@ Módulo `maria_cacau/core/observability.py` — singleton `observability` com en
 | `SHEET_SELECT` | `name=`, `sheet_id=` | Planilha existente selecionada |
 | `BTN_COPY` | `feature=` | Botão Copiar clicado (entregas ou produtos) |
 | `PREWARM_DONE` | `duration_s=` | Pré-aquecimento OAuth + TLS concluído |
-| `CACHE_CLEAR` | — | Cache em memória limpo pelo usuário (Arquivo → Limpar cache) |
 | `ERROR` | `msg=`, `where=` (opcional), `duration_s=` (opcional) | Qualquer exceção capturada |
 
 Saída: `~/.mariacacau/logs.log` (append-only, formato `YYYY-MM-DD HH:MM:SS  LEVEL  mensagem`).

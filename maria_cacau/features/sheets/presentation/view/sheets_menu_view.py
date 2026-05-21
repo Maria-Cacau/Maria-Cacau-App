@@ -30,10 +30,6 @@ class SheetsMenuView(QMenu):
         self._act_conectar.setMenuRole(QAction.MenuRole.NoRole)
         self._act_conectar.triggered.connect(self.connect_triggered)
 
-        self._act_limpar   = QAction(strings.ACT_LIMPAR_CACHE, self)
-        self._act_limpar.setMenuRole(QAction.MenuRole.NoRole)
-        self._act_limpar.triggered.connect(self.cache_clear_triggered)
-
         self._menus:          dict[str, QMenu]   = {}
         self._select_actions: dict[str, QAction] = {}
         self._separators:     dict[str, QAction] = {}
@@ -41,8 +37,6 @@ class SheetsMenuView(QMenu):
     def _setup_layout(self) -> None:
         self.addMenu(self._submenu)
         self.addAction(self._act_conectar)
-        self.addSeparator()
-        self.addAction(self._act_limpar)
 
     def add_or_update_sheet(self, name: str, sheet_id: str) -> None:
         if sheet_id in self._menus:

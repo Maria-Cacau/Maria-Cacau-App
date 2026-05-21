@@ -10,7 +10,6 @@ class _EventBus(QObject):
     credentials_cleared    = pyqtSignal()
 
     # ── Sheets ────────────────────────────────────────────────────────────────
-    cache_cleared   = pyqtSignal()
     sheet_connected = pyqtSignal(object)   # SheetModel
     sheet_selected  = pyqtSignal(object)   # SheetModel
     sheet_renamed   = pyqtSignal(object)   # SheetModel

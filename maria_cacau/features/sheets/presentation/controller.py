@@ -26,7 +26,6 @@ class SheetsController:
         self.view.connect_triggered.connect(self._on_connect)
         self.view.sheet_selected.connect(self._on_select)
         self.view.sheet_remove_requested.connect(self._on_remove_requested)
-        self.view.cache_clear_triggered.connect(self._on_clear_cache)
         bus.app_init_finished.connect(self._on_init_finished)
         bus.sheet_connected.connect(self._on_connected)
         bus.sheet_selected.connect(self._on_selected)
@@ -93,10 +92,6 @@ class SheetsController:
     def _on_init_finished(self) -> None:
         if session.active_sheet_id:
             self.view.set_active(session.active_sheet_id)
-
-    def _on_clear_cache(self) -> None:
-        bus.cache_cleared.emit()
-        observability.log(ObsEv.CACHE_CLEAR)
 
     def _on_select(self, sheet_id: str) -> None:
         self.viewmodel.select(sheet_id)
