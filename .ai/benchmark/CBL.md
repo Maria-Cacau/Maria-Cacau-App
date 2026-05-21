@@ -877,3 +877,73 @@ No repository. Clean Arch: o use case orquestra, o repository encapsula acesso a
 **P: Por que `QFormLayout` não expande os campos no macOS como no Windows?**
 
 No macOS, o `QFormLayout` usa por padrão a política `DontGrowFields` — os campos ficam com o tamanho mínimo necessário em vez de se expandirem para preencher o espaço disponível. A correção é `form.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)`, que força os campos com `QSizePolicy.Expanding` a ocuparem toda a largura disponível — comportamento padrão no Windows.
+
+---
+
+## Sessão — Mai/2026 (GitHub: Organização, Wiki e Auto-Update)
+
+---
+
+**P: Qual a boa prática para centralizar issues, wiki e assets em um repositório GitHub com múltiplos repos?**
+
+O GitHub reconhece o repo `.github` como especial dentro de uma organização: o `README.md` aparece na página pública da org, templates de issue em `.github/ISSUE_TEMPLATE/` valem para toda a org automaticamente, e o `profile/README.md` é o perfil público. Para centralizar suporte e assets, o `.github` elimina a necessidade de um repo separado (ex: `Support`) e mantém tudo no lugar que o GitHub espera. Issues abertas lá funcionam como canal oficial de suporte sem que o usuário precise navegar pelo repo de código.
+
+---
+
+**P: Por que o glob `**.egg-info` não funciona no `files.exclude` do VS Code?**
+
+O `**` no glob do VS Code significa "qualquer número de segmentos de caminho" e precisa de `/` para separar do padrão seguinte. `**.egg-info` sem a barra não casa com nada. O correto é `**/*.egg-info`, seguindo o mesmo padrão dos outros itens do `files.exclude` (`**/__pycache__`, `**/.DS_Store`).
+
+---
+
+**P: Como fazer auto-update silencioso em uma aplicação Python desktop? Quais abordagens existem?**
+
+Três níveis de complexidade: (1) notificação — checa a GitHub API no startup, exibe aviso com link; (2) download automático — baixa o instalador em background, abre para o usuário instalar; (3) substituição silenciosa — o app se atualiza sozinho sem interação. Para público leigo, o nível 3 é necessário. As opções de mercado: **WinSparkle** (`pywinsparkle`) — biblioteca madura usada pelo VLC, lê um `appcast.xml` e cuida de todo o fluxo com dialog nativo; **updater customizado** — launcher separado que checa a GitHub API, baixa o asset do release e instala silenciosamente; **PyUpdater** — foi o padrão para Python+PyInstaller, hoje abandonado. Decisão: WinSparkle, por delegar toda a responsabilidade para a lib.
+
+---
+
+**P: O `pywinsparkle` é compatível com Nuitka `--onefile`?**
+
+Não diretamente — o `pywinsparkle` está hardcoded para PyInstaller. Internamente faz `sys._MEIPASS` (exclusivo do PyInstaller) para localizar a `WinSparkle.dll`. Com Nuitka `--onefile`, `sys.frozen = True` é setado corretamente, mas `sys._MEIPASS` não existe, causando `AttributeError`. A solução é um monkey-patch antes do `import pywinsparkle`: `sys._MEIPASS = os.path.dirname(os.path.abspath(__file__))`. Com Nuitka `--onefile`, `__file__` aponta para o diretório temporário de extração — exatamente onde a DLL estará.
+
+---
+
+**P: Instalar `pywinsparkle` no macOS quebra a aplicação?**
+
+Não. O `pywinsparkle` internamente guarda o carregamento da DLL com `if os.name == "nt"` — no macOS importa sem erros mas não faz nada. No entanto, o pip não encontra wheel compatível para macOS e falha na instalação. A solução é usar o environment marker no `pyproject.toml`: `"pywinsparkle; sys_platform == 'win32'"`. Assim o pip ignora a dependência em outras plataformas.
+
+---
+
+**P: Como fazer um relative import com alias em Python?**
+
+`import .modulo as alias` não existe em Python. A sintaxe correta é `from . import modulo as alias`. O `import` relativo sempre exige o `from` como prefixo.
+
+---
+
+**P: Como suprimir avisos do Pylance para linhas específicas sem desativar a análise do arquivo inteiro?**
+
+Adicionar `# type: ignore[import]` no final da linha problemática. O código entre colchetes especifica o tipo de erro — mais preciso do que `# type: ignore` genérico. Funciona para Pylance, Pyright e mypy. Para o `pywinsparkle`, o aviso ocorre porque a lib não tem wheel para macOS, então o Pylance não encontra o módulo no ambiente de desenvolvimento. O `[import]` suprime exatamente esse erro sem afetar nenhuma outra verificação do arquivo.
+
+---
+
+**P: Por que o `import pywinsparkle` ficou dentro do método em vez de no topo do arquivo, como é a convenção?**
+
+Exceção justificada pelo monkey-patch. O `setup()` precisa setar `sys._MEIPASS` *antes* do `import pywinsparkle` — pois a lib lê esse atributo no momento da importação para localizar a DLL. Se o import estivesse no topo do arquivo, seria executado no carregamento do módulo, antes de qualquer método rodar, tornando o patch inútil. É um dos dois casos legítimos de import dentro de função: dependência que precisa de pré-condição antes de ser carregada. O comentário `# type: ignore[import]` na mesma linha cobre o aviso do Pylance.
+
+---
+
+**P: Qual a melhor forma de validar a implementação do auto-update com WinSparkle/pywinsparkle?**
+
+A validação é feita em camadas: (1) unit tests com mock de `sys.platform` e `pywinsparkle` — testam a lógica de guards e o patch do `_MEIPASS` sem precisar de Windows; (2) verificação do `appcast.xml` — testa se a URL está acessível e o XML é válido; (3) checklist manual no Windows — rodar o `.exe` gerado pelo Nuitka e confirmar que o WinSparkle não crasha e exibe o dialog de update quando a versão no appcast é maior. A decisão foi validar via camada 3 ao gerar o próximo build de teste.
+
+---
+
+**P: Como funcionam os testes unitários em Python? Comparação com XCTest.**
+
+Os dois principais frameworks são `unittest` (stdlib, estilo XCTest com herança de `TestCase` e métodos `assertX`) e `pytest` (padrão da indústria, usa `assert` nativo, menos boilerplate). O `pytest` é o mais adotado. Fixtures substituem `setUp/tearDown` de forma mais flexível — são funções injetadas por parâmetro com escopo configurável. Mocks são feitos com `unittest.mock.patch`, que troca objetos em runtime e restaura depois, equivalente a substituir protocolos por doubles em Swift.
+
+---
+
+**P: Qual a boa prática de organização de pastas de testes em Python? Co-located vs separado.**
+
+Existem dois modelos: `tests/` separado na raiz (convenção dominante, zero config com pytest) e testes co-localizados junto ao source de cada feature (comum em arquiteturas feature-first, facilita deletar features com os testes juntos). O padrão adotado no projeto MC Consultas é `tests/` separado, espelhando a estrutura de `maria_cacau/`.
