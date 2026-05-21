@@ -1,0 +1,26 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Order",
+    "type": "object",
+    "required": ["number", "status", "customer", "receiver", "products", "financial", "delivery"],
+    "properties": {
+        "number":        { "type": "string" },
+        "status":        { "type": "string", "description": "derivado: active | dispatched | cancelled" },
+        "source":        { "type": "string", "description": "ex: Instagram, Google, Cliente" },
+        "tiny_code":     { "type": "integer", "description": "0 = não integrado ao ERP" },
+
+        "customer":      { "$ref": "./shared.schema.json#/$defs/Customer" },
+        "receiver":      { "$ref": "./shared.schema.json#/$defs/Receiver" },
+        "customization": { "$ref": "./shared.schema.json#/$defs/Customization" },
+
+        "products": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "$ref": "./shared.schema.json#/$defs/ProductItem" }
+        },
+        "products_note": { "type": "string", "description": "campo livre para produto fora dos slots" },
+
+        "financial": { "$ref": "./shared.schema.json#/$defs/Financial" },
+        "delivery":  { "$ref": "./shared.schema.json#/$defs/Delivery" }
+    }
+}

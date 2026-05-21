@@ -20,7 +20,10 @@ if not exist "%VENV_NAME%\" (
 REM Instala o pacote e suas dependencias
 call %VENV_NAME%\Scripts\activate.bat
 python -m pip install --upgrade pip
-python -m pip install -e .
+python -m pip install -e ".[dev]"
+
+REM Registra a pasta de hooks do projeto
+git config core.hooksPath .githooks
 
 REM direnv e opcional no Windows — o VS Code detecta o venv automaticamente
 where direnv >nul 2>&1

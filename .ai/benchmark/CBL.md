@@ -431,3 +431,449 @@ Não é nativo — é uma lib terceira (`pip install git-filter-repo`). O git te
 **P: É possível rodar um script automaticamente após um `git merge`?**
 
 Sim, via hook `post-merge`. Roda após qualquer `git merge` ou `git pull` bem-sucedido. Padrão útil: verificar se `pyproject.toml` mudou com `git diff-tree` e rodar `pip install -e .` só quando necessário — evita rodar setup completo em todo merge.
+
+---
+
+## Sessão — Mai/2026 (Arquitetura: Módulo de Network)
+
+---
+
+**P: O módulo `core/network` está certo dessa forma? (api.py, request, response, client, config)**
+
+Estrutura geral boa — separação de responsabilidades correta. Dois problemas encontrados: (1) **bug real**: `field(default_factory=HTTPMethod.GET)` em `_request.py` — `default_factory` espera um callable, mas `HTTPMethod.GET` é uma string `"GET"`; em runtime levanta `TypeError`. Correto: `method: HTTPMethod = HTTPMethod.GET`. (2) `API(ABC)` sem nenhum `@abstractmethod` não é verdadeiramente abstrata — Python permite instanciar diretamente. O `import json` dentro do método `json()` do `HTTPResponse` também é ruído menor (melhor no topo do arquivo).
+
+---
+
+**P: Quero que `call()` e `entity()` sejam finais (sem override) e que o `__init__` seja acionado automaticamente ao herdar. Como garantir que o `path` seja fornecido?**
+
+O padrão correto: `path` como `@property @abstractmethod`. O `__init__` da base lê `self.path` — sem precisar receber `path` como argumento. Subclasses só declaram a property; ao instanciar, o `__init__` base roda automaticamente e lê o valor. Para travar `call` e `entity`: `@final` do `typing` — não impede override em runtime, mas mypy/pyright reclamam. Se algum `@abstractmethod` não for implementado, Python lança `TypeError` na instanciação (comportamento nativo de ABC).
+
+---
+
+**P: Chamar o `TypeVar` de `Entity` em vez de `T` faria sentido?**
+
+Faz sentido no contexto — comunica intenção. O trade-off: `T` é o padrão neutro do Python, `Entity` foge da convenção mas é mais legível. Ambos são válidos. `EntityT` foi o escolhido: sufixo `T` sinaliza que é um `TypeVar`, prefixo dá contexto semântico. É o mesmo padrão que a stdlib usa em `AnyStr`, `KT`, `VT`.
+
+---
+
+**P: `ENTITY_T` (maiúsculas) seria uma boa forma de nomear o `TypeVar`?**
+
+Não. Em Python, maiúsculas são convenção para constantes (`CONSTANTE = valor`). `ENTITY_T` seria lido como constante, não como tipo genérico. A convenção para `TypeVar` é PascalCase: `EntityT = TypeVar("EntityT")`.
+
+---
+
+## Sessão — Mai/2026 (Estudo: Arquitetura GSNetworking + Design Network Python)
+
+---
+
+**P: Quais são os pontos fortes e o que estaria pendente/poderia melhorar na arquitetura do GSNetworking?**
+
+Pontos fortes: separação total de responsabilidades (lib cuida só do transporte, consumer decide Codable e erros de domínio), plugin system extensível com ordem de execução (`amongTheFirsts/unaware/amongTheLasts`) e resolução Mock > Primary > First, certificate pinning robusto com wildcards e SHA256/SHA512, proteção de headers por nível (`.mandatory`, `.inmutable`) que impede plugins de sobrescrever campos críticos, e testabilidade com mocks inclusos no próprio módulo. Pontos de melhoria: `URLSession` é recriada a cada request (property computada, sem connection pool reaproveitado), WebSockets usa callbacks em vez de async/await (inconsistência com HTTP), sem plugin padrão para token refresh/OAuth, `assert()` no `baseURL` em vez de erro tipado, e sem suporte nativo a progress de upload/download ou deduplicação de requests.
+
+---
+
+**P: O que é `field(default_factory=dict)`?**
+
+Solução para o problema de valores padrão mutáveis em `@dataclass`. Em Python, colocar `headers: dict = {}` como padrão direto cria um único dict compartilhado entre todas as instâncias — o que causa contaminação cruzada entre objetos. `field(default_factory=dict)` diz ao dataclass para chamar `dict()` a cada nova instância, criando um dict independente. O argumento é qualquer callable: `default_factory=list`, `default_factory=lambda: {"Content-Type": "application/json"}`. Em Swift isso não existe porque `struct` já cria cópias por valor.
+
+---
+
+**P: O que é esse `|` sendo usado? Exemplo: `dict[str, str] | None`**
+
+É a sintaxe de union type do Python 3.10+, equivalente ao `Optional` do Swift. `dict[str, str] | None` significa "pode ser um `dict[str, str]` ou `None`" — o mesmo que `[String: String]?` em Swift. Antes do Python 3.10 era necessário `from typing import Optional` e escrever `Optional[Dict[str, str]]`. O `|` funciona para qualquer combinação: `int | str` (um ou outro, sempre presente), `int | str | None` (qualquer dos três incluindo nada).
+
+---
+
+**P: O import dentro de um método é uma boa prática?**
+
+Não como padrão geral — import no topo do arquivo é a convenção. Import dentro de método tem dois usos legítimos: evitar importação circular (quando módulo A importa B e B importa A) e adiar carregamento de dependências pesadas e opcionais (ex: `import reportlab` só quando a função de exportar PDF for chamada). No contexto do `json()` do `HTTPResponse`, o `import json` estava desnecessariamente dentro do método — `json` é stdlib, leve, e não há ciclo. O correto é no topo do arquivo.
+
+---
+
+**P: Esse método não deveria se chamar `to_json` por padrão?**
+
+Não — `to_json` seria semanticamente errado. A convenção em Python é que `to_json` **serializa** (objeto → string/bytes JSON). O método faz o oposto: **desserializa** os bytes do body em `dict`. O nome `.json()` foi herdado do `httpx` e `requests`, que estabeleceram esse padrão no ecossistema Python. Seguir o padrão das libs consagradas tem valor: qualquer dev Python reconhece imediatamente o que o método faz.
+
+---
+
+**P: Em Swift usamos enum para lidar com erros. Em Python a boa prática seria criar classes separadas mesmo?**
+
+Sim. Em Swift `enum` com associated values é o mecanismo natural para erros tipados. Em Python o padrão é hierarquia de classes herdando de `Exception`. A razão é que Python usa `try/except` com tipos de exceção — `except HTTPResponseError` captura especificamente esse erro, enquanto `except NetworkError` captura todos os erros da lib. Enums em Python não integram com esse mecanismo. A hierarquia `NetworkError → HTTPRequestError / HTTPResponseError` é o equivalente pythônico direto.
+
+---
+
+**P: O que é esse `TYPE_CHECKING`?**
+
+É uma constante de `typing` que vale `False` em runtime e `True` apenas quando ferramentas de análise estática (mypy, Pylance) estão verificando tipos. Usado com `if TYPE_CHECKING: from módulo import Tipo` para importar tipos apenas na análise — nunca em execução — quebrando importações circulares. No contexto do design proposto, não era necessário: não havia ciclo real entre `_config.py` e `_client.py`. Foi removido em favor de import direto, que é sempre preferível quando não há ciclo.
+
+---
+
+**P: Por que aspas no tipo ao invés do tipo direto? Exemplo: `response: "HTTPResponse"`**
+
+As aspas criam uma *forward reference* — o Python trata o tipo como string e não tenta resolvê-lo imediatamente. Útil em um único caso legítimo: referenciar uma classe dentro da própria definição dela (ex: `next: "Node | None"` dentro de `class Node`), quando a classe ainda não terminou de ser definida. Fora isso, se o tipo vem de outro arquivo, basta importar e usar diretamente. As aspas no documento foram descuido — foram removidas e substituídas por imports diretos.
+
+---
+
+**P: O que é `T = TypeVar("T")`?**
+
+É a forma do Python 3.12- de declarar um tipo genérico — equivalente ao `<T>` do Swift. Cria um placeholder que representa "algum tipo definido na chamada". Em `entity(self, cls: Type[T]) -> T`, garante que o tipo recebido e o tipo retornado são o mesmo: se passar `Pedido`, recebe `Pedido`, não `Any`. A diferença pro Swift é que Python precisa receber a classe explicitamente como parâmetro (`cls`) porque não tem inferência nesse nível. No Python 3.13 (versão do projeto), a sintaxe moderna elimina o `TypeVar`: `def entity[T](self, cls: type[T]) -> T` — sem imports adicionais.
+
+---
+
+**P: A configuração do WireMock precisa ser necessariamente no arquivo main ou poderia estar em outro local?**
+
+Pode estar em qualquer lugar — `configure()` e `override()` apenas alteram variáveis globais do módulo, então qualquer código que rode antes do primeiro request pode chamá-las. O `__main__.py` é a sugestão mais comum por ser o ponto de entrada, mas não é obrigatório. Casos comuns: arquivo de configuração de ambiente, setup de testes via `conftest.py` (com `yield` + `clear_override()` para garantir limpeza mesmo em falha), ou menu interno de dev. A única regra real é: quem chama `override()` é responsável por chamar `clear_override()` depois.
+
+---
+
+## Sessão — Mai/2026 (Setup: isort, deps de dev e git hooks)
+
+---
+
+**P: Como instalar as dependências de desenvolvimento definidas em `pyproject.toml`? O `build.sh` não estava fazendo isso.**
+
+`pip install -e .` instala apenas as dependências da seção `[project.dependencies]`. Para instalar os extras declarados em `[project.optional-dependencies]`, é necessário nomear o grupo: `pip install -e ".[dev]"`. Para múltiplos grupos: `pip install -e ".[dev,build]"`. O `build.sh` foi atualizado para usar `".[dev]"`.
+
+---
+
+**P: Quais tipos de hooks o git oferece?**
+
+Os hooks são divididos por contexto. **Commit**: `pre-commit`, `prepare-commit-msg`, `commit-msg`, `post-commit`. **Push**: `pre-push`. **Merge/Rebase**: `pre-merge-commit`, `post-merge`, `pre-rebase`. **Checkout**: `post-checkout`. **Server-side**: `pre-receive`, `update`, `post-receive`. Não existe hook `pre-merge` — o mais próximo de "antes de abrir PR" é o `pre-push` (roda antes do push ao remote); para garantir que o merge local esteja limpo, o correto é `pre-merge-commit`.
+
+---
+
+**P: Dentro de um git hook, precisa ativar o venv antes de rodar comandos Python?**
+
+Sim. O git executa hooks em um subshell sem qualquer ativação de ambiente virtual — `isort` e `pip` resolveriam para as versões do sistema (ou não encontrariam o comando). A solução é adicionar `source venv/bin/activate` no início do hook para garantir que os binários corretos do projeto sejam usados.
+
+---
+
+## Sessão — Mai/2026 (Arquitetura: Módulo Backend)
+
+---
+
+**P: Dá para usar Flask com `@route` como módulo local, sem fazer o `.run()`? Isso causaria algum problema?**
+
+Sim. Flask não precisa de `.run()` para funcionar como roteador — o `.run()` sobe o servidor HTTP real (Werkzeug). O que faz o roteamento é o `app.wsgi_app`, que pode ser chamado diretamente. O padrão idiomático é usar `app.test_client()`, que expõe um `client.open()` in-process: recebe path, method, query_string e body, e retorna um `TestResponse` — sem socket, sem thread, sem servidor real. O `BackendServer` usa esse mecanismo para converter `HTTPRequest → Flask → HTTPResponse`.
+
+---
+
+**P: Se adicionarmos o Flask mas não chamarmos `.run()`, e usarmos funções diretas em vez de `@route`, qual é o problema?**
+
+O problema central é o `flask.request` — o proxy de contexto de requisição do Flask. Fora do ciclo de requisição do Flask (ou seja, fora de um `test_client` ou servidor real), `flask.request` não existe e levanta `RuntimeError: Working outside of request context`. Chamar a função de view diretamente sem passar pelo Flask burla o roteamento mas ainda depende de `flask.request` dentro da função. A solução correta é passar pelo `test_client` — que inicializa o contexto corretamente — ou abandonar o Flask e usar funções puras com parâmetros explícitos.
+
+---
+
+**P: Qual a melhor prática para documentar o contrato de um JSON? JSONC ou JSON Schema?**
+
+JSON Schema (`draft-2020-12`) é a melhor prática para contratos: é um padrão aberto (json-schema.org), suporta validação programática, integra com VS Code (IntelliSense em arquivos com `$schema`), e pode ser usado em testes unitários (`jsonschema` no Python). JSONC (JSON com comentários) é atalho de documentação — útil em config, mas não valida nada. Para contratos de API, mesmo que in-process, JSON Schema é mais robusto.
+
+---
+
+**P: Como o JSON Schema permite reutilizar sub-objetos entre schemas diferentes?**
+
+Via `$defs` + `$ref`. No `shared.schema.json` define-se os objetos reutilizáveis dentro de `"$defs"`: `Address`, `Customer`, `PaymentItem`, etc. Outros schemas referenciam com `"$ref": "./shared.schema.json#/$defs/Customer"` — o validador resolve o caminho relativo + fragmento JSON Pointer. É o mecanismo padrão de composição do JSON Schema, equivalente ao `typealias` / `struct` compartilhado no Swift.
+
+---
+
+**P: Qual é a tradução de "parcela" (de compra parcelada) para o inglês?**
+
+`installment` (AmE) ou `instalment` (BrE). É o termo técnico consagrado no contexto financeiro: `installment plan` = plano de parcelamento, `installment payment` = pagamento em parcela. Não confundir com `payment` (pagamento em geral) nem com `portion` (que é mais genérico). Adotado como nome do campo no modelo `PaymentItem`.
+
+---
+
+**P: O `backend/` faz mais sentido estar fora do `core/`, na mesma hierarquia?**
+
+Sim — decisão de arquitetura. `core/` é infraestrutura pura (network, storage, sheets): não conhece regras de negócio, não conhece a planilha. `backend/` tem regras de negócio e conhece os dados do domínio (colunas, modelos, lógica de serviço). Misturar os dois dentro de `core/` quebraria essa separação. Fluxo correto: `features/ → backend/ → core/` — cada camada só conhece a camada abaixo.
+
+---
+
+**P: Faz sentido usar `@dataclass` do Python para representar o contrato JSON dos models?**
+
+Sim — é o padrão mais Pythônico para objetos de dados sem lógica. `@dataclass` gera `__init__`, `__repr__` e `__eq__` automaticamente a partir dos atributos. Para serialização, `dataclasses.asdict()` converte recursivamente o objeto (e objetos aninhados) para `dict` JSON-ready. Campos obrigatórios (sem default) ficam antes dos opcionais (com default ou `| None`) — o Python impõe essa ordem no `__init__` gerado.
+
+---
+
+**P: Faz sentido o mapper ser uma classe separada dentro do próprio arquivo de service?**
+
+Sim. O Mapper fica no mesmo arquivo do service (`payments_service.py`) e tem uma única responsabilidade: transformar `list[Order]` em `dict` JSON-ready via `dataclasses.asdict()`. A route fica limpa — só chama service + mapper + `jsonify`. O padrão é: `class PaymentsMapper` com `@staticmethod to_response(orders) -> dict` e `class PaymentsService` com a lógica. É análogo ao Presenter do Clean Arch, mas mais simples por ser in-process.
+
+---
+
+**P: `StrEnum` vs `Enum` — qual a diferença e quando usar `StrEnum`?**
+
+`StrEnum` (Python 3.11+) é um `Enum` cujos valores são strings e que herda de `str` diretamente. Isso significa que o próprio membro do enum **é** uma string — comparação direta `col == "pedido"` funciona sem `.value`. Com `Enum` clássico, seria necessário `col.value == "pedido"`. Para mapeamento de colunas da planilha, `StrEnum` é ideal: `df[Col.ORDER]` funciona diretamente como chave de DataFrame sem conversão explícita.
+
+---
+
+## Sessão — Mai/2026 (Arquitetura: GoogleSheetsDataSource e camadas do backend)
+
+---
+
+**P: Qual o padrão Flask/backend para separar acesso a dados, regras de negócio e rotas? Como trazer a mesma experiência de um banco SQL para a planilha?**
+
+O padrão clássico é `Route → Service → Repository`. É o equivalente ao que o SQLAlchemy faz com banco de dados: `SQLAlchemy engine` (gerencia conexão) é análogo ao `GoogleSheetsDataSource`; o `Repository/DAO` (sabe como buscar os dados) é o `SheetsRepository`; o `Service` aplica regra de negócio. A planilha é a fonte de dados — o data source sabe como se conectar e otimizar o acesso; o repository não sabe que existe gspread; o service não sabe que existe planilha.
+
+---
+
+**P: Repository vs Use Case — qual a diferença? Por que o backend usa Repository e não Use Case?**
+
+Repository = sabe *como buscar dados* de uma fonte. Não tem regra de negócio — só retorna dados. Use Case = orquestra *o fluxo de uma operação*, coordena repositórios, serviços e cache. No backend Flask, o Use Case não existe como camada formal — o Service absorve essa responsabilidade. O Use Case aparece fora do backend, dentro das features (PyQt6), porque a feature precisa orquestrar: chama o backend, aplica cache, monta o ViewModel.
+
+---
+
+**P: O que são os "dois passes" no acesso à planilha?**
+
+Otimização para não baixar a planilha inteira. Passo 1: lê só a coluna DATA (muito leve). Passo 2: identifica quais linhas têm as datas pedidas e faz `batch_get` só nessas linhas. Sem isso a alternativa seria `get_all_values()` — baixa todas as linhas toda vez. É o equivalente ao MySQL executar `SELECT ... WHERE data = ?` internamente: o consumer não sabe como funciona, só vê o resultado.
+
+---
+
+**P: Faz sentido chamar de `DataSource` em vez de `Service` para a camada de acesso à planilha?**
+
+Sim — e é mais preciso. "Service" no backend já tem um papel definido (regra de negócio). A camada que gerencia a conexão com a planilha é análoga ao SQLAlchemy engine — não é um service, é a fonte de dados. `GoogleSheetsDataSource` comunica isso claramente. Quando a planilha virar SQL, o `GoogleSheetsDataSource` é substituído por `SQLDataSource` com a mesma interface — nada mais muda.
+
+---
+
+**P: Como funciona o `before_request` do Flask e como usar para validar conexão antes de cada rota?**
+
+`before_request` é um hook que roda automaticamente antes de qualquer rota registrada no Blueprint. Registrado uma vez, todas as rotas do Blueprint ganham a validação sem código repetido. No nosso caso: `if not data_source.is_ready(): return jsonify({...}), 503`. É o ponto correto para checar pré-condições de infraestrutura — equivalente a um middleware de autenticação no Express.js.
+
+---
+
+**P: Por que o prewarm usa uma thread? O que ele faz?**
+
+O prewarm faz chamadas de rede: refresh do token OAuth e pré-aquecimento da conexão TLS com o Google. Isso pode levar segundos. Rodar na thread principal travaria a inicialização do app. Com uma thread em background, o app sobe instantaneamente e o prewarm acontece em paralelo. O `wait_ready()` no `before_request` sincroniza quando necessário — se o usuário demorou navegando pela UI, o prewarm já terminou e `wait_ready()` retorna na hora sem custo.
+
+---
+
+**P: Por que o `connect()` é chamado pelo `BackendServer` e não no `__init__` do próprio DataSource?**
+
+Separação de ciclo de vida. O data source não gerencia quando ele se conecta — quem decide é o servidor. Se amanhã o backend for deployado como serviço real, o `connect()` sai do `BackendServer` e vai para o startup do servidor sem mudar nada no `GoogleSheetsDataSource`. Se o `__init__` chamasse `connect()` automaticamente, a classe perderia esse controle externo.
+
+---
+
+## Sessão — Mai/2026 (Estudo: Erros no DataSource e separação de responsabilidades)
+
+---
+
+**P: Como seria o levantamento de erros no GoogleSheetsDataSource — quais erros cada método pode gerar?**
+
+Mapeados 16 erros em 7 categorias: credenciais (4: arquivo não encontrado, corrompido, formato inválido, falha ao salvar), autenticação/token (2: credencial rejeitada pelo Google, token OAuth expirado), planilha (4: sheet_id inválido, planilha não encontrada, sem permissão, falha ao salvar), rede (2: sem conexão, timeout), API Google (2: resposta fora do contrato, quota excedida), dados da planilha (3: data inválida, range invertido, estrutura inesperada), estado do DataSource (2: não pronto ao chamar fetch, prewarm falhou). O único reuso real é `TokenExpiredError` — aparece no prewarm e no fetch em runtime com causa idêntica (token OAuth inválido). O `PrewarmFailedError` é especial: o erro da thread background é guardado na instância e relançado em `wait_ready()`.
+
+---
+
+**P: Dá para centralizar todo o tratamento de erros em outra classe, deixando o `GoogleSheetsDataSource` só com lógica?**
+
+Sim. O padrão é separar em `_error_handlers.py` com uma classe `_SheetsGuard` (context managers + validações) e funções decorator (`handle_api`, `handle_sheet_setup`). O DataSource fica com ~80 linhas de lógica pura; o `_error_handlers.py` fica com ~70 linhas de tratamento. A única exceção é `_do_prewarm()`: a thread background precisa guardar o erro na instância para relançar depois, então mantém `try/except` explícito — único caso onde o padrão não encaixa.
+
+---
+
+**P: Usar `@contextmanager` para centralizar tratamento de erros é uma boa prática em Python?**
+
+Válido mas não convencional. Context manager em Python tem semântica forte de gerenciamento de recurso (abre → usa → fecha) — usar só para mapear exceções funciona, mas `with _guard.api():` não comunica imediatamente que é um guard de erro. O padrão mais idiomático para tratamento de erros é o decorator (`@handle_api`), que aparece na assinatura do método e comunica a intenção diretamente. O híbrido é a solução honesta: decorator para métodos simples onde o tipo de erro dominante é único; context manager quando há múltiplas operações distintas dentro do mesmo método que levantam erros diferentes (ex: `set_credentials` faz leitura de arquivo + I/O local + autenticação Google — três contextos de erro separados).
+
+---
+
+**P: O que é `@contextmanager`?**
+
+Decorator de `contextlib` que transforma uma função geradora em um context manager sem precisar implementar `__enter__` e `__exit__` manualmente. O código antes do `yield` roda no `__enter__`, o código depois roda no `__exit__`. Um `try/except` ao redor do `yield` captura exceções lançadas dentro do bloco `with`. Exemplo canônico da stdlib: `contextlib.suppress(FileNotFoundError)` — ignora a exceção especificada sem nenhum bloco extra. O `@contextmanager` é a alternativa legível a criar uma classe inteira só para gerenciar um recurso ou interceptar exceções.
+
+---
+
+## Sessão — Mai/2026 (Arquitetura: Contrato de erros e blueprint pai)
+
+---
+
+**P: Qual a boa prática em Python/Flask para criar um contrato de erros com as 4 informações (user_message, dev_message, http_status, error_code), considerando que o data source é isolado?**
+
+O equivalente ao protocolo Swift em Python é uma classe base com class-level attributes. Cada subclasse define os valores como atributos de classe — sem `__init__`, sem repetição. Flask oferece `@app.errorhandler(TipoDeErro)`: registrado uma vez no servidor, captura automaticamente qualquer exceção daquele tipo lançada em qualquer route da aplicação. O resultado é routes limpas sem `try/except` e sem `before_request` hardcoded. O `DataSourceError` deve carregar apenas os campos agnósticos de transporte (`code`, `user_message`, `dev_message`); o `http_status` fica em `BackendError` porque é um conceito HTTP — não pertence à camada de dados.
+
+---
+
+**P: Podemos usar duck typing — o DataSourceError ter os mesmos parâmetros que o BackendError para eliminar o translator?**
+
+Sim, funcionaria. O `@app.errorhandler(DataSourceError)` acessaria `e.code`, `e.user_message`, `e.dev_message`, `e.http_status` diretamente. O trade-off: `http_status` é um conceito HTTP dentro de uma camada que deveria ser agnóstica de transporte. Se o data source for substituído por MySQL ou usado em outro contexto (CLI, gRPC), os status codes HTTP são ruído. A decisão foi usar duck typing parcial: `DataSourceError` carrega os 3 campos agnósticos, e o translator adiciona apenas o `http_status`.
+
+---
+
+**P: O data source vai ser substituído por MySQL. Faz sentido o translator só para http_status, retornando -1 do lado do DataSource?**
+
+Sim — é a separação correta. `DataSourceError` carrega `code`, `user_message`, `dev_message` (agnósticos). O `backend/errors/_mapper.py` mantém uma tabela `{DataSourceError subclass → http_status}` e a função `translate()` monta o `BackendError` com os 4 campos. Quando o MySQL chegar: novas subclasses de `DataSourceError` com novo prefixo (ex: `MY01`), mesma estrutura do translator, `BackendError` e o contrato HTTP intocados.
+
+---
+
+## Sessão — Mai/2026 (Arquitetura: Shared Kernel e domain models)
+
+---
+
+**P: Faria sentido criar um repo "MCDomain" com os models/entidades compartilhados entre o backend e a aplicação?**
+
+A ideia tem nome no DDD: *shared kernel* — um pacote que carrega os tipos que ambos os lados do sistema conhecem. A lógica é válida: backend e app estão na mesma linguagem (Python), e a app precisa saber o shape do JSON para desserializar as respostas. Duplicar os models nos dois lados seria ruído real. A decisão foi: por ora, a app importa direto de `backend/shared/models.py` — o pacote já existe, só o empacotamento fica para quando o backend virar remoto (FastAPI no Railway). Quando isso acontecer, um pacote separado (`maria-cacau-domain`) faz sentido como dependência compartilhada. A distinção que fica clara: *entity/wire models* (contrato compartilhado, viveriam no MCDomain) vs *view-models* (orientados à UI, exclusivos da feature). Referência: `pocs/backend/shared-domain.md`.
+
+---
+
+## Sessão — Mai/2026 (Finalização: delivery feature)
+
+---
+
+**P: Faz sentido manter ações de copiar/salvar gráfico dentro do `ChartWidget` mesmo sendo Design System?**
+
+Sim. O argumento central é encapsulamento: o `ChartWidget` é o único que conhece o `_fig` interno (matplotlib `Figure`). Extrair essas ações para a view ou controller exigiria expor o `_fig` publicamente ou retornar bytes PNG fora do componente — complexidade sem benefício. Além disso, `copy_to_clipboard` e `save_to_file` são *capabilities do widget*, não regras de domínio: assim como `QTextBrowser` sabe copiar o próprio texto, `ChartWidget` sabe exportar o próprio gráfico. Qualquer feature que reusar o componente ganha o export de graça.
+
+---
+
+**P: Singular ou plural para o nome de uma pasta de feature? (`delivery` vs `deliveries`)**
+
+Para módulos de feature a convenção é singular — representa *o que a tela é*, não *o que ela lista*. Plural faz sentido no backend porque o endpoint *retorna uma coleção*. No frontend, olhando o próprio projeto (`home`, `products_resume`), o padrão é singular. `delivery` foi adotado também pela consistência com o blueprint do backend (`deliveries_bp`) — que usa plural por retornar dados — sem contaminar a nomenclatura da feature de UI.
+
+---
+
+## Sessão — Mai/2026 (Migração: orders_pendent para o backend)
+
+---
+
+**P: Por que as aspas no tipo de retorno de um método que retorna a própria classe? Exemplo: `-> "DeliveriesAPI"`**
+
+É uma *forward reference*. Quando Python parseia um método dentro de uma classe, a classe ainda não terminou de ser definida — então o nome dela não existe como símbolo no escopo ainda. As aspas dizem ao Python "não avalia agora, trata como string". A alternativa é adicionar `from __future__ import annotations` no topo do arquivo, o que torna todas as anotações lazy por padrão — eliminando a necessidade de aspas em qualquer ponto do arquivo.
+
+---
+
+**P: As chamadas paralelas aos dois endpoints (deliveries + payments) deveriam acontecer no repository ou no use case?**
+
+No use case. O repository sabe *como buscar* de uma fonte — seus métodos são independentes por endpoint. O use case decide *quando e como combinar* os dados e montar o view-model. Colocar orquestração no repository faria ele conhecer o `OrdersModel` (um conceito de UI), quebrando a separação de responsabilidades. O paralelismo com `ThreadPoolExecutor` é uma decisão de orquestração — pertence ao use case.
+
+---
+
+**P: `events.py` e `signals.py` pertencem ao `domain/` ou ao `presentation/`?**
+
+Ao `domain/`, apesar de hoje serem consumidos apenas na camada de apresentação. `events.py` define eventos de domínio da feature (ações que acontecem); `signals.py` é o mecanismo de comunicação entre camadas. Ambos podem ser consumidos por outras camadas no futuro — colocá-los em `presentation/` limitaria o acesso sem motivo. A regra prática: se o arquivo não tem dependência de PyQt6 ou UI, provavelmente é domínio. `signals.py` usa `pyqtSignal`, mas é o canal de comunicação da feature inteira — não exclusivo da UI.
+
+---
+
+**P: O blueprint do summary ter o nome "summary" em vez de "orders" afeta o path do endpoint GET /orders?**
+
+Não. O nome do blueprint (`Blueprint("summary", __name__)`) é apenas um identificador interno do Flask — usado em `url_for()` e no namespace de funções. O path da rota é definido exclusivamente no decorator (`@summary_bp.get("/orders")`). A renomeação foi necessária para evitar conflito de nome com o blueprint pai `orders_bp` criado em `orders/__init__.py` — dois blueprints com o mesmo nome no mesmo Flask app causam erro.
+
+---
+
+**P: Faz sentido colocar o before_request no nível da app ou no nível de orders?**
+
+No nível de `orders/`. O `check_connection` verifica se o data source está pronto — isso só faz sentido para rotas que acessam dados. As rotas de infra (`/auth`, `/source`, `/status`) não acessam o data source e não devem ser bloqueadas por esse check. Flask suporta blueprints aninhados: `before_request` no blueprint pai aplica-se a todos os sub-blueprints registrados nele. `orders/__init__.py` cria o blueprint pai `orders_bp`, registra `deliveries_bp`, `payments_bp` e `summary_bp` nele, e declara o `before_request` — cobertura automática para todas as subfeatures de orders.
+
+---
+
+## Sessão — Mai/2026 (Arquitetura: App shell, session e inicialização)
+
+---
+
+**P: O que existe no PyQt6/Python equivalente ao ciclo de vida do AppDelegate do Swift?**
+
+O PyQt6 oferece dois pontos principais de ciclo de vida: `QApplication.aboutToQuit` (signal emitido antes do app encerrar — equivalente ao `applicationWillTerminate`) e `QTimer.singleShot(0, callback)` (agenda uma chamada para o próximo loop do event loop — equivalente ao `applicationDidFinishLaunching`). Não existe um `AppDelegate` formal, mas o padrão `AppCoordinator` reproduz o mesmo comportamento: é instanciado no `__main__.py`, configura o app, cria a `MainWindow` e agenda a inicialização para logo após o app subir.
+
+---
+
+**P: Qual é a boa prática para injeção de dependências em Python, já que não temos o ecossistema do Swift (Swinject, etc.)?**
+
+Python favorece injeção manual sem container: quem cria as dependências as passa explicitamente via `__init__`. Para módulos como `LocalClient`, o padrão idiomático é um singleton de módulo configurado por uma função `configure()` — cada subsistema chama `configure()` uma vez no startup e depois acessa a instância global diretamente. Containers DI (Dependency Injector, injector) existem mas são raros em projetos sem necessidade de autowiring. O padrão do projeto é: `AppCoordinator` cria e propriedade as dependências; quem precisa de algo externo importa o módulo com o singleton.
+
+---
+
+**P: Quando um signal PyQt é emitido, uma nova instância da classe conectada é criada?**
+
+Não. O signal não instancia nada — ele chama os slots (funções/métodos) que foram conectados a ele. Se nenhum slot foi conectado, o signal emitido não faz nada. Os objetos que contêm os slots precisam já existir quando o signal for emitido. Por isso a ideia de "deixar o repositório ouvir um signal de inicialização para se auto-registrar" não funciona sem que o repositório já tenha sido instanciado antes do signal ser emitido.
+
+---
+
+**P: Um container DI resolveria o problema de auto-registro dos repositories com o signal de inicialização?**
+
+Sim — um container DI resolve exatamente isso. O container sabe quem precisa de quem e instancia na ordem correta antes de qualquer signal ser emitido. Sem container, é necessário instanciar explicitamente antes de conectar. Decisão: não implementar container agora; o `AppCoordinator` instancia e passa dependências manualmente. O event bus (`core/bus.py`) fica pronto para quando o container vier.
+
+---
+
+**P: Faz sentido criar um `AppInitUseCase` separado para a lógica de pré-carga (verificar caches + fazer uma única chamada HTTP), em vez de deixar isso espalhado nos `auto_connect` de auth e sheets?**
+
+Sim — e é a separação mais limpa. O `auto_connect` era uma mistura de responsabilidades: cada feature sabia de si mesma e tentava se auto-inicializar. O `AppInitUseCase` centraliza toda a sequência: lê cache de credenciais → lê cache de planilha → se ambos presentes, faz uma única chamada HTTP ao `/auth` com o `sheet_id` incluído → atualiza o `session`. A feature de auth não precisa saber de planilhas; a feature de sheets não precisa saber de credenciais. O use case é o único que orquestra os dois.
+
+---
+
+**P: Qual a boa prática em Python para estado global compartilhado entre features (equivalente a um singleton de sessão)?**
+
+Singleton de módulo: um arquivo `core/session.py` define `AppSession` com os campos de estado e expõe uma instância `session = AppSession()`. Qualquer módulo que importar `from core.session import session` obtém a mesma instância — Python garante isso pelo sistema de módulos (cada módulo é carregado uma única vez). É o padrão Pythônico: sem `@Singleton` decorator, sem metaclass, apenas um objeto no nível do módulo.
+
+---
+
+**P: Faz sentido usar um event bus ou um signal de lifecycle para o evento de inicialização do app?**
+
+Event bus é a escolha correta para esse caso. Um signal de lifecycle exigiria que todos os interessados no evento herdassem de uma classe específica ou se registrassem numa lista — criando acoplamento. O event bus (`core/bus.py` com um `QObject` singleton) expõe signals que qualquer módulo pode conectar sem conhecer os outros. Para o projeto, o `app_initialized` foi criado mas removido provisoriamente — será readicionado quando o container DI for implementado, pois sem container ninguém consegue ouvir o signal antes de ser instanciado.
+
+---
+
+**P: Qual é o padrão de organização de arquivos para separar o "shell do app" das features do usuário em um projeto Python?**
+
+O padrão convencional é estrutura flat: `app/`, `features/`, `core/`, `backend/` como irmãos no pacote raiz — cada um com responsabilidade clara. Colocar `features/` dentro de `app/` misturaria o shell técnico com as features de produto. A referência da stdlib e de frameworks como Django: infraestrutura (settings, urls, wsgi) separada das apps/features. No projeto: `app/` contém a casca técnica (`AppCoordinator`, `MainWindow`, `MenuHandler`); `features/` contém as telas e domínios de usuário.
+
+---
+
+**P: É possível automatizar a atualização do grafo graphify fora do PR, como num passo pós-merge?**
+
+Sim via hook `post-merge` do git. O hook roda automaticamente após qualquer `git merge` ou `git pull` bem-sucedido. Com `.githooks/post-merge` versionado e `git config core.hooksPath .githooks` configurado, qualquer desenvolvedor que der `git pull` na branch receberá o grafo atualizado automaticamente — sem que as alterações do grafo apareçam no diff do PR. A alternativa seria CI/CD rodar `graphify update .` no servidor pós-merge e commitar de volta, mas o hook local é mais simples para um projeto de escopo atual.
+
+---
+
+**P: O que faz o hook PreToolUse configurado no `.claude/settings.json`?**
+
+---
+
+## Sessão — Mai/2026 (Refatoração: Feature Status Bar)
+
+---
+
+**P: Onde emitir os signals de `request_started`/`request_finished` — repositories, viewmodels ou controllers?**
+
+A decisão foi nos **repositories**. O critério determinante: os repos já têm a lógica de cache (`if key in self._cache: return`) — cache hits retornam antes da chamada HTTP. Emitindo do repo, o signal só dispara para requisições que realmente vão à rede; viewmodels disparariam mesmo em cache hit. Repos já importavam `bus` (para `cache_cleared`), então não há nova dependência de camada. O `try/finally` garante que `request_finished` sempre dispara — inclusive em erro — para decrementar o `_busy_count` corretamente. Cada repo usa o membro `Services` correspondente ao seu domínio: `Services.DELIVERY`, `Services.PAYMENTS`, `Services.SUMMARY`.
+
+---
+
+**P: Faz sentido criar uma variável tipo `controllers` para agrupar imports de features e facilitar o acesso?**
+
+É um padrão válido em Python — criar um sub-módulo `features/controllers.py` que agrupa re-exports permite `from maria_cacau.features.controllers import X`. O trade-off: adiciona uma camada de indireção sem ganho real quando os imports já são limpos (`from maria_cacau.features import X`). A decisão foi não implementar nesse momento — o `features/__init__.py` com `__all__` já entrega o caminho curto. O sub-módulo agrupador faria sentido quando o `__init__.py` começar a ter 10+ exports e houver necessidade de separar por papel (`controllers`, `use_cases`, `models`).
+
+---
+
+**P: O que faz o hook PreToolUse configurado no `.claude/settings.json`?**
+
+O hook intercepta toda chamada de ferramenta `Bash` que contenha comandos de busca (`grep`, `rg`, `find`, `fd`, `ack`, `ag`). Se o arquivo `graphify-out/graph.json` existir, injeta uma mensagem de contexto pedindo ao Claude para ler o `GRAPH_REPORT.md` antes de buscar arquivos raw. O objetivo é fazer o Claude preferir o grafo de conhecimento (que tem edges EXTRACTED + INFERRED entre módulos) em vez de busca textual — especialmente para perguntas sobre relações entre módulos.
+
+---
+
+## Sessão — Mai/2026 (Feature: Remover planilha + refinamentos de dialog)
+
+---
+
+**P: Por que ao remover uma planilha e reconectar uma nova na sessão seguinte aparece o erro "Planilha não configurada"?**
+
+Causa raiz em cadeia: `AppInitUseCase` retornava cedo quando havia credenciais mas nenhuma planilha em cache → `ConnectAuthAPI` nunca era chamada → o backend ficava sem `_client` → `session.is_authenticated = False` → ao conectar planilha, `repository.connect` skipava `SelectSheetAPI` por causa do check `if session.is_authenticated` → `data_source.set_sheet` era chamado mas `_client = None` → `_setup_vm()` não rodava → `_vm = None` → `is_ready()` = False → `DataSourceNotReadyError`. Fix: `AppInitUseCase` agora chama `pre_login(sheet_id)` mesmo sem `sheet_id`, garantindo que o backend receba as credenciais em qualquer caso.
+
+---
+
+**P: Faz sentido o use case chamar a API de auth diretamente, ou isso deveria ficar no repository?**
+
+No repository. Clean Arch: o use case orquestra, o repository encapsula acesso a dados externos. `ConnectAuthAPI` é um detalhe de implementação da camada `data/` de auth — o use case não deve conhecê-la. A solução foi criar `AuthRepository.pre_login(sheet_id)`: lê as credenciais internamente e chama a API. O use case passa só o `sheet_id` e o repositório resolve o resto.
+
+---
+
+**P: Por que `setMinimumWidth` não funciona no `QMessageBox` no macOS?**
+
+`QMessageBox` no macOS tem tamanho gerenciado pelo sistema operacional, que ignora `setMinimumWidth`. A solução idiomática é adicionar um `QSpacerItem` com a largura desejada diretamente no `QGridLayout` interno do dialog — o layout respeita o spacer e expande o popup. Implementado em `GuiPopup._apply_min_width()` usando `grid.rowCount()` e `grid.columnCount()` para inserir na posição correta.
+
+---
+
+**P: Como fazer um check mark aparecer no item pai de um sub-menu no PyQt6?**
+
+`QMenu` não exibe check mark diretamente no sub-menu. O mecanismo é via `menuAction()`: cada `QMenu` tem uma `QAction` associada (`menuAction()`). Essa action pode ser marcada como checkable com `menuAction().setCheckable(True)` e verificada com `menuAction().setChecked(True)`. O check mark aparece no item pai no menu que contém o sub-menu.
+
+---
+
+**P: Por que `QFormLayout` não expande os campos no macOS como no Windows?**
+
+No macOS, o `QFormLayout` usa por padrão a política `DontGrowFields` — os campos ficam com o tamanho mínimo necessário em vez de se expandirem para preencher o espaço disponível. A correção é `form.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)`, que força os campos com `QSizePolicy.Expanding` a ocuparem toda a largura disponível — comportamento padrão no Windows.

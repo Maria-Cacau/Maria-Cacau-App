@@ -1,6 +1,3 @@
-# Wiki - Docs
-files/wiki/*
-
 # AI
 *.claude
 
@@ -9,9 +6,6 @@ files/wiki/*
 
 # Planilha com dados (usada para teste)
 arquivos/zTestes/
-
-# Configuração do VSCode
-# *.vscode/
 
 # Arquivos da Interface Gráfica
 arquivos/gui
@@ -94,6 +88,7 @@ graphify-out/manifest.json
 # local token tracking, not useful to share
 graphify-out/cost.json
 
+graphify-out/graph.html
 
 # Obsidian
 */obsidian

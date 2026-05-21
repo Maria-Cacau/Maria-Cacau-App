@@ -1,6 +1,9 @@
 {
     "files.exclude": {
-        "maria_cacau/{assets,core,design_system,features}/**/__init__.py": true,
+        "maria_cacau/{assets,design_system,features}/**/__init__.py": true,
+        "maria_cacau/core/{sheets,storage}/**/__init__.py": true,
+        "maria_cacau/core/__init__.py": true,
+        "maria_cacau/backend/{repositories,routes,services}/**/__init__.py": true,
         "**/__pycache__": true,
         "**/.DS_Store": true,
         "**/venv": true,
