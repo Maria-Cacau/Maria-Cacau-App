@@ -1,7 +1,7 @@
-from maria_cacau import asset
-
 from PyQt6.QtGui import QPainter, QPixmap
 from PyQt6.QtWidgets import QHBoxLayout, QWidget
+
+from maria_cacau import asset
 
 from .models import HomeFeaturesModel
 

@@ -3,7 +3,6 @@
 from typing import Protocol
 
 from . import _observability as observability
-
 from ._request import HTTPRequest
 from ._response import HTTPResponse
 
