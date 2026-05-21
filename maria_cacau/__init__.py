@@ -28,7 +28,7 @@ try:
 except FileNotFoundError:
     pass
 
-__year__    = _custom.get('year',    '2020')
+__year__    = _custom.get('year',    '2026')
 __company__ = _custom.get('company', 'KINGS')
 
 __copyright__ = f"COPYRIGHT © {__year__} {__company__}"
