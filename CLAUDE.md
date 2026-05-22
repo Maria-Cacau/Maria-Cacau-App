@@ -25,17 +25,17 @@ Quando o usuário pedir "finalizar a demanda" (ou variações), executar sempre:
 
 Nunca trazer código de outras branches, nunca abrir PR automaticamente.
 
-## Documentação de Estudo em Andamento
+## Documentação de Trabalho em Andamento
 
-Quando o usuário pedir para atualizar a documentação e o contexto envolver um tema de estudo ou trabalho em andamento, atualizar o arquivo `self-study.md` da pasta correspondente (`pocs/<tema>/self-study.md`).
+Quando o usuário pedir para atualizar a documentação e o contexto envolver um tema de estudo ou trabalho em andamento, atualizar o `session-context.md` da pasta correspondente.
 
-O `self-study.md` deve sempre deixar claro:
-- Qual a intenção e objetivo do estudo
-- O status atual de cada etapa (concluído / em andamento / pendente)
-- As decisões já fechadas (para não reabrir sem motivo)
-- Os próximos passos concretos para retomar na próxima sessão
+Para a v6.0, o arquivo central é:
+`../Maria-Cacau-Study/pocs/prototipacao/versions/v6/session-context.md`
 
 Esse arquivo é o ponto de entrada para qualquer IA ou sessão futura continuar de onde parou, sem precisar reler tudo.
+
+**Branch alvo da v6 — Fase 1 (Design System):** `develop-designsystem`
+PRs dessa fase devem comparar e apontar para `develop-designsystem`, não para `develop`.
 
 ## Dados Sensíveis em Arquivos de Resultado
 
