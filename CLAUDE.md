@@ -25,17 +25,25 @@ Quando o usuário pedir "finalizar a demanda" (ou variações), executar sempre:
 
 Nunca trazer código de outras branches, nunca abrir PR automaticamente.
 
-## Documentação de Trabalho em Andamento
+## V6 — Versão em desenvolvimento
 
-Quando o usuário pedir para atualizar a documentação e o contexto envolver um tema de estudo ou trabalho em andamento, atualizar o `session-context.md` da pasta correspondente.
+A **v6.0** é a versão ativa. Todo trabalho novo (features, redesign, design system) acontece nela.
 
-Para a v6.0, o arquivo central é:
-`../Maria-Cacau-Study/pocs/prototipacao/versions/v6/session-context.md`
+**Branch alvo da Fase 1 (Design System):** `develop-designSystem`
+PRs da Fase 1 apontam para `develop-designSystem`, não para `develop` nem `main`.
 
-Esse arquivo é o ponto de entrada para qualquer IA ou sessão futura continuar de onde parou, sem precisar reler tudo.
+**Documentação centralizada:** toda análise, estudo e decisão de design da v6 fica em:
+`../Maria-Cacau-Study/pocs/prototipacao/versions/v6/`
 
-**Branch alvo da v6 — Fase 1 (Design System):** `develop-designsystem`
-PRs dessa fase devem comparar e apontar para `develop-designsystem`, não para `develop`.
+Arquivos relevantes nessa pasta:
+- `session-context.md` — ponto de entrada obrigatório; resume o estado atual, decisões tomadas e próximos passos
+  - Ao ler o `.md`, já analisa tb as referências externas e o moodboard, para come;car a sessão já com a base lida.
+- `design-system-as-is.md` — snapshot do DS atual (v5), para não precisar reler o código
+- `decisions/` — uma decisão por arquivo (cores, tipografia, espaçamento…); cada arquivo documenta o que foi decidido e tem uma seção "Possível entrega" com o código resultante
+- `moodboard/mc-consultas-moodboard-figma.html` — design system completo em HTML navegável
+- `navegaveis/mc-consultas-figma.html` — protótipo navegável das telas
+
+**Ao final de cada sessão que avance a v6:** atualizar `session-context.md` com o que foi decidido ou implementado, para que a próxima sessão retome de onde parou sem perder contexto.
 
 ## Dados Sensíveis em Arquivos de Resultado
 
