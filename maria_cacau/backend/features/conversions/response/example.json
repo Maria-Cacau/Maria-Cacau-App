@@ -4,8 +4,22 @@
     "number": "26512,1",
     "reason": null,
     "message": null,
-    "customer_name": "Mariana Albuquerque",
-    "total": 1946.89,
+    "customer": {
+        "name": "Mariana Albuquerque",
+        "relationship": "",
+        "phone": "",
+        "cpf": "",
+        "email": null
+    },
+    "financial": {
+        "total": 1946.89,
+        "subtotal": null,
+        "discount": null,
+        "shipping": null,
+        "amount_pendent": null,
+        "pay_on_pickup": null,
+        "payments": null
+    },
     "payment_date": "10/09/2026",
     "sent_at": null,
     "fields": [

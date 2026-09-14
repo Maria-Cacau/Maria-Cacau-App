@@ -1,6 +1,7 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "title": "Payments Pendent Response",
+    "description": "Corrigido em 14/09/2026: referenciava ./order.schema.json, um arquivo que nunca existiu no repositório.",
     "type": "object",
     "required": ["total", "orders"],
     "properties": {
@@ -10,7 +11,7 @@
         },
         "orders": {
             "type": "array",
-            "items": { "$ref": "./order.schema.json" }
+            "items": { "$ref": "../../../../../shared/schemas/shared.schema.json#/$defs/Order" }
         }
     }
 }

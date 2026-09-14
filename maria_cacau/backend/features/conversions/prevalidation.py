@@ -8,6 +8,7 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 
 from ...data_source import PaymentCols, SheetCols
+from ...shared import Customer, Financial
 from ...utils import (normalize_decimal, split_city_state, state_from_zip,
                       to_datetime)
 from .models import (BlockReason, ConversionStatus, FieldStatus, PendingOrder,
@@ -68,14 +69,15 @@ def prevalidate(order: dict[str, str] | None, number: str, *, now: datetime | No
     now = now or datetime.now(_TZ)
     fields = _build_fields(order)
 
-    customer_name = order.get(SheetCols.CUSTOMER_NAME, "").strip() or None
+    customer_name = order.get(SheetCols.CUSTOMER_NAME, "").strip()
     total_raw     = order.get(SheetCols.TOTAL, "") or "0"
     total         = float(normalize_decimal(total_raw) or "0")
     payment_raw   = order.get(PaymentCols.DATE.slot(1), "").strip()
     sheet_status  = order.get(SheetCols.META_STATUS, "").strip()
     sent_at       = order.get(SheetCols.META_SENT, "").strip() or None
 
-    common = dict(customer_name=customer_name, total=total, payment_date=payment_raw or None, fields=fields)
+    customer = Customer(name=customer_name) if customer_name else None
+    common = dict(customer=customer, financial=Financial(total=total), payment_date=payment_raw or None, fields=fields)
 
     if sheet_status == SheetStatus.ENVIADO.value:
         return _blocked(number, BlockReason.ALREADY_SENT, sent_at=sent_at, **common)

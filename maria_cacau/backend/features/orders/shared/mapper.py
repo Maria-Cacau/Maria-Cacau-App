@@ -6,8 +6,8 @@ from pandas import Series
 
 from ....data_source import (PAYMENT_SLOTS, PRODUCT_SLOTS, PaymentCols,
                              ProductCols, SheetCols)
-from .models import (Address, Customer, Customization, Delivery, Event,
-                     Financial, Order, PaymentItem, ProductItem, Receiver)
+from ....shared import (Address, Customer, Customization, Delivery, Event,
+                        Financial, Order, PaymentItem, ProductItem, Receiver)
 
 
 class OrderMapper:

@@ -3,6 +3,8 @@
 from dataclasses import dataclass, field
 from enum import Enum
 
+from ...shared import Customer, Financial
+
 
 class SheetStatus(str, Enum):
     """Vocabulário aceito na coluna `Meta Status` da planilha.
@@ -65,9 +67,9 @@ class PendingOrder:
     reason:  BlockReason | WarnReason | None = None
     message: str | None = None
 
-    customer_name: str | None = None
-    total:         float | None = None
-    payment_date:  str | None = None
-    sent_at:       str | None = None  # preenchido quando reason == ALREADY_SENT
+    customer:      Customer  | None = None  # só o name é preenchido — o resto do Customer não se aplica aqui
+    financial:     Financial | None = None  # só o total é preenchido
+    payment_date:  str       | None = None
+    sent_at:       str       | None = None  # preenchido quando reason == ALREADY_SENT
 
     fields: list[FieldStatus] = field(default_factory=list)

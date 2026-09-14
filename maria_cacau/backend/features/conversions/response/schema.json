@@ -24,10 +24,22 @@
             "description": "Texto pronto para exibir, já em português"
         },
 
-        "customer_name": { "type": ["string", "null"] },
-        "total":         { "type": ["number", "null"] },
-        "payment_date":  { "type": ["string", "null"], "description": "formato DD/MM/YYYY" },
-        "sent_at":       { "type": ["string", "null"], "description": "presente só quando reason == already_sent" },
+        "customer": {
+            "description": "Só o name é preenchido (relationship/phone/cpf/email ficam vazios/null — o telefone e o e-mail já aparecem em fields[], com semântica de presença).",
+            "oneOf": [
+                { "type": "null" },
+                { "$ref": "../../../shared/schemas/shared.schema.json#/$defs/Customer" }
+            ]
+        },
+        "financial": {
+            "description": "Só total é preenchido aqui — os demais campos de Financial vêm null (não foram calculados).",
+            "oneOf": [
+                { "type": "null" },
+                { "$ref": "../../../shared/schemas/shared.schema.json#/$defs/Financial" }
+            ]
+        },
+        "payment_date": { "type": ["string", "null"], "description": "formato DD/MM/YYYY" },
+        "sent_at":      { "type": ["string", "null"], "description": "presente só quando reason == already_sent" },
 
         "fields": {
             "type": "array",

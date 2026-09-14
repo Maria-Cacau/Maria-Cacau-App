@@ -1,5 +1,6 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "description": "$defs compartilhados entre features do backend (hoje: orders/ e conversions/). Migrado de features/orders/schemas/shared.schema.json em 14/09/2026 — Customer e Financial passaram a ser reaproveitados por conversions/, e o resto do domínio de pedido veio junto por ser a mesma família.",
     "$defs": {
         "Address": {
             "description": "Endereço de entrega do pedido. Demais campos podem ser preenchidos via API pública a partir do zip.",
@@ -37,7 +38,7 @@
                 "relationship": { "type": "string", "description": "Parentesco com o presenteado (ex: Mãe, Pai, Amigo(a))" },
                 "phone":        { "type": "string" },
                 "cpf":          { "type": "string" },
-                "email":        { "type": "string" }
+                "email":        { "type": ["string", "null"], "description": "null quando não cadastrado" }
             }
         },
 
@@ -89,18 +90,18 @@
         },
 
         "Financial": {
-            "description": "Dados financeiros do pedido, incluindo totais e parcelas de pagamento.",
+            "description": "Dados financeiros do pedido. Só `total` é obrigatório (afrouxado em 14/09/2026, ao ser reaproveitado por conversions/) — os demais campos vêm `null` quando não foram calculados, nunca um zero ou lista vazia fingindo que o valor é conhecido. orders/ continua preenchendo tudo sempre.",
             "type": "object",
-            "required": ["subtotal", "total"],
+            "required": ["total"],
             "properties": {
-                "subtotal":       { "type": "number", "description": "Soma dos produtos antes de desconto e frete" },
-                "discount":       { "type": "number" },
-                "shipping":       { "type": "number", "minimum": 0 },
+                "subtotal":       { "type": ["number", "null"], "description": "Soma dos produtos antes de desconto e frete" },
+                "discount":       { "type": ["number", "null"] },
+                "shipping":       { "type": ["number", "null"], "minimum": 0 },
                 "total":          { "type": "number", "description": "Valor final do pedido" },
-                "amount_pendent": { "type": "number", "description": "negativo = ainda deve" },
-                "pay_on_pickup":  { "type": "boolean" },
+                "amount_pendent": { "type": ["number", "null"], "description": "negativo = ainda deve" },
+                "pay_on_pickup":  { "type": ["boolean", "null"] },
                 "payments": {
-                    "type": "array",
+                    "type": ["array", "null"],
                     "items": { "$ref": "#/$defs/PaymentItem" }
                 }
             }
@@ -117,6 +118,32 @@
                 "address":        { "$ref": "#/$defs/Address" },
                 "factory_notes":  { "type": "string" },
                 "motoboy_info":   { "type": "string" }
+            }
+        },
+
+        "Order": {
+            "description": "Um pedido completo — usado por orders/subfeatures/{summary,payments}.",
+            "type": "object",
+            "required": ["number", "status", "customer", "receiver", "products", "financial", "delivery"],
+            "properties": {
+                "number":        { "type": "string" },
+                "status":        { "type": "string", "description": "derivado: active | dispatched | cancelled" },
+                "source":        { "type": "string", "description": "ex: Instagram, Google, Cliente" },
+                "tiny_code":     { "type": "integer", "description": "0 = não integrado ao ERP" },
+
+                "customer":      { "$ref": "#/$defs/Customer" },
+                "receiver":      { "$ref": "#/$defs/Receiver" },
+                "customization": { "$ref": "#/$defs/Customization" },
+
+                "products": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": { "$ref": "#/$defs/ProductItem" }
+                },
+                "products_note": { "type": "string", "description": "campo livre para produto fora dos slots" },
+
+                "financial": { "$ref": "#/$defs/Financial" },
+                "delivery":  { "$ref": "#/$defs/Delivery" }
             }
         }
     }
