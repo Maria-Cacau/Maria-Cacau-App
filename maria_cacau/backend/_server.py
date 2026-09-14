@@ -9,6 +9,7 @@ _app = Flask(__name__)
 _app.register_blueprint(orders_bp)
 _app.register_blueprint(auth_bp)
 _app.register_blueprint(sheet_bp)
+_app.register_blueprint(conversions_bp)
 
 
 @_app.errorhandler(DataSourceError)

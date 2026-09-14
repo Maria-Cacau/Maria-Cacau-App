@@ -20,6 +20,10 @@ _HTTP_STATUS: dict[type[DataSourceError], int] = {
     UnexpectedSheetStructureError:  502,
     PrewarmFailedError:             503,
     DataSourceNotReadyError:        503,
+    SheetColumnNotFoundError:       502,
+    SheetWriteError:                502,
+    SheetFieldNotWritableError:     500,
+    OrderNotFoundError:             404,
 }
 
 
