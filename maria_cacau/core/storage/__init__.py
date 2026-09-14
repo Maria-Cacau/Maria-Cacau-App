@@ -3,6 +3,7 @@
 
 from ._cache import CacheStorage
 from ._handler import StorageHandler
+from ._keys import StorageKey
 from ._location import StorageLocation
 from ._security import SecurityStorage
 
@@ -10,5 +11,6 @@ __all__ = [
     'StorageHandler',
     'SecurityStorage',
     'CacheStorage',
+    'StorageKey',
     'StorageLocation',
 ]
