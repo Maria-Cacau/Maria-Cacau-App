@@ -60,16 +60,18 @@ conectadas**.
 
 Lista de planilhas salvas: `~/.mariacacau/sheets.json`
 
-### Escopo é somente leitura
-O client do Sheets é criado com escopo de leitura, em `backend/data_source/_google_sheets.py`:
+### Escopo de leitura e escrita
+O client do Sheets é criado em `backend/data_source/_google_sheets.py`, com escopo de leitura e
+escrita desde 14/09/2026 (era só leitura antes disso):
 
 ```python
-_SCOPES = ["https://www.googleapis.com/auth/spreadsheets.readonly"]
+_SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
 
 creds = Credentials.from_service_account_info(credentials, scopes=_SCOPES)
 ```
 
-Dar permissão de escrita para a Service Account na planilha **não basta**: o escopo é pedido na
-autenticação, então o client nasce somente leitura de qualquer jeito. Toda feature que precise
-gravar na planilha esbarra nisso antes de qualquer outra coisa — o escopo teria que virar
-`https://www.googleapis.com/auth/spreadsheets`.
+Dar permissão à Service Account no compartilhamento da planilha não basta sozinho: o escopo é
+pedido na autenticação, e é ele que decide o que o client pode fazer — a permissão do
+compartilhamento é a identidade, o escopo é o poder. Escrita disponível via `update_order`, com
+allowlist de colunas (`WRITABLE_COLS`) — arquitetura completa em
+`Maria-Cacau-Study/style-guide/backend/overview.md`, seção "Escrita — `update_order`".
