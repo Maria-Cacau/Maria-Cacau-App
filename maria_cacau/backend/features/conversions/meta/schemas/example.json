@@ -1,0 +1,21 @@
+{
+    "$schema": "./event.schema.json",
+    "event_name": "Purchase",
+    "event_id": "26512-1",
+    "event_time": 1789095599,
+    "action_source": "website",
+    "user_data": {
+        "em": "fce5b87817f1c4ac70bc618a581827b6ab3903986f287b1ba78ef90b8b47f2c5",
+        "ph": "b10e13640ec4fac36f207300eee364fcca6891f4ab7703adab3a2ecd5504280c",
+        "fn": "a410b5bf29327087f83e5a424c32316c8da82978be253494f15cb4be2aa76484",
+        "ln": "bbe47010dd7d075f183f4ee92ebe2736ca77009837eb00f11356da24c1731d62",
+        "zp": "9a4a139dfbfcd2fc89a3cb4302dad65a35abd8d29a56c09a962b69c5cf3bca40",
+        "ct": "8f7f2f7ccd3f2898cf4850905346e8fb333d00aac1c974f8f37326e068cf7b1e",
+        "st": "be18b85f77fc024db379acf19e8a1ce62307ab7bb1bca395389ecfc2dafaf741",
+        "country": "885036a0da3dff3c3e05bc79bf49382b12bc5098514ed57ce0875aba1aa2c40d"
+    },
+    "custom_data": {
+        "currency": "BRL",
+        "value": 1946.89
+    }
+}
