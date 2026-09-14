@@ -1,5 +1,5 @@
 {
-    "$schema": "./detail.schema.json",
+    "$schema": "./schema.json",
     "number": "2026",
     "status": "active",
     "source": "Instagram",
