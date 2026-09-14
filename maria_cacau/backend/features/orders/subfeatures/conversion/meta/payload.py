@@ -2,13 +2,10 @@
 
 from datetime import datetime
 from datetime import time as _time
-from zoneinfo import ZoneInfo
 
-from ....data_source import PaymentCols, SheetCols
-from ....utils import normalize_decimal, to_datetime
+from ......data_source import PaymentCols, SheetCols
+from ......utils import TIMEZONE, normalize_decimal, to_datetime
 from .normalizer import build_user_data
-
-_TZ = ZoneInfo("America/Sao_Paulo")
 
 
 def event_id_from_order_number(number: str) -> str:
@@ -25,8 +22,8 @@ def event_time_from_payment_date(date_str: str, *, now: datetime | None = None) 
     hoje.
     """
     payment_day = to_datetime(date_str).date()
-    end_of_day = datetime.combine(payment_day, _time(23, 59, 59), tzinfo=_TZ)
-    now = now or datetime.now(_TZ)
+    end_of_day = datetime.combine(payment_day, _time(23, 59, 59), tzinfo=TIMEZONE)
+    now = now or datetime.now(TIMEZONE)
     return int(min(end_of_day, now).timestamp())
 
 

@@ -1,9 +1,4 @@
-"""Modelos de domínio compartilhados entre features do backend.
-
-Migrado de `features/orders/shared/models.py` em 14/09/2026 — `Customer` e `Financial` passaram
-a ser usados também por `features/conversions/`. O resto do domínio de pedido (`Order`, `Address`,
-`Delivery`...) veio junto por serem a mesma família de modelos, e o `Order` depende deles.
-"""
+"""Modelos de domínio do pedido, disponíveis para qualquer feature do backend."""
 
 from dataclasses import dataclass
 
@@ -70,11 +65,8 @@ class PaymentItem:
 
 @dataclass
 class Financial:
-    """Só `total` é obrigatório (decidido em 14/09/2026, ao reaproveitar este model em
-    `features/conversions/`). Os demais campos ficam `None` quando não calculados — nunca um
-    zero ou lista vazia fingindo que o valor é conhecido. Quem só precisa do total, como a
-    pré-validação de conversões, não recalcula subtotal/desconto/frete/parcelas; `orders/`
-    continua preenchendo tudo sempre, comportamento de lá não muda."""
+    """Só `total` é obrigatório. Os demais campos ficam `None` quando não calculados — nunca um
+    zero ou lista vazia fingindo que o valor é conhecido."""
 
     total:          float
     subtotal:       float             | None = None
@@ -98,7 +90,7 @@ class Delivery:
 @dataclass
 class Meta:
     """Estado do pedido nas colunas `Meta Status`/`Meta Dt Envio` da planilha, sem interpretação
-    de regra de negócio — quem decide se pode enviar é `features/conversions`."""
+    de regra de negócio — quem decide se o pedido pode ser enviado é a subfeature de conversão."""
 
     status:  str | None = None
     sent_at: str | None = None

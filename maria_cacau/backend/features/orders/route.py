@@ -5,9 +5,10 @@ from flask import Blueprint, jsonify, request
 from ...data_source import data_source
 from ...data_source.errors._errors import DataSourceNotReadyError
 from .service import OrdersMapper, OrdersService
-from .subfeatures import deliveries_bp, payments_bp
+from .subfeatures import conversion_bp, deliveries_bp, payments_bp
 
 orders_bp = Blueprint("orders", __name__)
+orders_bp.register_blueprint(conversion_bp)
 orders_bp.register_blueprint(deliveries_bp)
 orders_bp.register_blueprint(payments_bp)
 _service = OrdersService()

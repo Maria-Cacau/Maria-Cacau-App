@@ -1,4 +1,3 @@
-from .client import MetaClientError, MetaResponse, send_events
 from .normalizer import build_user_data
 from .payload import (build_event, event_id_from_order_number,
                       event_time_from_payment_date)
@@ -8,7 +7,4 @@ __all__ = [
     "build_user_data",
     "event_id_from_order_number",
     "event_time_from_payment_date",
-    "MetaClientError",
-    "MetaResponse",
-    "send_events",
 ]

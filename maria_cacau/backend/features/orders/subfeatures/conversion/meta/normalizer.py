@@ -10,8 +10,8 @@ A normalização de CEP, cidade/UF e telefone é genérica (nada de específico 
 
 import hashlib
 
-from ....data_source import SheetCols
-from ....utils import (normalize_phone, normalize_zip, split_city_state,
+from ......data_source import SheetCols
+from ......utils import (normalize_phone, normalize_zip, split_city_state,
                        state_from_zip, strip_accents)
 
 

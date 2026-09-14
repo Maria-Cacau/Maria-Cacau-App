@@ -1,6 +1,6 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "description": "$defs compartilhados entre features do backend (hoje: orders/ e conversions/). Migrado de features/orders/schemas/shared.schema.json em 14/09/2026 — Customer e Financial passaram a ser reaproveitados por conversions/, e o resto do domínio de pedido veio junto por ser a mesma família.",
+    "description": "$defs do domínio de pedido, disponíveis para qualquer feature do backend.",
     "$defs": {
         "Address": {
             "description": "Endereço de entrega do pedido. Demais campos podem ser preenchidos via API pública a partir do zip.",
@@ -90,7 +90,7 @@
         },
 
         "Financial": {
-            "description": "Dados financeiros do pedido. Só `total` é obrigatório (afrouxado em 14/09/2026, ao ser reaproveitado por conversions/) — os demais campos vêm `null` quando não foram calculados, nunca um zero ou lista vazia fingindo que o valor é conhecido. orders/ continua preenchendo tudo sempre.",
+            "description": "Dados financeiros do pedido. Só `total` é obrigatório — os demais campos vêm `null` quando não foram calculados, nunca um zero ou lista vazia fingindo que o valor é conhecido.",
             "type": "object",
             "required": ["total"],
             "properties": {
@@ -122,7 +122,7 @@
         },
 
         "Meta": {
-            "description": "Estado bruto do pedido nas colunas `Meta Status`/`Meta Dt Envio` da planilha, sem interpretação de regra de negócio — quem decide se o pedido pode ser enviado é features/conversions, a partir destes mesmos dados. null em cada campo quando a coluna está vazia.",
+            "description": "Estado bruto do pedido nas colunas `Meta Status`/`Meta Dt Envio` da planilha, sem interpretação de regra de negócio — quem decide se o pedido pode ser enviado é PUT /orders/<pedido>/conversion, a partir destes mesmos dados. null em cada campo quando a coluna está vazia.",
             "type": "object",
             "properties": {
                 "status":  { "type": ["string", "null"], "description": "ex: Enviado, Negado, Teste, Ignorado" },
