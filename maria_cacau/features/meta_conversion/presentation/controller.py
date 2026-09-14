@@ -1,5 +1,6 @@
 """Controller da feature Meta Conversion: conecta signals da view ao ViewModel e trata respostas."""
 
+import sys
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
@@ -73,7 +74,11 @@ class MetaConversionController:
 
     def _show_error(self, error: ErrorModel) -> None:
         observability.log(ObsEv.ERROR, code=error.code, dev_message=error.dev_message)
-        # A mensagem técnica fica só no log. O código vai no texto principal, e não só no título, porque
-        # o macOS não exibe o título da janela em QMessageBox.
+        # A mensagem técnica fica só no log. O macOS não exibe o título da janela em QMessageBox, então
+        # lá o código vai no texto principal; nos demais, fica no título e o corpo é só a mensagem.
         title = strings.DLG_META_ERRO_TITULO.format(code=error.code)
-        self.view.popup.show(DSDialogModel(title=title, message=title, detail=error.user_message))
+        if sys.platform == "darwin":
+            model = DSDialogModel(title=title, message=title, detail=error.user_message)
+        else:
+            model = DSDialogModel(title=title, message=error.user_message)
+        self.view.popup.show(model)
