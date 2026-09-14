@@ -1,6 +1,7 @@
 """Mapeamento de colunas e tabs da planílha."""
 
 from enum import StrEnum
+from typing import Final
 
 PAYMENT_SLOTS = 6
 PRODUCT_SLOTS = 7
@@ -57,6 +58,17 @@ class SheetCols(StrEnum):
     ADDRESS_ZIP            = "cep"
     FACTORY_NOTES          = "obs fábrica"
     MOTOBOY_INFO           = "info motoboy"
+
+    # Meta
+    META_STATUS = "meta status"
+    META_SENT   = "meta dt envio"
+
+
+# Colunas que permitem alteração (`DataSourceProtocol.update_order`)
+WRITABLE_COLS: Final[frozenset[str]] = frozenset({
+    SheetCols.META_STATUS,
+    SheetCols.META_SENT,
+})
 
 
 class ProductCols(StrEnum):

@@ -173,3 +173,43 @@ class DataSourceNotReadyError(DataSourceError):
 
     def __init__(self) -> None:
         super().__init__(self.dev_message)
+
+
+class SheetColumnNotFoundError(DataSourceError):
+    code         = "DS19"
+    user_message = "A planilha não tem a coluna esperada. Confirme com quem administra."
+    dev_message  = "Expected column header not found in the sheet."
+
+    def __init__(self, column: str) -> None:
+        super().__init__(f"{self.dev_message}: {column!r}")
+        self.column = column
+
+
+class SheetWriteError(DataSourceError):
+    code         = "DS20"
+    user_message = "Erro ao gravar o status na planilha."
+    dev_message  = "Failed to write to the sheet."
+
+    def __init__(self, cause: Exception) -> None:
+        super().__init__(f"{self.dev_message}: {cause}")
+        self.cause = cause
+
+
+class SheetFieldNotWritableError(DataSourceError):
+    code         = "DS21"
+    user_message = "Erro interno: campo não pode ser alterado."
+    dev_message  = "One or more fields are not in the writable columns allowlist."
+
+    def __init__(self, fields: set[str]) -> None:
+        super().__init__(f"{self.dev_message}: {sorted(fields)}")
+        self.fields = fields
+
+
+class OrderNotFoundError(DataSourceError):
+    code         = "DS22"
+    user_message = "Pedido não encontrado na planilha."
+    dev_message  = "Order number not found."
+
+    def __init__(self, number: str) -> None:
+        super().__init__(f"{self.dev_message}: {number!r}")
+        self.number = number

@@ -9,7 +9,7 @@ from ._normalizer import SheetNormalizer
 from ._viewmodel import _SheetsViewModel
 from .errors._handler import _guard
 
-_SCOPES = ["https://www.googleapis.com/auth/spreadsheets.readonly"]
+_SCOPES = ["https://www.googleapis.com/auth/spreadsheets"] ## Escopo de edição!
 
 
 class GoogleSheetsDataSource:
@@ -61,6 +61,16 @@ class GoogleSheetsDataSource:
         with self._lock:
             result = self._vm.fetch(utils.date_range(start, end))
             return SheetNormalizer.normalize(result)
+
+    def fetch_order_by_number(self, number: str) -> dict | None:
+        with self._lock:
+            data = self._vm.fetch_by_order_number(number)
+            return SheetNormalizer.normalize([data])[0] if data is not None else None
+
+    def update_order(self, number: str, fields: dict[str, str]) -> None:
+        _guard.validate_writable_fields(fields)
+        with self._lock:
+            self._vm.update_order(number, fields)
 
     ### Interno
 

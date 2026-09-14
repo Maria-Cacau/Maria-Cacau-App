@@ -32,3 +32,15 @@ class DataSourceProtocol(Protocol):
     def fetch_orders_by_period(self, start: str, end: str) -> list[dict]:
         """Retorna pedidos no intervalo de datas informado (DD/MM/YYYY)."""
         ...
+
+    def fetch_order_by_number(self, number: str) -> dict | None:
+        """Busca exata pelo número do pedido (vírgula, ponto ou hífen como separador decimal;
+        sem separador, assume ,0). Devolve None se não encontrado."""
+        ...
+
+    def update_order(self, number: str, fields: dict[str, str]) -> None:
+        """Atualiza campos de um pedido existente, identificado pelo número.
+
+        Só aceita chaves de `WRITABLE_COLS` (`sheet_mapper.py`) — nunca altera a coluna PEDIDO,
+        nunca cria linha nova. Pedido não encontrado é erro, não é um create implícito."""
+        ...

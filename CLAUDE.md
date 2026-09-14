@@ -12,14 +12,15 @@ interno **`Maria-Cacau-Study`** (documentação viva do projeto). Se esse repo e
 ## Finalizar demanda
 
 Quando o usuário pedir "finalizar a demanda" (ou variações), executar sempre:
-1. Rodar `isort` no projeto todo (via `source .envrc && python3 -m isort`) -- SEMPRE
-2. Atualizar os arquivos em `.ai/` que forem afetados pelas mudanças da sessão (só o que é específico deste repo — setup, build, packaging; arquitetura/decisão de projeto vai em `Maria-Cacau-Study`)
-3. Entregar a descrição do PR em bloco ```md para copy/paste``` — comparar com `develop` (`main` se for a develop)
+1. Atualizar os arquivos em `.ai/` que forem afetados pelas mudanças da sessão (só o que é específico deste repo — setup, build, packaging; arquitetura/decisão de projeto vai em `Maria-Cacau-Study`)
+2. Entregar a descrição do PR em bloco ```md para copy/paste``` — comparar com `develop` (`main` se for a develop)
    Estilo: `## Overview` com 1–2 parágrafos focados na motivação/impacto (não técnico), depois `## Ajustes feitos` com bullets contextuais. Sem checklist, sem referências a arquivos nos bullets.```
-4. Verificar se há perguntas pertinentes para atualizar no CBL (`Maria-Cacau-Study/CBL.md`) — regra completa no `CLAUDE.md` da pasta que contém este repo.
+3. Verificar se há perguntas pertinentes para atualizar no CBL (`Maria-Cacau-Study/CBL.md`) — regra completa no `CLAUDE.md` da pasta que contém este repo.
 
-Atualização do grafo (`graphify update .`) não é mais manual — o workflow `code-standardize` roda
-automaticamente a cada push na `develop` (ver `Maria-Cacau-Study/demandas/ci-cd/`).
+`isort` e a atualização do grafo (`graphify update .`) não são mais manuais — o workflow
+`code-standardize` roda os dois automaticamente a cada push na `develop` (ver
+`Maria-Cacau-Study/demandas/ci-cd/`). Não rodar nenhum dos dois manualmente ao finalizar; o CI
+resolve. Só rodar `isort` manual se o usuário pedir explicitamente antes disso.
 
 Nunca trazer código de outras branches, nunca abrir PR automaticamente.
 

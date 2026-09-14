@@ -7,6 +7,7 @@ import gspread
 import requests
 
 from .._utils import normalize_date, to_datetime
+from ..sheet_mapper import WRITABLE_COLS
 from ._errors import *
 
 
@@ -62,6 +63,11 @@ class _SheetsGuard:
     def validate_date_range(self, start: str, end: str) -> None:
         if to_datetime(normalize_date(end)) < to_datetime(normalize_date(start)):
             raise InvalidDateRangeError(start=start, end=end)
+
+    def validate_writable_fields(self, fields: dict[str, str]) -> None:
+        invalid = set(fields) - WRITABLE_COLS
+        if invalid:
+            raise SheetFieldNotWritableError(fields=invalid)
 
 
 _guard = _SheetsGuard()
