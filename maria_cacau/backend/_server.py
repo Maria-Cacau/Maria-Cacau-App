@@ -1,7 +1,10 @@
-from flask import Flask, jsonify
+from enum import Enum
+
+from flask import Flask, jsonify, request
 
 from ..core.network import HTTPRequest, HTTPResponse
-from .data_source import DataSourceError
+from ..core.observability import observability
+from .data_source import DataSourceError, current_api_usage, start_api_usage
 from .errors import BackendError, generic_mapper, translate
 from .features import *
 
@@ -9,6 +12,26 @@ _app = Flask(__name__)
 _app.register_blueprint(orders_bp)
 _app.register_blueprint(auth_bp)
 _app.register_blueprint(sheet_bp)
+
+
+class BackendEvent(Enum):
+    DATA_SOURCE_API = 'DATA_SOURCE_API'  # extra: path=, method=, reads=, writes=
+
+
+@_app.before_request
+def start_usage_tracking():
+    start_api_usage()
+
+
+@_app.after_request
+def log_usage(response):
+    usage = current_api_usage()
+    if usage is not None and (usage.reads or usage.writes):
+        observability.log(
+            BackendEvent.DATA_SOURCE_API,
+            path=request.path, method=request.method, reads=usage.reads, writes=usage.writes,
+        )
+    return response
 
 
 @_app.errorhandler(DataSourceError)
