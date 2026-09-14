@@ -64,6 +64,13 @@ class SheetCols(StrEnum):
     META_SENT   = "meta dt envio"
 
 
+# Nomes alternativos de coluna → nome canônico. A planilha é editada à mão e títulos já foram
+# renomeados; cada variação conhecida entra aqui, sem mexer em quem consome `SheetCols`.
+COLUMN_ALIASES: Final[dict[str, str]] = {
+    "data postagem": SheetCols.DELIVERY_DATE,
+}
+
+
 # Colunas que permitem alteração (`DataSourceProtocol.update_order`)
 WRITABLE_COLS: Final[frozenset[str]] = frozenset({
     SheetCols.META_STATUS,
