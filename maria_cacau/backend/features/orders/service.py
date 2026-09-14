@@ -4,8 +4,8 @@ import dataclasses
 
 from ...data_source.errors._errors import OrderNotFoundError
 from ...utils import to_datetime
-from .shared import Order, OrderMapper
 from .repository import OrdersRepository
+from .shared import Order, OrderMapper
 
 
 class OrdersMapper:

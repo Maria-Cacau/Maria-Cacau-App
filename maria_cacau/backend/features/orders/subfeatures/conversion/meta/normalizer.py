@@ -8,7 +8,7 @@ import hashlib
 
 from ......data_source import SheetCols
 from ......utils import (normalize_phone, normalize_zip, split_city_state,
-                       state_from_zip, strip_accents)
+                         state_from_zip, strip_accents)
 
 
 def _hash(value: str) -> str:
