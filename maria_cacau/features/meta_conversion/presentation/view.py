@@ -1,8 +1,8 @@
 """View da feature Meta Conversion: dialog para buscar um pedido e enviá-lo à Meta."""
 
 from PyQt6.QtCore import Qt, pyqtSignal
-from PyQt6.QtWidgets import (QDialog, QFormLayout, QHBoxLayout, QVBoxLayout,
-                             QWidget)
+from PyQt6.QtWidgets import (QDialog, QFormLayout, QFrame, QHBoxLayout,
+                             QVBoxLayout, QWidget)
 
 from maria_cacau.assets import strings
 from maria_cacau.design_system.components import (DSButton, DSButtonState,
@@ -10,7 +10,11 @@ from maria_cacau.design_system.components import (DSButton, DSButtonState,
                                                   DSLabel, DSTextInput)
 from maria_cacau.design_system.constants import DIALOG_MIN_WIDTH
 
-from ..domain.models import META_STATUS_SENT, ConversionOrderModel
+from ..domain.models import (META_STATUS_SENT, ConversionOrderModel,
+                             ConversionState)
+
+_ORDER_FIELDS    = ("number", "customer", "total", "payment")
+_CUSTOMER_FIELDS = ("phone", "email", "name", "zip", "city")
 
 
 class MetaConversionView(QDialog):
@@ -19,6 +23,7 @@ class MetaConversionView(QDialog):
 
     _COLOR_OK      = '#388e3c'
     _COLOR_BLOCKED = '#C62828'
+    _COLOR_WARNING = '#8a6d00'
     _COLOR_HINT    = 'gray'
 
     def __init__(self, parent=None) -> None:
@@ -52,11 +57,7 @@ class MetaConversionView(QDialog):
         self._lbl_status = DSLabel("")
         self._lbl_status.setWordWrap(True)
 
-        self._values = {
-            key: DSLabel("") for key in
-            ("number", "customer", "phone", "email", "total", "payment", "delivery", "zip", "city", "products")
-        }
-        self._values["products"].setWordWrap(True)
+        self._values = {key: DSLabel("") for key in _ORDER_FIELDS + _CUSTOMER_FIELDS}
 
         self._btn_close = DSButton(strings.BTN_FECHAR)
         self._btn_close.clicked.connect(self.close)
@@ -71,23 +72,28 @@ class MetaConversionView(QDialog):
         order_layout.addWidget(self._number_input)
         order_layout.addWidget(self._btn_search)
 
-        self._details = QWidget()
-        form = QFormLayout(self._details)
-        form.setContentsMargins(0, 0, 0, 0)
         labels = {
             "number":   strings.DLG_META_CAMPO_PEDIDO,
             "customer": strings.DLG_META_CAMPO_CLIENTE,
-            "phone":    strings.DLG_META_CAMPO_TELEFONE,
-            "email":    strings.DLG_META_CAMPO_EMAIL,
             "total":    strings.DLG_META_CAMPO_VALOR,
             "payment":  strings.DLG_META_CAMPO_PAGAMENTO,
-            "delivery": strings.DLG_META_CAMPO_ENTREGA,
+            "phone":    strings.DLG_META_CAMPO_TELEFONE,
+            "email":    strings.DLG_META_CAMPO_EMAIL,
+            "name":     strings.DLG_META_CAMPO_NOME,
             "zip":      strings.DLG_META_CAMPO_CEP,
             "city":     strings.DLG_META_CAMPO_CIDADE,
-            "products": strings.DLG_META_CAMPO_PRODUTOS,
         }
-        for key, label in labels.items():
-            form.addRow(DSLabel(label), self._values[key])
+
+        separator = QFrame()
+        separator.setFrameShape(QFrame.Shape.HLine)
+        separator.setFrameShadow(QFrame.Shadow.Sunken)
+
+        self._details = QWidget()
+        details_layout = QVBoxLayout(self._details)
+        details_layout.setContentsMargins(0, 0, 0, 0)
+        details_layout.addLayout(self._form(_ORDER_FIELDS, labels))
+        details_layout.addWidget(separator)
+        details_layout.addLayout(self._form(_CUSTOMER_FIELDS, labels))
 
         status_box = DSGroupBox(strings.DLG_META_GRP_SITUACAO)
         status_layout = QVBoxLayout(status_box)
@@ -105,6 +111,16 @@ class MetaConversionView(QDialog):
         layout.addLayout(footer)
         self.setLayout(layout)
 
+    def _form(self, keys: tuple[str, ...], labels: dict[str, str]) -> QFormLayout:
+        form = QFormLayout()
+        # O padrão do macOS alinha rótulos à direita; fixado para ficar igual ao Windows.
+        form.setLabelAlignment(Qt.AlignmentFlag.AlignLeft)
+        form.setFormAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
+        form.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.AllNonFixedFieldsGrow)
+        for key in keys:
+            form.addRow(DSLabel(labels[key]), self._values[key])
+        return form
+
     ## MARK: - Private
 
     def _set_status(self, text: str, color: str, *, bold: bool = True) -> None:
@@ -120,6 +136,13 @@ class MetaConversionView(QDialog):
         else:
             label.setText(strings.LBL_NAO_INFORMADO)
             label.setStyleSheet(f"color: {self._COLOR_BLOCKED};")
+
+    def _set_check(self, key: str, value: str | None, present: bool | None = None) -> None:
+        present = bool(value) if present is None else present
+        mark, color = ("✓", self._COLOR_OK) if present else ("✗", self._COLOR_BLOCKED)
+        text = value or strings.LBL_NAO_INFORMADO
+        self._values[key].setText(f'<span style="color:{color}">{mark}</span> {text}')
+        self._values[key].setStyleSheet("" if value else f"color: {self._COLOR_BLOCKED};")
 
     def _set_search_enabled(self, enabled: bool) -> None:
         self._number_input.setEnabled(enabled)
@@ -140,35 +163,45 @@ class MetaConversionView(QDialog):
         self._details.setVisible(False)
         self._set_search_enabled(True)
         self._btn_send.update_state(DSButtonState.DISABLED)
+        self.adjustSize()
 
     def prepare_search(self) -> None:
         self._number_input.setEnabled(False)
         self._btn_search.update_state(DSButtonState.LOADING)
         self._btn_send.update_state(DSButtonState.DISABLED)
 
-    def show_order(self, order: ConversionOrderModel) -> None:
+    def show_order(self, order: ConversionOrderModel, state: ConversionState) -> None:
         self._set_value("number",   order.number)
         self._set_value("customer", order.customer_name)
-        self._set_value("phone",    order.customer_phone)
-        self._set_value("email",    order.customer_email)
         self._set_value("total",    self._money(order.total))
         self._set_value("payment",  order.first_payment_date)
-        self._set_value("delivery", f"{order.delivery_date} — {order.delivery_type}")
-        self._set_value("zip",      order.zip_code)
-        self._set_value("city",     order.city)
-        self._set_value("products", "\n".join(f"{p.quantity} × {p.name}" for p in order.products))
+
+        self._set_check("phone", order.customer_phone)
+        self._set_check("email", order.customer_email)
+        self._set_check("name",  order.customer_name, present=order.has_last_name)
+        self._set_check("zip",   order.zip_code)
+        self._set_check("city",  order.city)
 
         self._lbl_status.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
-        if order.can_send:
-            self._set_status(strings.LBL_META_PRONTO, self._COLOR_OK)
-        elif order.meta_status == META_STATUS_SENT and order.meta_sent_at:
-            self._set_status(strings.LBL_META_JA_ENVIADO.format(data=order.meta_sent_at), self._COLOR_OK)
+        if state == ConversionState.HANDLED:
+            if order.meta_status == META_STATUS_SENT and order.meta_sent_at:
+                self._set_status(strings.LBL_META_JA_ENVIADO.format(data=order.meta_sent_at), self._COLOR_OK)
+            else:
+                self._set_status(strings.LBL_META_STATUS.format(status=order.meta_status), self._COLOR_BLOCKED)
+        elif state == ConversionState.OUTSIDE_WINDOW:
+            self._set_status(strings.LBL_META_FORA_PRAZO, self._COLOR_WARNING)
+        elif state == ConversionState.MISSING_DATA:
+            self._set_status(strings.LBL_META_FALTANDO_DADOS, self._COLOR_WARNING)
         else:
-            self._set_status(strings.LBL_META_STATUS.format(status=order.meta_status), self._COLOR_BLOCKED)
+            self._set_status(strings.LBL_META_PRONTO, self._COLOR_OK)
+
+        # Faltando dados continua habilitado: o clique mostra o motivo exato no popup de erro.
+        can_send = state in (ConversionState.READY, ConversionState.MISSING_DATA)
 
         self._details.setVisible(True)
         self._set_search_enabled(True)
-        self._btn_send.update_state(DSButtonState.DEFAULT if order.can_send else DSButtonState.DISABLED)
+        self._btn_send.update_state(DSButtonState.DEFAULT if can_send else DSButtonState.DISABLED)
+        self.adjustSize()
 
     def prepare_send(self) -> None:
         self._set_search_enabled(False)
@@ -179,6 +212,6 @@ class MetaConversionView(QDialog):
         self._set_search_enabled(True)
         self._btn_send.update_state(DSButtonState.DISABLED)
 
-    def finish_send_error(self, can_retry: bool) -> None:
+    def finish_send_error(self) -> None:
         self._set_search_enabled(True)
-        self._btn_send.update_state(DSButtonState.DEFAULT if can_retry else DSButtonState.DISABLED)
+        self._btn_send.update_state(DSButtonState.DEFAULT)
