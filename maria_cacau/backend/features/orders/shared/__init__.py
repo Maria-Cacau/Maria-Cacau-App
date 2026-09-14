@@ -1,3 +1,4 @@
 from ....shared import (Address, Customer, Customization, Delivery, Event,
-                        Financial, Order, PaymentItem, ProductItem, Receiver)
+                        Financial, Meta, Order, PaymentItem, ProductItem,
+                        Receiver)
 from .mapper import OrderMapper

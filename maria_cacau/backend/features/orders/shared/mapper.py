@@ -7,7 +7,8 @@ from pandas import Series
 from ....data_source import (PAYMENT_SLOTS, PRODUCT_SLOTS, PaymentCols,
                              ProductCols, SheetCols)
 from ....shared import (Address, Customer, Customization, Delivery, Event,
-                        Financial, Order, PaymentItem, ProductItem, Receiver)
+                        Financial, Meta, Order, PaymentItem, ProductItem,
+                        Receiver)
 
 
 class OrderMapper:
@@ -28,6 +29,14 @@ class OrderMapper:
             tiny_code=int(row[SheetCols.TINY]) if row.get(SheetCols.TINY) else None,
             customization=OrderMapper._customization(row),
             products_note=str(row.get(SheetCols.PRODUCTS_NOTE, "")) or None,
+            meta=OrderMapper._meta(row),
+        )
+
+    @staticmethod
+    def _meta(row: Series) -> Meta:
+        return Meta(
+            status=str(row.get(SheetCols.META_STATUS, "")).strip() or None,
+            sent_at=str(row.get(SheetCols.META_SENT, "")).strip() or None,
         )
 
     @staticmethod

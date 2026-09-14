@@ -96,6 +96,15 @@ class Delivery:
 
 
 @dataclass
+class Meta:
+    """Estado do pedido nas colunas `Meta Status`/`Meta Dt Envio` da planilha, sem interpretação
+    de regra de negócio — quem decide se pode enviar é `features/conversions`."""
+
+    status:  str | None = None
+    sent_at: str | None = None
+
+
+@dataclass
 class Order:
     number:        str
     customer:      Customer
@@ -108,3 +117,4 @@ class Order:
     tiny_code:     int           | None = None
     customization: Customization | None = None
     products_note: str           | None = None
+    meta:          Meta          | None = None

@@ -1,6 +1,6 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "title": "Orders Summary Response",
+    "title": "Orders Response",
     "description": "Resposta real de GET /orders (ver OrdersMapper.to_response) — envelope com o total e a lista de pedidos do período. Corrigido em 14/09/2026: a versão anterior deste arquivo descrevia só o Order sozinho, sem o envelope, e nunca bateu com o que a rota de fato devolve.",
     "type": "object",
     "required": ["total", "orders"],
@@ -11,7 +11,7 @@
         },
         "orders": {
             "type": "array",
-            "items": { "$ref": "../../../../../shared/schemas/shared.schema.json#/$defs/Order" }
+            "items": { "$ref": "../../../shared/schemas/shared.schema.json#/$defs/Order" }
         }
     }
 }

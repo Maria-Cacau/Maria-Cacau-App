@@ -121,8 +121,17 @@
             }
         },
 
+        "Meta": {
+            "description": "Estado bruto do pedido nas colunas `Meta Status`/`Meta Dt Envio` da planilha, sem interpretação de regra de negócio — quem decide se o pedido pode ser enviado é features/conversions, a partir destes mesmos dados. null em cada campo quando a coluna está vazia.",
+            "type": "object",
+            "properties": {
+                "status":  { "type": ["string", "null"], "description": "ex: Enviado, Negado, Teste, Ignorado" },
+                "sent_at": { "type": ["string", "null"], "description": "formato DD/MM/YYYY, preenchido só quando status == Enviado" }
+            }
+        },
+
         "Order": {
-            "description": "Um pedido completo — usado por orders/subfeatures/{summary,payments}.",
+            "description": "Um pedido completo — usado por orders/subfeatures/{summary,payments,detail}.",
             "type": "object",
             "required": ["number", "status", "customer", "receiver", "products", "financial", "delivery"],
             "properties": {
@@ -143,7 +152,8 @@
                 "products_note": { "type": "string", "description": "campo livre para produto fora dos slots" },
 
                 "financial": { "$ref": "#/$defs/Financial" },
-                "delivery":  { "$ref": "#/$defs/Delivery" }
+                "delivery":  { "$ref": "#/$defs/Delivery" },
+                "meta": { "$ref": "#/$defs/Meta" }
             }
         }
     }

@@ -1,0 +1,6 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "OrderDetail",
+    "description": "Resposta de GET /orders/<pedido> — mesmo Order de orders/{summary,payments}, com o campo meta preenchido a partir das colunas Meta Status/Meta Dt Envio da planilha.",
+    "$ref": "../../../shared/schemas/shared.schema.json#/$defs/Order"
+}

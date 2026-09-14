@@ -1,5 +1,6 @@
 from .models import (Address, Customer, Customization, Delivery, Event,
-                     Financial, Order, PaymentItem, ProductItem, Receiver)
+                     Financial, Meta, Order, PaymentItem, ProductItem,
+                     Receiver)
 
 __all__ = [
     "Address",
@@ -8,6 +9,7 @@ __all__ = [
     "Delivery",
     "Event",
     "Financial",
+    "Meta",
     "Order",
     "PaymentItem",
     "ProductItem",
