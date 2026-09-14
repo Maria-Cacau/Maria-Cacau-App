@@ -83,6 +83,10 @@ def handle_api(fn):
         except gspread.exceptions.APIError as e:
             if e.response.status_code == 429:
                 raise ApiQuotaExceededError()
+            # Estado reaproveitado entre chamadas (aba aberta, linhas conhecidas) pode ter ficado
+            # inválido — ex.: aba renomeada. Descarta para a próxima chamada começar do zero.
+            if args and hasattr(args[0], "on_api_error"):
+                args[0].on_api_error()
             raise ApiUnexpectedResponseError(cause=e)
         except google.auth.exceptions.RefreshError:
             raise TokenExpiredError()
