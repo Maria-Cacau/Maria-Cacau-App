@@ -2,7 +2,7 @@
 
 import json
 
-from maria_cacau.core.storage.security import SecurityStorage
+from maria_cacau.core.storage import SecurityStorage
 
 from ..domain.errors import NoCachedCredentialsError
 from .apis import ConnectAuthAPI, DisconnectAuthAPI
