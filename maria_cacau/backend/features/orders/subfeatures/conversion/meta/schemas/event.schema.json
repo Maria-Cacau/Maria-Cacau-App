@@ -1,0 +1,67 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "MetaPurchaseEvent",
+    "description": "Evento Purchase enviado à Conversions API da Meta. Montado por payload.build_event() a partir do dict de um pedido.",
+    "type": "object",
+    "required": ["event_name", "event_id", "event_time", "action_source", "user_data", "custom_data"],
+    "properties": {
+        "event_name": {
+            "const": "Purchase"
+        },
+        "event_id": {
+            "type": "string",
+            "description": "Número do pedido com vírgula trocada por hífen (ex: 26512,1 -> 26512-1). Determinístico: reenviar o mesmo pedido produz o mesmo event_id, e a Meta deduplica em vez de contar a venda duas vezes."
+        },
+        "event_time": {
+            "type": "integer",
+            "description": "Unix timestamp. min(23:59:59 do dia do 1º pagamento, agora), em America/Sao_Paulo — nunca no futuro, e com a margem máxima até o limite de 7 dias que a Meta aceita."
+        },
+        "action_source": {
+            "const": "website",
+            "description": "Fixo: o conjunto de dados da conta é um Pixel de site, que descarta em silêncio os valores chat, other e business_messaging."
+        },
+        "user_data": {
+            "$ref": "#/$defs/UserData"
+        },
+        "custom_data": {
+            "$ref": "#/$defs/CustomData"
+        }
+    },
+
+    "$defs": {
+        "UserData": {
+            "type": "object",
+            "description": "Identificação do comprador, cada campo com hash SHA-256 (64 caracteres hex). Campo ausente ou vazio no pedido não entra aqui — nunca um hash de string vazia. Precisa de telefone ou e-mail para a Meta ter alguma chance de casar com uma pessoa.",
+            "minProperties": 1,
+            "additionalProperties": false,
+            "properties": {
+                "em":      { "$ref": "#/$defs/Sha256", "description": "E-mail, minúsculo e sem espaço nas pontas" },
+                "ph":      { "$ref": "#/$defs/Sha256", "description": "Telefone: só dígitos + código do país (55). Nunca inventa o 9º dígito" },
+                "fn":      { "$ref": "#/$defs/Sha256", "description": "Primeiro nome, minúsculo e sem acento" },
+                "ln":      { "$ref": "#/$defs/Sha256", "description": "Sobrenome (resto do nome após a 1ª palavra), minúsculo e sem acento" },
+                "zp":      { "$ref": "#/$defs/Sha256", "description": "CEP, só dígitos" },
+                "ct":      { "$ref": "#/$defs/Sha256", "description": "Cidade: parte antes do hífen da coluna Cidade, minúscula, sem acento e sem espaço" },
+                "st":      { "$ref": "#/$defs/Sha256", "description": "UF, sigla de 2 letras minúscula. Split da Cidade; fallback por faixa de CEP" },
+                "country": { "$ref": "#/$defs/Sha256", "description": "Sempre o hash de \"br\"" }
+            }
+        },
+
+        "CustomData": {
+            "type": "object",
+            "required": ["currency", "value"],
+            "properties": {
+                "currency": { "const": "BRL" },
+                "value": {
+                    "type": "number",
+                    "minimum": 0,
+                    "description": "TOTAL do pedido, cheio, com frete — nunca subtotal"
+                }
+            }
+        },
+
+        "Sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+        }
+    }
+}
