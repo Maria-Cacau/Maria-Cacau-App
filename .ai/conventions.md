@@ -5,17 +5,23 @@
 > `../Maria-Cacau-Study/style-guide/architecture/clean-architecture/conventions.md`.
 
 ## Imports
-Usar **imports absolutos** a partir do pacote. O projeto é instalado com `pip install -e .`, então `maria_cacau` é sempre resolvível.
+Absoluto **entre pacotes**; relativo (`.`/`..`) **dentro do mesmo pacote**. O projeto é instalado
+com `pip install -e .`, então `maria_cacau` é sempre resolvível — mas isso não significa usar
+absoluto pra tudo. Regra completa e exemplos em
+`../Maria-Cacau-Study/style-guide/code/conventions.md`.
 
 ```python
-# correto
+# correto — cruza pra outro pacote (feature → design_system)
 from maria_cacau.design_system.components import DSButton
 from maria_cacau.core.error import ErrorModel
-from maria_cacau.assets import strings
+
+# correto — módulos irmãos, mesmo pacote (core/network/_client.py)
+from ._request import HTTPRequest
 
 # evitar
-from ..design_system.components import DSButton  # relativo
-import sys; sys.path.insert(...)                   # gambiarra
+from ..design_system.components import DSButton    # relativo cruzando pra outro pacote
+from maria_cacau.core.network._request import HTTPRequest  # absoluto dentro do mesmo pacote
+import sys; sys.path.insert(...)                    # gambiarra
 ```
 
 ## Metadados do app
