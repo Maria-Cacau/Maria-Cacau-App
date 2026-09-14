@@ -126,12 +126,12 @@
             "type": "object",
             "properties": {
                 "status":  { "type": ["string", "null"], "description": "ex: Enviado, Negado, Teste, Ignorado" },
-                "sent_at": { "type": ["string", "null"], "description": "formato DD/MM/YYYY, preenchido só quando status == Enviado" }
+                "sent_at": { "type": ["string", "null"], "description": "formato DD/MM/YYYY; preenchido quando o envio foi feito (status Enviado ou Teste)" }
             }
         },
 
         "Order": {
-            "description": "Um pedido completo — usado por orders/subfeatures/{summary,payments,detail}.",
+            "description": "Um pedido completo — o mesmo objeto em todas as rotas de pedidos que devolvem pedido.",
             "type": "object",
             "required": ["number", "status", "customer", "receiver", "products", "financial", "delivery"],
             "properties": {

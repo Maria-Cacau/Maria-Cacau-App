@@ -1,11 +1,7 @@
-"""Normalização e hash dos campos de identificação da Meta CAPI.
-
-Migrado de `Maria-Cacau-BotConversa/scripts/meta_enviar_chat.py` — já validado contra a API real
-em 02/09/2026. Regras por campo, medidas na planilha real, em
-`Maria-Cacau-Study/demandas/meta-conversions-api/implementation/planejamentos/fase1-fluxo.md`.
+"""Hash e montagem do `user_data` da Meta CAPI.
 
 A normalização de CEP, cidade/UF e telefone é genérica (nada de específico da Meta) e mora em
-`backend/utils/` — aqui fica só o hash e a montagem do `user_data`.
+`backend/utils/` — aqui fica só o hash e os nomes de campo que a Meta espera.
 """
 
 import hashlib

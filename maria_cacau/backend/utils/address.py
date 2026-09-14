@@ -5,10 +5,9 @@ from .text import strip_accents
 # Faixas de CEP por UF (Correios, dados públicos), pelos 5 primeiros dígitos, intervalo fechado.
 # Os quatro estados menores (AP, RR, AC, RO) são recortes dentro da faixa de um estado maior.
 #
-# ⚠️ O bloco DF/GO/RO (70000–76999) é a parte menos verificada desta tabela — montada de memória
-# sobre dado público dos Correios, sem conferir contra uma fonte oficial linha a linha. O resto
-# foi validado contra as 27 capitais (uma por UF). Vale um spot-check antes de depender disso em
-# produção, especialmente pedidos de Goiás/Rondônia/DF.
+# ⚠️ O bloco DF/GO/RO (70000–76999) não foi conferido linha a linha contra uma fonte oficial; o
+# resto bate com o CEP das 27 capitais. Conferir antes de depender disso para pedidos de
+# Goiás/Rondônia/DF.
 _CEP_RANGES: list[tuple[int, int, str]] = [
     (0,     19999, "sp"), (20000, 28999, "rj"), (29000, 29999, "es"), (30000, 39999, "mg"),
     (40000, 48999, "ba"), (49000, 49999, "se"), (50000, 56999, "pe"), (57000, 57999, "al"),

@@ -12,7 +12,7 @@ from ....shared import (Address, Customer, Customization, Delivery, Event,
 
 
 class OrderMapper:
-    """Converte uma linha do DataFrame (vinda do SheetsRepository) em um Order."""
+    """Converte uma linha de pedido (vinda do repository da feature) em um Order."""
 
     @staticmethod
     def to_model(row: Series) -> Order:

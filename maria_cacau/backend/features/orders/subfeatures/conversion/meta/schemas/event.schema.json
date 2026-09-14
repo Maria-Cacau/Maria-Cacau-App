@@ -18,7 +18,7 @@
         },
         "action_source": {
             "const": "website",
-            "description": "Fixo, medido em 02/09/2026: o conjunto de dados da conta é um Pixel de site e descarta em silêncio chat, other e business_messaging."
+            "description": "Fixo: o conjunto de dados da conta é um Pixel de site, que descarta em silêncio os valores chat, other e business_messaging."
         },
         "user_data": {
             "$ref": "#/$defs/UserData"
