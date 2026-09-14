@@ -51,3 +51,6 @@ class DSDialog(QMessageBox):
         grid = self.layout()
         spacer = QSpacerItem(DIALOG_MIN_WIDTH, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
         grid.addItem(spacer, grid.rowCount(), 0, 1, grid.columnCount())
+        # Sem peso na coluna do texto, a largura que sobra vai para a coluna vazia entre ícone e
+        # texto — no Windows, onde o texto pede pouca largura por quebrar linha, isso abre um vão.
+        grid.setColumnStretch(grid.columnCount() - 1, 1)

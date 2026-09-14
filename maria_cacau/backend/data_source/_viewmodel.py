@@ -5,7 +5,7 @@ from . import _utils as utils
 from .errors._errors import (OrderNotFoundError, SheetColumnNotFoundError,
                              SheetWriteError, UnexpectedSheetStructureError)
 from .errors._handler import handle_api
-from .sheet_mapper import SheetCols, SheetTabs
+from .sheet_mapper import COLUMN_ALIASES, SheetCols, SheetTabs
 
 
 class _SheetsViewModel:
@@ -55,7 +55,12 @@ class _SheetsViewModel:
 
     @staticmethod
     def _find_col(header: list[str], name: str) -> int | None:
-        return next((i + 1 for i, h in enumerate(header) if h.strip().lower() == name), None)
+        """Índice (1-based) da coluna pelo nome canônico, aceitando os nomes alternativos."""
+        for i, h in enumerate(header):
+            normalized = utils.normalize_header(h)
+            if COLUMN_ALIASES.get(normalized, normalized) == name:
+                return i + 1
+        return None
 
     @handle_api
     def fetch(self, dates: set[str]) -> list[dict]:
@@ -67,18 +72,18 @@ class _SheetsViewModel:
         Passo 2 — cirúrgico: faz batch_get apenas nas linhas identificadas,
         em lotes de até 100 ranges para respeitar o limite da API.
 
-        Fallback: se a coluna DATA não for encontrada, traz tudo (get_all_values).
+        Sem a coluna de data no cabeçalho é erro: ler a planilha inteira devolveria todos os
+        pedidos como se fossem da data pedida, além de gastar a cota.
         """
         worksheet = self.database
         self._load_schema(worksheet)
         header   = self._header
         date_col = self._data_col
 
-        # Passo 1a: sem coluna DATA — fallback para leitura completa
         if date_col is None:
-            return utils.to_dicts(header, worksheet.get_all_values()[1:])
+            raise SheetColumnNotFoundError(column=SheetCols.DELIVERY_DATE)
 
-        # Passo 1b: lê só a coluna DATA e filtra os números das linhas alvo
+        # Passo 1: lê só a coluna de data e filtra os números das linhas alvo
         normalized  = {utils.normalize_date(d) for d in dates}
         col_values  = worksheet.col_values(date_col)
 
