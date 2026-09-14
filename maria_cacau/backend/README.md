@@ -16,13 +16,13 @@ BackendServer          ← Flask test_client() in-process
     │
     ├── features/auth/     ← gerencia credenciais no DataSource
     ├── features/sheet/    ← gerencia planilha ativa no DataSource
-    └── features/orders/   ← lê e processa pedidos
+    └── features/orders/   ← lê e processa pedidos; envia pedido como conversão para a Meta
             │
-            ▼
-    GoogleSheetsDataSource ← acessa a planilha via gspread
+            ├── GoogleSheetsDataSource ← acessa a planilha via gspread
+            └── Conversions API (Meta) ← HTTP, credencial lida do core/storage
 ```
 
-**Isolamento:** o backend não importa nada de `maria_cacau.*`. Features da aplicação conhecem só `HTTPRequest`/`HTTPResponse`.
+**Isolamento:** features da aplicação conhecem só `HTTPRequest`/`HTTPResponse`. No sentido contrário, o backend depende só do `core` do app: `core.network` (contrato de request/response) e `core.storage` (credencial da Meta, gravada pelo app ao importar as credenciais — o backend roda no mesmo processo e reaproveita o storage). Nenhuma `features/` do app é importada.
 
 ---
 
@@ -58,8 +58,12 @@ Body do `POST`:
 | `GET` | `/orders/deliveries` | Contagem de entregas por tipo para uma data (`?date=DD/MM/AAAA`) |
 | `GET` | `/orders/payments-pendent` | Pedidos com pagamento pendente para uma data (`?date=DD/MM/AAAA`) |
 | `GET` | `/orders` | Lista de pedidos de um período (`?start=DD/MM/AAAA&end=DD/MM/AAAA`) |
+| `GET` | `/orders/<pedido>` | Um pedido — mesmo `Order` da lista (inclui `meta`). `404` se não existir |
+| `PUT` | `/orders/<pedido>/conversion` | Envia o pedido para a Meta e grava o resultado na planilha. Sem corpo; `204` no sucesso (e se já estava enviado) |
 
 > Rotas de `/orders` exigem autenticação prévia via `POST /auth`. Retornam `503` se o DataSource não estiver pronto.
+
+Erros do `PUT /orders/<pedido>/conversion`: `422` quando o pedido não pode ser enviado (`CV01` ignorado, `CV02` sem contato, `CV03` sem data de pagamento, `CV04` fora dos 7 dias, `CV05` total zerado); `503 MT01` sem credencial da Meta; `401 MT03` token inválido; `502 MT02` Meta indisponível; `502 MT04` Meta recusou (grava `Negado`).
 
 ---
 
@@ -75,4 +79,4 @@ Todos os erros seguem o mesmo contrato JSON:
 }
 ```
 
-Erros do DataSource (`DS01`–`DS18`) são traduzidos automaticamente para o HTTP status correspondente. Erros inesperados retornam `500`.
+Erros do DataSource (`DS01`–`DS22`) são traduzidos automaticamente para o HTTP status correspondente. Erros de feature (`CV*`, `MT*`) já carregam o próprio status. Erros inesperados retornam `500`.
