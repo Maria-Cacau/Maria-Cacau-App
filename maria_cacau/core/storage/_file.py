@@ -2,12 +2,15 @@
 
 from pathlib import Path
 
-from maria_cacau.core.storage.handler import StorageHandler
+from ._handler import StorageHandler
 
 _BASE_DIR = Path.home() / '.mariacacau'
 
 
-class SecurityStorage(StorageHandler[str]):
+class FileStorage(StorageHandler[str]):
+    """Backend puro: só conhece o arquivo, sem lógica de decisão — quem escolhe usar este backend
+    ou o `KeychainStorage` é o `SecurityStorage`."""
+
     def __init__(self) -> None:
         self._dir = _BASE_DIR
         self._dir.mkdir(parents=True, exist_ok=True)
