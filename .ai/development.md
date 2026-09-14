@@ -51,7 +51,12 @@ Na primeira vez, o app precisa do `.json` da Service Account para autenticar.
 1. Menu **Segurança → Configurar certificado** → selecionar o `.json` da Service Account
 2. Menu **Arquivo → Conectar nova planilha** → colar o link ou ID da planilha
 
-As credenciais são salvas via `SecurityStorage` (`~/.mariacacau/`, arquivo protegido por permissões — não é mais `keyring`/keychain do SO). Nas próximas execuções, o app autentica automaticamente e as planilhas já conectadas aparecem em **Arquivo → Planilhas conectadas**.
+As credenciais são salvas via `SecurityStorage`: no cofre do sistema (Keychain no macOS, Credential
+Manager no Windows) quando o dado cabe, ou em arquivo protegido por permissões em `~/.mariacacau/`
+quando não cabe ou o cofre está indisponível na máquina — o `google-credentials` (JSON da service
+account) sempre cai em arquivo, por ser grande demais para o cofre. Nas próximas execuções, o app
+autentica automaticamente e as planilhas já conectadas aparecem em **Arquivo → Planilhas
+conectadas**.
 
 Lista de planilhas salvas: `~/.mariacacau/sheets.json`
 

@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from maria_cacau.core.storage.handler import StorageHandler
+from ._handler import StorageHandler
 
 
 class CacheStorage(StorageHandler[Any]):
