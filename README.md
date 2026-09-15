@@ -66,6 +66,8 @@ necessário rodar nada localmente numa máquina Windows.
   `patch`): abre o PR de release com a versão já bumpada
 - Ao mergear esse PR na `main`, o workflow `app-distribution` builda o `.exe` via Nuitka e publica
   a release automaticamente com o asset anexado
+- Para validar uma branch antes da release, rodar o workflow `app-snapshot` (aba Actions) escolhendo
+  a branch: gera o `.exe` e publica como pre-release `x.y.z.<run>-SNAPSHOT`
 
 
 </br>
