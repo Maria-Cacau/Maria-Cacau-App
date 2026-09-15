@@ -2,9 +2,11 @@
 
 from datetime import datetime
 
+from ......core.observability import observability
 from .....data_source import SheetCols
 from .....utils import TIMEZONE, DateFormat
 from .errors import MetaRejectedError
+from .events import ConversionEvent
 from .meta import MetaRepository, build_event
 from .models import SheetStatus
 from .repository import ConversionRepository
@@ -28,11 +30,22 @@ class ConversionService:
         validate(order)
 
         try:
-            self._meta.send_event(build_event(order))
+            response = self._meta.send_event(build_event(order))
         except MetaRejectedError:
             self._repo.mark(number, SheetStatus.NEGADO)
             raise
 
+        test_mode = self._meta.is_test_mode()
+        # Registrado antes de gravar na planilha: se a escrita falhar, o comprovante de que a Meta
+        # recebeu (e o fbtrace_id, que o suporte da Meta usa para rastrear o evento) não se perde.
+        observability.log(
+            ConversionEvent.META_CONVERSION_SENT,
+            order=number,
+            events_received=response.get("events_received"),
+            fbtrace_id=response.get("fbtrace_id") or "",
+            test_mode=test_mode,
+        )
+
         # Só grava depois da resposta da Meta — gravar antes marcaria como enviado algo que não foi.
-        status = SheetStatus.TESTE if self._meta.is_test_mode() else SheetStatus.ENVIADO
+        status = SheetStatus.TESTE if test_mode else SheetStatus.ENVIADO
         self._repo.mark(number, status, datetime.now(TIMEZONE).strftime(DateFormat.BR_FULL))

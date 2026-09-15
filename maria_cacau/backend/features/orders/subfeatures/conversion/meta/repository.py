@@ -60,9 +60,10 @@ class MetaRepository:
             return body
 
         error = body.get("error", {})
+        detail = f"{error.get('message', '')} (fbtrace_id={error.get('fbtrace_id', '')})"
         if error.get("type") == _OAUTH_TYPE or error.get("code") == _OAUTH_CODE:
-            raise MetaAuthError(error.get("message", ""))
-        raise MetaRejectedError(f"[{response.status_code}] {error.get('message', '')}")
+            raise MetaAuthError(detail)
+        raise MetaRejectedError(f"[{response.status_code}] {detail}")
 
     def _credentials(self) -> _Credentials:
         token    = self._security.retrieve(StorageKey.META_ACCESS_TOKEN)

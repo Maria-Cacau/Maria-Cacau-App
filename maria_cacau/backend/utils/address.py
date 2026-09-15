@@ -3,18 +3,16 @@
 from .text import strip_accents
 
 # Faixas de CEP por UF (Correios, dados públicos), pelos 5 primeiros dígitos, intervalo fechado.
-# Os quatro estados menores (AP, RR, AC, RO) são recortes dentro da faixa de um estado maior.
-#
-# ⚠️ O bloco DF/GO/RO (70000–76999) não foi conferido linha a linha contra uma fonte oficial; o
-# resto bate com o CEP das 27 capitais. Conferir antes de depender disso para pedidos de
-# Goiás/Rondônia/DF.
+# Os estados menores são recortes dentro da faixa de um estado maior — o DF, por exemplo, tem duas
+# faixas separadas por um trecho de Goiás. Fronteiras conferidas contra a ViaCEP e contra os pedidos
+# da planilha.
 _CEP_RANGES: list[tuple[int, int, str]] = [
     (0,     19999, "sp"), (20000, 28999, "rj"), (29000, 29999, "es"), (30000, 39999, "mg"),
     (40000, 48999, "ba"), (49000, 49999, "se"), (50000, 56999, "pe"), (57000, 57999, "al"),
     (58000, 58999, "pb"), (59000, 59999, "rn"), (60000, 63999, "ce"), (64000, 64999, "pi"),
     (65000, 65999, "ma"), (66000, 68899, "pa"), (68900, 68999, "ap"), (69000, 69299, "am"),
     (69300, 69399, "rr"), (69400, 69899, "am"), (69900, 69999, "ac"), (70000, 72799, "df"),
-    (72800, 76799, "go"), (76800, 76999, "ro"), (77000, 77999, "to"), (78000, 78999, "mt"),
+    (72800, 72999, "go"), (73000, 73699, "df"), (73700, 76799, "go"), (76800, 76999, "ro"), (77000, 77999, "to"), (78000, 78999, "mt"),
     (79000, 79999, "ms"), (80000, 87999, "pr"), (88000, 89999, "sc"), (90000, 99999, "rs"),
 ]
 
@@ -53,7 +51,7 @@ def split_city_state(raw: str) -> tuple[str, str | None]:
 
 
 def state_from_zip(zip_digits: str) -> str | None:
-    """Fallback de UF por faixa de CEP, para quando a cidade não tem UF extraível."""
+    """UF pela faixa do CEP. Preferível à UF digitada na cidade, que tem erros de digitação."""
     if len(zip_digits) < 5 or not zip_digits.isdigit():
         return None
     prefix = int(zip_digits[:5])

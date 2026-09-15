@@ -31,14 +31,12 @@ class StatusBarController:
     def _on_init_finished(self) -> None:
         if not session.has_credentials_cached:
             self._set_base(StatusBarState.NO_CREDENTIALS, strings.SB_SEM_CREDENCIAIS)
-        elif not session.active_sheet_id:
-            self._set_base(StatusBarState.NO_SHEET, strings.SB_SEM_PLANILHA)
         else:
-            name = session.active_sheet_name or session.active_sheet_id
-            self._set_base(StatusBarState.CONNECTED, strings.SB_PLANILHA.format(nome=name, id=session.active_sheet_id))
+            self._set_from_active_sheet()
 
     def _on_credentials_configured(self) -> None:
-        self._on_sheet_removed()
+        # Limpar o certificado mantém a planilha selecionada — ao configurar de novo, ela volta a valer.
+        self._set_from_active_sheet()
 
     def _on_credentials_cleared(self) -> None:
         self._busy_count = 0
@@ -63,6 +61,13 @@ class StatusBarController:
             self.view.set_state(self._state, self._text)
 
     # ── Interno ───────────────────────────────────────────────────────────────
+
+    def _set_from_active_sheet(self) -> None:
+        if not session.active_sheet_id:
+            self._set_base(StatusBarState.NO_SHEET, strings.SB_SEM_PLANILHA)
+        else:
+            name = session.active_sheet_name or session.active_sheet_id
+            self._set_base(StatusBarState.CONNECTED, strings.SB_PLANILHA.format(nome=name, id=session.active_sheet_id))
 
     def _set_base(self, state: StatusBarState, text: str) -> None:
         self._state = state

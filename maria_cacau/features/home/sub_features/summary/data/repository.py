@@ -3,10 +3,11 @@
 from maria_cacau.core.bus import bus
 from maria_cacau.core.network import HTTPResponseError
 from maria_cacau.core.services import Services
+from maria_cacau.features._shared import ErrorMapper
 
 from ..domain.models import OrderDetail
 from .apis import OrdersSummaryAPI
-from .mapper import ErrorMapper, OrdersSummaryMapper
+from .mapper import OrdersSummaryMapper
 
 
 class SummaryRepository:

@@ -5,6 +5,7 @@ import gspread
 from google.oauth2.service_account import Credentials
 
 from . import _utils as utils
+from ._usage import track_api_usage
 from ._normalizer import SheetNormalizer
 from ._viewmodel import _SheetsViewModel
 from .errors._handler import _guard
@@ -31,6 +32,7 @@ class GoogleSheetsDataSource:
         with _guard.authentication():
             creds        = Credentials.from_service_account_info(credentials, scopes=_SCOPES)
             self._client = gspread.authorize(creds)
+            track_api_usage(self._client.http_client)
         if self._sheet_id is not None:
             self._setup_vm()
 

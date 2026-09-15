@@ -1,6 +1,6 @@
 """Normaliza headers inconsistentes da planilha para os valores canônicos dos enums."""
 
-from .sheet_mapper import PaymentCols, ProductCols
+from .sheet_mapper import COLUMN_ALIASES, PaymentCols, ProductCols
 
 
 class SheetNormalizer:
@@ -14,6 +14,7 @@ class SheetNormalizer:
     _RENAMES: dict[str, str] = {
         "valor pg 1":  PaymentCols.AMOUNT.slot(1),  # espaço extra no slot 1
         "data 6ªpgto": PaymentCols.DATE.slot(3),    # número trocado (deveria ser data 3ªpgto)
+        **COLUMN_ALIASES,
     }
 
     @classmethod

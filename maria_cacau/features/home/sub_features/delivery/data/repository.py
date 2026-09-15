@@ -3,10 +3,11 @@
 from maria_cacau.core.bus import bus
 from maria_cacau.core.network import HTTPResponseError
 from maria_cacau.core.services import Services
+from maria_cacau.features._shared import ErrorMapper
 
 from ..domain.models import DeliveriesSummary, PendentOrder
 from .apis import DeliveriesAPI, PaymentsPendentAPI
-from .mapper import DeliveriesMapper, ErrorMapper, PaymentsMapper
+from .mapper import DeliveriesMapper, PaymentsMapper
 
 
 class OrdersRepository:
