@@ -16,7 +16,8 @@ dependencies = [
     "seaborn",
     "flask",
     "keyring",
-    "requests"
+    "requests",
+    "tzdata; sys_platform == 'win32'"
 ]
 
 [project.scripts]
