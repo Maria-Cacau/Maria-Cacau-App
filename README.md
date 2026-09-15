@@ -1,6 +1,6 @@
 # Maria Cacau — App
 
-[![Version](https://img.shields.io/badge/version-5.0.1-orange)](https://github.com/Maria-Cacau/Maria-Cacau-App/releases/tag/5.0.1)
+[![Version](https://img.shields.io/badge/version-5.2.0-orange)](https://github.com/Maria-Cacau/Maria-Cacau-App/releases/tag/5.2.0)
 ![Language](https://img.shields.io/badge/language-Python-blue?logo=python)
 [![Python Version](https://img.shields.io/badge/python-v3.13+-blue?logo=python)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-CC%20BY--NC%204.0-brightgreen?logo=creativecommons)](./LICENSE)
