@@ -50,3 +50,37 @@ Isso é convencional — ferramentas de empacotamento não devem entrar nas depe
 projeto. `scripts/build.bat`/`build.sh` instalam esse grupo quando chamados com `build` como
 argumento (`scripts\build.bat build`); sem argumento, instalam o grupo `dev` (padrão de
 desenvolvimento local).
+
+## Dependência carregada como dado
+
+O Nuitka segue sozinho tudo que o app importa estaticamente. Arquivo de dados que não é `.py`, ou
+módulo carregado de forma dinâmica, fica de fora do `.exe`: o build passa e o erro só aparece ao
+abrir o executável, no Windows.
+
+Caso atual: `zoneinfo`. O Windows não tem banco de fusos IANA, então o `zoneinfo` lê os arquivos do
+pacote `tzdata`. Isso exige dois ajustes:
+
+```toml
+dependencies = [
+    ...
+    "tzdata; sys_platform == 'win32'"
+]
+```
+
+```python
+"--include-package-data=tzdata",
+```
+
+O primeiro fica neste repo. O segundo está no comando fixo da action `nuitka`, em
+`Maria-Cacau-Actions`, desde a `2.1.0`. Sem ele, o `.exe` levanta `ZoneInfoNotFoundError` ao abrir.
+
+O `keyring` segue a mesma lógica: descobre os backends por entry point, então o backend do Windows é
+importado de forma estática em `core/storage/_keychain.py`:
+
+```python
+from keyring.backends.Windows import WinVaultKeyring
+keyring.set_keyring(WinVaultKeyring())
+```
+
+Ao adicionar uma dependência que lê dados do próprio pacote ou descobre plugins dinamicamente,
+conferir se ela precisa de flag de inclusão no Nuitka.

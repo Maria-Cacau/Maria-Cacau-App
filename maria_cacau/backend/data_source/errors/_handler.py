@@ -7,6 +7,7 @@ import gspread
 import requests
 
 from .._utils import normalize_date, to_datetime
+from ..sheet_mapper import WRITABLE_COLS
 from ._errors import *
 
 
@@ -63,6 +64,11 @@ class _SheetsGuard:
         if to_datetime(normalize_date(end)) < to_datetime(normalize_date(start)):
             raise InvalidDateRangeError(start=start, end=end)
 
+    def validate_writable_fields(self, fields: dict[str, str]) -> None:
+        invalid = set(fields) - WRITABLE_COLS
+        if invalid:
+            raise SheetFieldNotWritableError(fields=invalid)
+
 
 _guard = _SheetsGuard()
 
@@ -77,6 +83,10 @@ def handle_api(fn):
         except gspread.exceptions.APIError as e:
             if e.response.status_code == 429:
                 raise ApiQuotaExceededError()
+            # Estado reaproveitado entre chamadas (aba aberta, linhas conhecidas) pode ter ficado
+            # inválido — ex.: aba renomeada. Descarta para a próxima chamada começar do zero.
+            if args and hasattr(args[0], "on_api_error"):
+                args[0].on_api_error()
             raise ApiUnexpectedResponseError(cause=e)
         except google.auth.exceptions.RefreshError:
             raise TokenExpiredError()

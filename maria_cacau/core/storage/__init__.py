@@ -1,5 +1,16 @@
-from maria_cacau.core.storage.cache import CacheStorage
-from maria_cacau.core.storage.handler import StorageHandler
-from maria_cacau.core.storage.security import SecurityStorage
+"""Superfície pública do storage. `FileStorage` e `KeychainStorage` são backends internos da
+`SecurityStorage` — quem consome este pacote não deve instanciá-los direto."""
 
-__all__ = ['StorageHandler', 'SecurityStorage', 'CacheStorage']
+from ._cache import CacheStorage
+from ._handler import StorageHandler
+from ._keys import StorageKey
+from ._location import StorageLocation
+from ._security import SecurityStorage
+
+__all__ = [
+    'StorageHandler',
+    'SecurityStorage',
+    'CacheStorage',
+    'StorageKey',
+    'StorageLocation',
+]

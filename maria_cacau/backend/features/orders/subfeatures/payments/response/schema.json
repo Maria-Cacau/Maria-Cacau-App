@@ -1,6 +1,7 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "title": "Payments Pendent Response",
+    "description": "Resposta de GET /orders/payments-pendent — envelope com o total e os pedidos da data com pagamento pendente.",
     "type": "object",
     "required": ["total", "orders"],
     "properties": {
@@ -10,7 +11,7 @@
         },
         "orders": {
             "type": "array",
-            "items": { "$ref": "./order.schema.json" }
+            "items": { "$ref": "../../../../../shared/schemas/shared.schema.json#/$defs/Order" }
         }
     }
 }

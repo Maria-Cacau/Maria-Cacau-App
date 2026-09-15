@@ -1,5 +1,8 @@
 from datetime import datetime
 from enum import Enum
+from zoneinfo import ZoneInfo
+
+TIMEZONE = ZoneInfo("America/Sao_Paulo")
 
 
 class DateFormat(str, Enum):

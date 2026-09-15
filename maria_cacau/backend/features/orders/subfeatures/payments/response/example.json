@@ -75,6 +75,11 @@
                 },
                 "factory_notes": "",
                 "motoboy_info": ""
+            },
+
+            "meta": {
+                "status": null,
+                "sent_at": null
             }
         }
     ]

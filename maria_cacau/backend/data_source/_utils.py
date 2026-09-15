@@ -27,9 +27,22 @@ def normalize_date(val: str) -> str | None:
     return None
 
 
+def normalize_order_number(value: str) -> str:
+    """Normaliza o número do pedido para o formato com vírgula usado na planilha (`26512,1`)."""
+    normalized = value.strip().replace('.', ',').replace('-', ',')
+    if ',' not in normalized:
+        normalized += ',0'
+    return normalized
+
+
+def normalize_header(header: str) -> str:
+    """Título de coluna em minúsculas, com espaços e quebras de linha colapsados num espaço só."""
+    return re.sub(r'\s+', ' ', header).strip().lower()
+
+
 def to_dicts(header: list[str], rows: list[list]) -> list[dict]:
-    """Converte linhas da planilha em lista de dicts usando o cabeçalho como chaves (lowercase, whitespace normalizado)."""
-    keys = [re.sub(r'\s+', ' ', h).strip().lower() for h in header]
+    """Converte linhas da planilha em lista de dicts usando o cabeçalho normalizado como chaves."""
+    keys = [normalize_header(h) for h in header]
     return [dict(zip(keys, row)) for row in rows]
 
 
