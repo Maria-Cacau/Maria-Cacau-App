@@ -65,6 +65,10 @@ class MetaConversionView(QDialog):
         self._btn_send = DSButton(strings.BTN_ENVIAR_META)
         self._btn_send.clicked.connect(self.send_requested)
 
+        # Num QDialog, Enter no campo também clica o botão padrão — a busca sairia duas vezes.
+        for button in (self._btn_search, self._btn_close, self._btn_send):
+            button.setAutoDefault(False)
+
     def _setup_layout(self) -> None:
         order_box = DSGroupBox(strings.DLG_META_GRP_PEDIDO)
         order_layout = QHBoxLayout(order_box)

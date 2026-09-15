@@ -10,7 +10,7 @@ from ._normalizer import SheetNormalizer
 from ._viewmodel import _SheetsViewModel
 from .errors._handler import _guard
 
-_SCOPES = ["https://www.googleapis.com/auth/spreadsheets"] ## Escopo de edição!
+_SCOPES = ["https://www.googleapis.com/auth/spreadsheets"] # Leitura e escrita: a conversão grava Meta Status e Meta Dt Envio.
 
 
 class GoogleSheetsDataSource:

@@ -18,9 +18,10 @@ from ..errors import (MetaAuthError, MetaNotConfiguredError, MetaRejectedError,
 _VERSION   = "v26.0"
 _GRAPH_URL = f"https://graph.facebook.com/{_VERSION}"
 
-# Token inválido, expirado ou sem permissão — a Graph API sinaliza pelo tipo/código do erro.
-_OAUTH_TYPE = "OAuthException"
-_OAUTH_CODE = 190
+# Códigos de erro da Graph API. Limite de requisição também chega com tipo OAuthException, então a
+# classificação é pelo código, não pelo tipo.
+_RATE_LIMIT_CODES = frozenset({4, 17, 32, 613})
+_AUTH_CODES       = frozenset({102, 190, 10})
 
 
 @dataclass(frozen=True)
@@ -59,11 +60,17 @@ class MetaRepository:
         if response.ok:
             return body
 
-        error = body.get("error", {})
-        detail = f"{error.get('message', '')} (fbtrace_id={error.get('fbtrace_id', '')})"
-        if error.get("type") == _OAUTH_TYPE or error.get("code") == _OAUTH_CODE:
+        error  = body.get("error", {}) if isinstance(body, dict) else {}
+        code   = error.get("code")
+        detail = f"[{response.status_code}] {error.get('message', '')} (fbtrace_id={error.get('fbtrace_id', '')})"
+
+        # Indisponibilidade não é recusa: marcar `Negado` travaria na tela um pedido que só pegou
+        # instabilidade da Meta.
+        if response.status_code == 429 or response.status_code >= 500 or code in _RATE_LIMIT_CODES:
+            raise MetaUnavailableError(detail)
+        if code in _AUTH_CODES or (isinstance(code, int) and 200 <= code < 300):
             raise MetaAuthError(detail)
-        raise MetaRejectedError(f"[{response.status_code}] {detail}")
+        raise MetaRejectedError(detail)
 
     def _credentials(self) -> _Credentials:
         token    = self._security.retrieve(StorageKey.META_ACCESS_TOKEN)

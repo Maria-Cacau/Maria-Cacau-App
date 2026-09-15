@@ -12,7 +12,7 @@ class OrderMapper:
         customer  = order["customer"]
         financial = order["financial"]
         address   = order["delivery"].get("address") or {}
-        payments  = financial.get("payments") or []
+        first     = next((p for p in financial.get("payments") or [] if p.get("installment") == 1), None)
         meta      = order.get("meta") or {}
 
         return ConversionOrderModel(
@@ -21,7 +21,7 @@ class OrderMapper:
             customer_phone=customer.get("phone") or None,
             customer_email=customer.get("email") or None,
             total=financial["total"],
-            first_payment_date=payments[0]["date"] if payments else None,
+            first_payment_date=first["date"] if first else None,
             zip_code=address.get("zip") or None,
             city=address.get("city") or None,
             meta_status=meta.get("status"),

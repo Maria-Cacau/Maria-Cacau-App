@@ -24,6 +24,8 @@ class MetaConversionController:
         self.view      = MetaConversionView()
         self.viewmodel = MetaConversionViewModel()
         self._number: str | None = None
+        # Uma requisição por vez: clique repetido ou Enter duplicado não dispara outra chamada.
+        self._busy = False
         self._setup_actions()
 
     def _setup_actions(self) -> None:
@@ -39,15 +41,17 @@ class MetaConversionController:
 
     def on_search(self) -> None:
         number = self.view.get_number().strip()
-        if not number:
+        if not number or self._busy:
             return
+        self._busy = True
         observability.log(ObsEv.SEARCH_ACTION)
         self.view.prepare_search()
         self.viewmodel.search(number)
 
     def on_send(self) -> None:
-        if not self._number:
+        if not self._number or self._busy:
             return
+        self._busy = True
         observability.log(ObsEv.SEND_ACTION)
         self.view.prepare_send()
         self.viewmodel.send(self._number)
@@ -55,20 +59,24 @@ class MetaConversionController:
     ## Respostas
 
     def handle_order_loaded(self, order: ConversionOrderModel) -> None:
+        self._busy = False
         # O número devolvido pelo backend já vem completo (`26512` → `26512,0`) — é ele que vai no envio.
         self._number = order.number
         self.view.show_order(order, order.state(datetime.now(_TIMEZONE).date()))
 
     def handle_order_failed(self, error: ErrorModel) -> None:
+        self._busy = False
         self._number = None
         self.view.show_placeholder()
         self._show_error(error)
 
     def handle_sent(self) -> None:
-        self.view.show_sent(datetime.now().strftime("%d/%m/%Y"))
+        self._busy = False
+        self.view.show_sent(datetime.now(_TIMEZONE).strftime("%d/%m/%Y"))
         observability.log(ObsEv.SENT, order=self._number)
 
     def handle_send_failed(self, error: ErrorModel) -> None:
+        self._busy = False
         self.view.finish_send_error()
         self._show_error(error)
 
