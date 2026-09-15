@@ -31,9 +31,9 @@ def build_user_data(order: dict[str, str]) -> dict[str, str]:
 
     zip_code = normalize_zip(order.get(SheetCols.ADDRESS_ZIP, ""))
 
-    city, state = split_city_state(order.get(SheetCols.ADDRESS_CITY, ""))
-    if not state:
-        state = state_from_zip(zip_code) or ""
+    city, typed_state = split_city_state(order.get(SheetCols.ADDRESS_CITY, ""))
+    # O CEP decide a UF: a UF digitada na cidade só entra quando não há CEP válido.
+    state = state_from_zip(zip_code) or typed_state or ""
 
     fields = {
         "em": email,

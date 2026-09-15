@@ -41,7 +41,7 @@
                 "ln":      { "$ref": "#/$defs/Sha256", "description": "Sobrenome (resto do nome após a 1ª palavra), minúsculo e sem acento" },
                 "zp":      { "$ref": "#/$defs/Sha256", "description": "CEP, só dígitos" },
                 "ct":      { "$ref": "#/$defs/Sha256", "description": "Cidade: parte antes do hífen da coluna Cidade, minúscula, sem acento e sem espaço" },
-                "st":      { "$ref": "#/$defs/Sha256", "description": "UF, sigla de 2 letras minúscula. Split da Cidade; fallback por faixa de CEP" },
+                "st":      { "$ref": "#/$defs/Sha256", "description": "UF, sigla de 2 letras minúscula. Pela faixa do CEP; sem CEP válido, a UF escrita na coluna Cidade" },
                 "country": { "$ref": "#/$defs/Sha256", "description": "Sempre o hash de \"br\"" }
             }
         },
