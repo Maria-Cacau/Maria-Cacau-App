@@ -15,7 +15,8 @@ dependencies = [
     "matplotlib",
     "seaborn",
     "flask",
-    "keyring"
+    "keyring",
+    "requests"
 ]
 
 [project.scripts]

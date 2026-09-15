@@ -1,4 +1,6 @@
-from dataclasses import dataclass, field
+"""Modelos de domínio do pedido, disponíveis para qualquer feature do backend."""
+
+from dataclasses import dataclass
 
 
 @dataclass
@@ -63,13 +65,16 @@ class PaymentItem:
 
 @dataclass
 class Financial:
-    subtotal:       float
+    """Só `total` é obrigatório. Os demais campos ficam `None` quando não calculados — nunca um
+    zero ou lista vazia fingindo que o valor é conhecido."""
+
     total:          float
-    discount:       float             = 0.0
-    shipping:       float             = 0.0
-    amount_pendent: float             = 0.0
-    pay_on_pickup:  bool              = False
-    payments:       list[PaymentItem] = field(default_factory=list)
+    subtotal:       float             | None = None
+    discount:       float             | None = None
+    shipping:       float             | None = None
+    amount_pendent: float             | None = None
+    pay_on_pickup:  bool              | None = None
+    payments:       list[PaymentItem] | None = None
 
 
 @dataclass
@@ -80,6 +85,15 @@ class Delivery:
     address:       Address | None = None
     factory_notes: str     | None = None
     motoboy_info:  str     | None = None
+
+
+@dataclass
+class Meta:
+    """Estado do pedido nas colunas `Meta Status`/`Meta Dt Envio` da planilha, sem interpretação
+    de regra de negócio — quem decide se o pedido pode ser enviado é a subfeature de conversão."""
+
+    status:  str | None = None
+    sent_at: str | None = None
 
 
 @dataclass
@@ -95,3 +109,4 @@ class Order:
     tiny_code:     int           | None = None
     customization: Customization | None = None
     products_note: str           | None = None
+    meta:          Meta          | None = None

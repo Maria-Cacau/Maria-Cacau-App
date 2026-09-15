@@ -5,11 +5,12 @@ import gspread
 from google.oauth2.service_account import Credentials
 
 from . import _utils as utils
+from ._usage import track_api_usage
 from ._normalizer import SheetNormalizer
 from ._viewmodel import _SheetsViewModel
 from .errors._handler import _guard
 
-_SCOPES = ["https://www.googleapis.com/auth/spreadsheets.readonly"]
+_SCOPES = ["https://www.googleapis.com/auth/spreadsheets"] # Leitura e escrita: a conversão grava Meta Status e Meta Dt Envio.
 
 
 class GoogleSheetsDataSource:
@@ -31,6 +32,7 @@ class GoogleSheetsDataSource:
         with _guard.authentication():
             creds        = Credentials.from_service_account_info(credentials, scopes=_SCOPES)
             self._client = gspread.authorize(creds)
+            track_api_usage(self._client.http_client)
         if self._sheet_id is not None:
             self._setup_vm()
 
@@ -61,6 +63,16 @@ class GoogleSheetsDataSource:
         with self._lock:
             result = self._vm.fetch(utils.date_range(start, end))
             return SheetNormalizer.normalize(result)
+
+    def fetch_order_by_number(self, number: str) -> dict | None:
+        with self._lock:
+            data = self._vm.fetch_by_order_number(number)
+            return SheetNormalizer.normalize([data])[0] if data is not None else None
+
+    def update_order(self, number: str, fields: dict[str, str]) -> None:
+        _guard.validate_writable_fields(fields)
+        with self._lock:
+            self._vm.update_order(number, fields)
 
     ### Interno
 

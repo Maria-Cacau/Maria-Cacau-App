@@ -1,0 +1,17 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Orders",
+    "description": "Resposta de GET /orders — envelope com o total e a lista de pedidos do período.",
+    "type": "object",
+    "required": ["total", "orders"],
+    "properties": {
+        "total": {
+            "type": "integer",
+            "description": "Quantidade de pedidos no período"
+        },
+        "orders": {
+            "type": "array",
+            "items": { "$ref": "../item/schema.json" }
+        }
+    }
+}

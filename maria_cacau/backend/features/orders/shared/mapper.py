@@ -6,12 +6,13 @@ from pandas import Series
 
 from ....data_source import (PAYMENT_SLOTS, PRODUCT_SLOTS, PaymentCols,
                              ProductCols, SheetCols)
-from .models import (Address, Customer, Customization, Delivery, Event,
-                     Financial, Order, PaymentItem, ProductItem, Receiver)
+from ....shared import (Address, Customer, Customization, Delivery, Event,
+                        Financial, Meta, Order, PaymentItem, ProductItem,
+                        Receiver)
 
 
 class OrderMapper:
-    """Converte uma linha do DataFrame (vinda do SheetsRepository) em um Order."""
+    """Converte uma linha de pedido (vinda do repository da feature) em um Order."""
 
     @staticmethod
     def to_model(row: Series) -> Order:
@@ -28,6 +29,14 @@ class OrderMapper:
             tiny_code=int(row[SheetCols.TINY]) if row.get(SheetCols.TINY) else None,
             customization=OrderMapper._customization(row),
             products_note=str(row.get(SheetCols.PRODUCTS_NOTE, "")) or None,
+            meta=OrderMapper._meta(row),
+        )
+
+    @staticmethod
+    def _meta(row: Series) -> Meta:
+        return Meta(
+            status=str(row.get(SheetCols.META_STATUS, "")).strip() or None,
+            sent_at=str(row.get(SheetCols.META_SENT, "")).strip() or None,
         )
 
     @staticmethod

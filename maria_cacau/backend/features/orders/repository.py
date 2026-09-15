@@ -1,17 +1,17 @@
-"""Repositório de pedidos por período — busca e prepara dados da planilha para o OrdersService."""
+"""Repositório de pedidos — busca e prepara dados da planilha para o OrdersService."""
 
 import pandas as pd
 from pandas import DataFrame
 
-from .....data_source import (PAYMENT_SLOTS, PRODUCT_SLOTS, PaymentCols,
-                              ProductCols, SheetCols, data_source)
-from .....utils import normalize_decimal
+from ...data_source import (PAYMENT_SLOTS, PRODUCT_SLOTS, PaymentCols,
+                            ProductCols, SheetCols, data_source)
+from ...utils import normalize_decimal
 
 
-class OrdersSummaryRepository:
+class OrdersRepository:
     """Acessa o data source e entrega um DataFrame tipado para o OrdersService.
 
-    Único lugar que conhece SheetCols, ProductCols e PaymentCols no contexto de resumo por período.
+    Único lugar que conhece SheetCols, ProductCols e PaymentCols no contexto de pedidos.
     """
 
     def get_by_period(self, start: str, end: str) -> DataFrame:
@@ -20,6 +20,13 @@ class OrdersSummaryRepository:
         if not rows:
             return DataFrame()
         return self._to_dataframe(rows)
+
+    def get_by_number(self, number: str) -> DataFrame:
+        """Retorna o pedido numa DataFrame de uma linha, ou vazia se não existir."""
+        row = data_source.fetch_order_by_number(number)
+        if row is None:
+            return DataFrame()
+        return self._to_dataframe([row])
 
     @staticmethod
     def _to_dataframe(rows: list[dict]) -> DataFrame:
@@ -34,15 +41,15 @@ class OrdersSummaryRepository:
             SheetCols.PAY_ON_PICKUP,
         ]
         for col in financial_cols:
-            OrdersSummaryRepository._cast_numeric(df, col)
+            OrdersRepository._cast_numeric(df, col)
 
         for i in range(1, PRODUCT_SLOTS + 1):
-            OrdersSummaryRepository._cast_numeric(df, ProductCols.PRICE.slot(i))
-            OrdersSummaryRepository._cast_numeric(df, ProductCols.TOTAL.slot(i))
-            OrdersSummaryRepository._cast_numeric(df, ProductCols.QTY.slot(i))
+            OrdersRepository._cast_numeric(df, ProductCols.PRICE.slot(i))
+            OrdersRepository._cast_numeric(df, ProductCols.TOTAL.slot(i))
+            OrdersRepository._cast_numeric(df, ProductCols.QTY.slot(i))
 
         for i in range(1, PAYMENT_SLOTS + 1):
-            OrdersSummaryRepository._cast_numeric(df, PaymentCols.AMOUNT.slot(i))
+            OrdersRepository._cast_numeric(df, PaymentCols.AMOUNT.slot(i))
 
         return df
 

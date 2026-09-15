@@ -1,0 +1,6 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Order",
+    "description": "Resposta de GET /orders/<pedido>, e cada item de orders[] em GET /orders.",
+    "$ref": "../../../../shared/schemas/shared.schema.json#/$defs/Order"
+}

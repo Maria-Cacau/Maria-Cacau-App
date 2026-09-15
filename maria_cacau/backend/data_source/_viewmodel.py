@@ -1,23 +1,36 @@
 import gspread
+from gspread.utils import rowcol_to_a1
 
 from . import _utils as utils
-from .errors._errors import UnexpectedSheetStructureError
+from .errors._errors import (OrderNotFoundError, SheetColumnNotFoundError,
+                             SheetWriteError, UnexpectedSheetStructureError)
 from .errors._handler import handle_api
-from .sheet_mapper import SheetCols, SheetTabs
+from .sheet_mapper import COLUMN_ALIASES, SheetCols, SheetTabs
 
 
 class _SheetsViewModel:
-    """Encapsula o acesso à planilha: schema cacheado, prewarm e fetch."""
+    """Encapsula o acesso à planilha: fetch e escrita, com schema, aba e linhas de pedido em cache
+    entre chamadas."""
 
     def __init__(self, client: gspread.Client, sheet_id: str) -> None:
         self._client   = client
         self._sheet_id = sheet_id
         self._header: list[str] | None = None
-        self._data_col: int | None     = None  # válido apenas quando _header não é None
+        # Válidos apenas quando _header não é None; None quando a coluna não existe no header.
+        self._data_col:  int | None = None
+        self._order_col: int | None = None
+        self._worksheet: gspread.Worksheet | None = None
+        # Linha de cada pedido já localizado (número normalizado → linha): evita reler a coluna
+        # PEDIDO inteira. Toda linha tirada daqui é conferida antes de ser usada.
+        self._rows: dict[str, int] = {}
 
     @property
     def database(self) -> gspread.Worksheet:
-        return self._client.open_by_key(self._sheet_id).worksheet(SheetTabs.DATABASE)
+        # Abrir custa duas leituras de metadado (planilha e aba). O objeto não mantém conexão, só
+        # o endereço da aba, então é reaproveitado — e descartado em erro da API (ex.: aba renomeada).
+        if self._worksheet is None:
+            self._worksheet = self._client.open_by_key(self._sheet_id).worksheet(SheetTabs.DATABASE)
+        return self._worksheet
 
     def prewarm(self) -> None:
         try:
@@ -25,41 +38,54 @@ class _SheetsViewModel:
         except Exception:
             pass
 
+    def on_api_error(self) -> None:
+        self._worksheet = None
+        self._rows.clear()
+
     def _load_schema(self, worksheet: gspread.Worksheet) -> None:
-        """Carrega cabeçalho e índice da coluna DATA na primeira chamada; no-op nas seguintes."""
+        """Carrega cabeçalho e índices das colunas conhecidas na primeira chamada; no-op nas
+        seguintes."""
         if self._header is not None:
             return
-        
-        header = worksheet.row_values(1)
-        self._header   = header
 
-        self._data_col = next(
-            (i + 1 for i, h in enumerate(header) if h.strip().lower() == SheetCols.DELIVERY_DATE),
-            None,
-        )
+        header = worksheet.row_values(1)
+
+        # `_header` por último: o prewarm roda fora do lock, e quem vê o cabeçalho carregado já
+        # precisa encontrar os índices preenchidos.
+        self._data_col  = self._find_col(header, SheetCols.DELIVERY_DATE)
+        self._order_col = self._find_col(header, SheetCols.ORDER)
+        self._header    = header
+
+    @staticmethod
+    def _find_col(header: list[str], name: str) -> int | None:
+        """Índice (1-based) da coluna pelo nome canônico, aceitando os nomes alternativos."""
+        for i, h in enumerate(header):
+            if _SheetsViewModel._canonical(h) == name:
+                return i + 1
+        return None
 
     @handle_api
     def fetch(self, dates: set[str]) -> list[dict]:
         """Busca pedidos por datas usando dois passes para minimizar chamadas à API.
 
-        Passo 1 — leve: usa o schema cacheado (cabeçalho + índice da coluna DATA)
+        Passo 1 — leve: usa o schema cacheado (cabeçalho + índice da coluna de data)
         e lê só essa coluna para identificar as linhas das datas pedidas.
 
         Passo 2 — cirúrgico: faz batch_get apenas nas linhas identificadas,
         em lotes de até 100 ranges para respeitar o limite da API.
 
-        Fallback: se a coluna DATA não for encontrada, traz tudo (get_all_values).
+        Sem a coluna de data no cabeçalho é erro: ler a planilha inteira devolveria todos os
+        pedidos como se fossem da data pedida, além de gastar a cota.
         """
         worksheet = self.database
         self._load_schema(worksheet)
         header   = self._header
         date_col = self._data_col
 
-        # Passo 1a: sem coluna DATA — fallback para leitura completa
         if date_col is None:
-            return utils.to_dicts(header, worksheet.get_all_values()[1:])
+            raise SheetColumnNotFoundError(column=SheetCols.DELIVERY_DATE)
 
-        # Passo 1b: lê só a coluna DATA e filtra os números das linhas alvo
+        # Passo 1: lê só a coluna de data e filtra os números das linhas alvo
         normalized  = {utils.normalize_date(d) for d in dates}
         col_values  = worksheet.col_values(date_col)
 
@@ -70,15 +96,134 @@ class _SheetsViewModel:
         if not target_rows:
             return []
 
-        # Passo 2: busca apenas as linhas alvo, em batches de até 100 ranges
-        header_len = len(header)
+        rows = self._batch_get_rows(worksheet, target_rows, len(header))
+        return utils.to_dicts(header, rows)
+
+    @handle_api
+    def fetch_by_order_number(self, number: str) -> dict | None:
+        """Busca exata pelo número do pedido.
+
+        Com a linha já conhecida, lê só ela e confere a coluna PEDIDO — o dado vem sempre atual, e a
+        conferência pega a planilha reordenada. Sem linha conhecida (ou se ela mudou), lê a coluna
+        PEDIDO para achá-la e depois busca a linha.
+        """
+        worksheet = self.database
+        self._load_schema(worksheet)
+        normalized = utils.normalize_order_number(number)
+
+        known = self._rows.get(normalized)
+        if known is not None:
+            row = self._read_row(worksheet, known)
+            if row is not None and self._row_is_order(row, normalized):
+                return utils.to_dicts(self._header, [row])[0]
+            self._rows.pop(normalized, None)
+
+        target_row = self._find_row(worksheet, number)
+        if target_row is None:
+            return None
+        return utils.to_dicts(self._header, [self._read_row(worksheet, target_row)])[0]
+
+    @handle_api
+    def update_order(self, number: str, fields: dict[str, str]) -> None:
+        """Atualiza os campos informados, num único `batch_update`.
+
+        O cabeçalho e a linha ficam em cache, e a planilha é editada à mão: antes de gravar, uma única
+        leitura confere o título das colunas de destino e a célula PEDIDO da linha conhecida. Coluna
+        movida recarrega o cabeçalho; linha que não bate é localizada de novo pela coluna PEDIDO —
+        gravar no lugar errado sobrescreveria outro dado.
+        """
+        worksheet = self.database
+        self._load_schema(worksheet)
+        target_row, cols = self._locate_for_write(worksheet, number, list(fields))
+
+        updates = [
+            {"range": rowcol_to_a1(target_row, cols[field]), "values": [[value]]}
+            for field, value in fields.items()
+        ]
+
+        try:
+            worksheet.batch_update(updates)
+        except Exception as exc:
+            raise SheetWriteError(cause=exc)
+
+    def _locate_for_write(self, worksheet: gspread.Worksheet, number: str, fields: list[str]) -> tuple[int, dict[str, int]]:
+        cols = self._cols_for(fields)
+        if self._order_col is None:
+            raise SheetColumnNotFoundError(column=SheetCols.ORDER)
+
+        normalized = utils.normalize_order_number(number)
+        known      = self._rows.get(normalized)
+        checked    = {**cols, SheetCols.ORDER: self._order_col}
+
+        ranges = [rowcol_to_a1(1, col) for col in checked.values()]
+        if known is not None:
+            ranges.append(rowcol_to_a1(known, self._order_col))
+        cells = [self._single_value(vr) for vr in worksheet.batch_get(ranges)]
+
+        header_ok = all(self._canonical(cell) == name for name, cell in zip(checked, cells))
+        if not header_ok:
+            self._header = None
+            self._rows.clear()
+            self._load_schema(worksheet)
+            cols = self._cols_for(fields)
+        elif known is not None and utils.normalize_order_number(cells[-1]) == normalized:
+            return known, cols
+
+        self._rows.pop(normalized, None)
+        target_row = self._find_row(worksheet, number)
+        if target_row is None:
+            raise OrderNotFoundError(number=number)
+        return target_row, cols
+
+    def _cols_for(self, fields: list[str]) -> dict[str, int]:
+        cols = {field: self._find_col(self._header, field) for field in fields}
+        missing = [field for field, col in cols.items() if col is None]
+        if missing:
+            raise SheetColumnNotFoundError(column=missing[0])
+        return cols
+
+    @staticmethod
+    def _canonical(header: str) -> str:
+        normalized = utils.normalize_header(header)
+        return COLUMN_ALIASES.get(normalized, normalized)
+
+    @staticmethod
+    def _single_value(value_range: list) -> str:
+        return str(value_range[0][0]) if value_range and value_range[0] else ""
+
+    def _find_row(self, worksheet: gspread.Worksheet, number: str) -> int | None:
+        """Localiza a linha do pedido pela chave, lendo só a coluna PEDIDO."""
+        if self._order_col is None:
+            raise SheetColumnNotFoundError(column=SheetCols.ORDER)
+
+        normalized = utils.normalize_order_number(number)
+        col_values = worksheet.col_values(self._order_col)
+
+        target_row = next(
+            (idx for idx, val in enumerate(col_values[1:], start=2)
+             if utils.normalize_order_number(val) == normalized),
+            None,
+        )
+        if target_row is not None:
+            self._rows[normalized] = target_row
+        return target_row
+
+    def _read_row(self, worksheet: gspread.Worksheet, row: int) -> list | None:
+        rows = self._batch_get_rows(worksheet, [row], len(self._header))
+        return rows[0] if rows else None
+
+    def _row_is_order(self, row: list, normalized: str) -> bool:
+        return self._order_col is not None and utils.normalize_order_number(row[self._order_col - 1]) == normalized
+
+    @staticmethod
+    def _batch_get_rows(worksheet: gspread.Worksheet, target_rows: list[int], header_len: int) -> list[list]:
+        """Busca as linhas informadas, em batches de até 100 ranges, e normaliza o comprimento
+        de cada uma para o do cabeçalho."""
         rows: list[list] = []
         for batch in utils.to_ranges(target_rows):
             for value_range in worksheet.batch_get(batch):
                 for row in value_range:
                     if len(row) > header_len:
                         raise UnexpectedSheetStructureError(expected=header_len, got=len(row))
-                    # Garante que todas as linhas têm o mesmo comprimento do cabeçalho
                     rows.append((row + [""] * max(0, header_len - len(row)))[:header_len])
-
-        return utils.to_dicts(header, rows)
+        return rows
