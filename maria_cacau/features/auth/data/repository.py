@@ -5,7 +5,8 @@ from pathlib import Path
 
 from maria_cacau.core.storage import CacheStorage, SecurityStorage, StorageKey
 
-from ..domain.errors import InvalidMetaCredentialsError, NoCachedCredentialsError
+from ..domain.errors import (InvalidMetaCredentialsError,
+                             NoCachedCredentialsError)
 from .apis import ConnectAuthAPI, DisconnectAuthAPI
 
 _CREDENTIALS_KEY = "google-credentials"

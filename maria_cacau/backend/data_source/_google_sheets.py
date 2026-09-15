@@ -5,8 +5,8 @@ import gspread
 from google.oauth2.service_account import Credentials
 
 from . import _utils as utils
-from ._usage import track_api_usage
 from ._normalizer import SheetNormalizer
+from ._usage import track_api_usage
 from ._viewmodel import _SheetsViewModel
 from .errors._handler import _guard
 
